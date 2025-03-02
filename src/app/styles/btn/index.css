@@ -1,0 +1,24 @@
+.btn__default {
+  font-family: "Inter", serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 20.57px;
+  text-align: center;
+  border-width: 1px;
+  border-radius: 15px;
+}
+
+.btn__orange {
+  padding: 12px 48px;
+  background-color: var(--color-orange);
+  color: var(--color-white);
+  max-width: 229px;
+}
+
+.btn__white {
+  padding: 12px 52px;
+  background-color: var(--color-white-1);
+  color: var(--color-black-1);
+  max-width: 265px;
+  border-color: var(--color-gray-1);
+}

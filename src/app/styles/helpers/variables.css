@@ -1,0 +1,18 @@
+@theme {
+  --color-bg: linear-gradient(
+    231.16deg,
+    #f6f6f6 0.73%,
+    #f5f5f5 46.94%,
+    #f6f6f6 99.04%
+  );
+
+  --color-orange: #ff5532;
+
+  --color-white: #ffffff;
+  --color-white-1: #f9f9f9;
+
+  --color-gray-1: #717171;
+  --color-gray-2: linear-gradient(180deg, #fbfbfb 0%, #f5f5f5 100%);
+
+  --color-black-1: #111827;
+}

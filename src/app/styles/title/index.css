@@ -1,0 +1,27 @@
+.title__default {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 48.41px;
+}
+
+.title__container {
+  display: flex;
+  align-items: center;
+  width: 308px;
+  height: 70px;
+}
+
+.title__view-1 {
+  font-family: "Inter", serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-1);
+}
+
+.title__view-2 {
+  font-family: "Inter", serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 36px;
+  @apply text-black-1;
+}

@@ -1,0 +1,11 @@
+.text__default {
+  font-family: "Inter", serif;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 25.5px;
+  color: var(--color-black-1);
+}
+
+.text__default.text__bold {
+  font-weight: 700;
+}

@@ -1,0 +1,26 @@
+.container__default {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 39px 74px 62px 92px;
+}
+
+.container__sidebar {
+  min-width: 232px;
+  background: var(--color-gray-2);
+
+  @apply pt-[51px];
+}
+
+.container__view-1 {
+  display: flex;
+  gap: 13px;
+  padding-top: 22px;
+  background: var(--color-bg);
+  border-radius: 19px;
+}
+.container__sidebar .container__logo {
+  margin-left: 30px;
+  margin-right: 34px;
+  @apply px-[9px] pt-[9px] pb-[18px];
+}

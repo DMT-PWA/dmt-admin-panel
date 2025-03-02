@@ -1,0 +1,15 @@
+.input__default {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 6px;
+
+  background: var(--color-white);
+
+  padding: 12px 20px;
+
+  font-family: "Onest", serif;
+  color: var(--color-gray-1);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17.85px;
+}

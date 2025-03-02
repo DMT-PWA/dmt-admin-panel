@@ -1,0 +1,7 @@
+table th {
+  font-family: "inter", serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--color-gray-1);
+  text-align: left;
+}
