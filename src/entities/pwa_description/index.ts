@@ -1,0 +1,1 @@
+export { pwaDescriptionReducer } from "./model"

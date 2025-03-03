@@ -19,6 +19,14 @@
   background: var(--color-bg);
   border-radius: 19px;
 }
+
+.container__view-2 {
+  display: flex;
+  gap: 31px;
+  padding-top: 31px;
+  background: var(--color-bg);
+  border-radius: 37px;
+}
 .container__sidebar .container__logo {
   margin-left: 30px;
   margin-right: 34px;

@@ -15,6 +15,17 @@
   max-width: 229px;
 }
 
+.btn__orange-view-1 {
+  padding: 12px 11px;
+  max-height: 42px;
+  min-width: 167px;
+  font-family: "Onest", serif;
+  font-size: 14px;
+  line-height: 17.85px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
 .btn__white {
   padding: 12px 52px;
   background-color: var(--color-white-1);

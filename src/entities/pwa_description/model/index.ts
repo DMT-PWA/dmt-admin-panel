@@ -1,0 +1,1 @@
+export { default as pwaDescriptionReducer } from "./pwaDescriptionSlice"
