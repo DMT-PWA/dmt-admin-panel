@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { PWA_LIST } from "../model/const";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
 
 type listItem = {
@@ -13,8 +12,6 @@ type listItem = {
 export const Sidebar: FC = () => {
   const [isOpen, setOpen] = useState(true);
   const navigate = useNavigate();
-
-  const route = useAppSelector((state) => state.sidebar.current_page);
 
   const pathname = useLocation().pathname;
 
@@ -39,21 +36,22 @@ export const Sidebar: FC = () => {
             >
               PWA
             </span>
-
-            <button onClick={() => setOpen(isOpen ? false : true)}>
-              <img
-                src="src/shared/assets/icons/shevron.png"
-                alt="dots"
-                width={24}
-                height={24}
-                className={`transition-transform duration-300 ease-in-out ${
-                  !isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+            {pathname !== "/pwa" && (
+              <button onClick={() => setOpen(isOpen ? false : true)}>
+                <img
+                  src="src/shared/assets/icons/shevron.png"
+                  alt="dots"
+                  width={24}
+                  height={24}
+                  className={`transition-transform duration-300 ease-in-out ${
+                    !isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            )}
           </div>
         </div>
-        {isOpen ? (
+        {pathname !== "/pwa" && isOpen ? (
           <ul className="pl-[64px]">
             {PWA_LIST.map((item: listItem) => (
               <li

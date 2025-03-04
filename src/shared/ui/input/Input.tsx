@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { FC } from "react";
+import { ChangeEvent, FC } from "react";
 
 type InputProps = {
   label?: string;
@@ -8,6 +8,7 @@ type InputProps = {
   container_classes?: string;
   placeholder?: string;
   type?: string;
+  onUpdateValue?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const InputDefault: FC<InputProps> = ({
@@ -17,6 +18,7 @@ export const InputDefault: FC<InputProps> = ({
   container_classes,
   placeholder,
   type = "text",
+  onUpdateValue,
 }) => {
   return (
     <div
@@ -29,8 +31,9 @@ export const InputDefault: FC<InputProps> = ({
       <input
         type={type}
         value={value}
-        className={`input__default ${input_classes ? input_classes : ""}`}
+        className={clsx(`input__default`, input_classes)}
         placeholder={placeholder}
+        onChange={onUpdateValue}
       />
     </div>
   );
