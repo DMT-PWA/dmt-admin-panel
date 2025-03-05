@@ -2,16 +2,23 @@ import { FC, useState } from "react";
 import { PWA_LIST } from "../model/const";
 import { useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
+import { useAppSelector } from "src/shared/lib/store";
+import { useDispatch } from "react-redux";
+import { setCurrentStage } from "src/entities/pwa_create";
 
 type listItem = {
   id: number;
   title: string;
   route: string;
+  slug: string;
 };
 
 export const Sidebar: FC = () => {
   const [isOpen, setOpen] = useState(true);
   const navigate = useNavigate();
+  const currentStage = useAppSelector((state) => state.pwa_create.currentStage);
+
+  const dispatch = useDispatch();
 
   const pathname = useLocation().pathname;
 
@@ -56,10 +63,10 @@ export const Sidebar: FC = () => {
             {PWA_LIST.map((item: listItem) => (
               <li
                 key={item.id}
-                onClick={() => navigate(item.route)}
+                onClick={() => dispatch(setCurrentStage(item.slug))}
                 className={clsx(
                   "text__default cursor-pointer flex items-center h-[50px]",
-                  { "!text-orange": `/${item.route}` === pathname }
+                  { "!text-orange": `${item.slug}` === currentStage }
                 )}
               >
                 {item.title}

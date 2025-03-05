@@ -32,3 +32,11 @@
   margin-right: 34px;
   @apply px-[9px] pt-[9px] pb-[18px];
 }
+
+.phone__container {
+  width: 411px;
+  height: 849px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("src/shared/assets/images/phone_bg.png");
+}

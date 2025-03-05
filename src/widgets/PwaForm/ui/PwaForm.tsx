@@ -11,7 +11,7 @@ export const PwaForm: FC = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="container__view-2 flex-col px-7 pb-[202px]">
+    <div className="container__view-2 flex-col flex-1 px-7 pb-[202px]">
       <Title title="Дизайн" withContainer={false} classes="title__view-2" />
       <div className="flex flex-col gap-6">
         <InputDefault

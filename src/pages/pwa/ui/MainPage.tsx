@@ -28,7 +28,7 @@ const MainPage = () => {
         />
         <InputDefault
           label="Название PWA"
-          input_classes="w-[352px] border-orange"
+          input_classes="w-[352px]"
           placeholder="Поиск по названию PWA"
         />
       </div>

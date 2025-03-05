@@ -1,2 +1,1 @@
-export { PwaDesign } from "./PwaDesign"
-export { PwaDescription } from "./PwaDescription"
+export { PwaCreate } from "./PwaCreate";

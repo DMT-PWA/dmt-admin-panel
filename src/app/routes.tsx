@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { MainPage } from "src/pages/pwa";
-import { PwaDesign, PwaDescription } from "src/pages/pwa_create";
+import { PwaCreate } from "src/pages/pwa_create";
 import { Sidebar } from "src/widgets/sidebar";
 
 const LayoutWithSidebar = () => {
@@ -15,8 +15,7 @@ const LayoutWithSidebar = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/pwa" replace />} />
         <Route path="/pwa" element={<MainPage />} />
-        <Route path="/pwa_create" element={<PwaDesign />} />
-        <Route path="/pwa_description" element={<PwaDescription />} />
+        <Route path="/pwa_create" element={<PwaCreate />} />
       </Routes>
     </div>
   );
