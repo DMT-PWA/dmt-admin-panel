@@ -37,7 +37,7 @@ export const PwaForm: FC = () => {
       <div className="flex gap-[22px]">
         <ButtonDefault
           onClickHandler={() => setModalOpen(true)}
-          btn_text="Создать коллекцию"
+          btn_text="Загрузить дизайн"
           btn_classes="btn__orange btn__orange-view-1"
         />
         <ButtonDefault
@@ -45,6 +45,7 @@ export const PwaForm: FC = () => {
           btn_classes="btn__white btn__orange-view-1"
         />
       </div>
+      <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"></div>
       <Dialog
         open={isModalOpen}
         onClose={() => setModalOpen(false)}

@@ -3,6 +3,7 @@ import { pwaCreateReducer } from "src/entities/pwa_create";
 import { pwaDescriptionReducer } from "src/entities/pwa_description";
 import { pwaDesignReducer } from "src/entities/pwa_design";
 import { sidebarModule } from "src/widgets/sidebar";
+import { collectionSliceReducer } from "src/entities/collection"
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     pwa_description: pwaDescriptionReducer,
     pwa_design: pwaDesignReducer,
     pwa_create: pwaCreateReducer,
+    collection: collectionSliceReducer
   },
 });

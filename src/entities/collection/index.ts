@@ -1,0 +1,1 @@
+export { collectionSliceReducer, setCollectionImage, removeCollectionImage, setImage, removeImage } from "./model"
