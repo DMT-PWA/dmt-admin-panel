@@ -1,11 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-const create_stages = [
-  "design",
-  "description",
-  "comments",
-  "setting",
-  "metrics",
-];
 
 const initialState = {
   currentStage: "design",

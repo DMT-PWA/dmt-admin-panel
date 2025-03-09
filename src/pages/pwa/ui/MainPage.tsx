@@ -7,7 +7,7 @@ import { PwaTable } from "src/widgets/PwaTable";
 const MainPage = () => {
   const navigate = useNavigate();
 
-  const handleClick = () => navigate("/pwa_create");
+  const handleClick = () => navigate("/pwa_create/design");
 
   return (
     <div className="container__default">

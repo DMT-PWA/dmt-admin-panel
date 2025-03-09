@@ -1,14 +1,22 @@
-import { FC } from "react";
+import { Dialog, DialogBackdrop } from "@headlessui/react";
+import { ChangeEvent, FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setPwaTitle } from "src/entities/pwa_design";
+import { CollectionCreate } from "src/features/collection_create";
 import { useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
+import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 
 export const PwaForm: FC = () => {
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
   const title = useAppSelector((state) => state.pwa_design.pwa_title);
   const dispatch = useDispatch();
+
+  const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
+    dispatch(setPwaTitle(e.target.value));
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[202px]">
@@ -17,19 +25,18 @@ export const PwaForm: FC = () => {
         <InputDefault
           value={title}
           label="Название PWA"
-          input_classes=""
+          input_classes="!border-0"
           placeholder="..."
-          onUpdateValue={(event) => dispatch(setPwaTitle(event.target.value))}
+          onUpdateValue={onSetPwaTitle}
         />
-        <InputDefault
-          label="Язык интерфейса PWA"
-          input_classes=""
-          placeholder="Английский"
-        />
-        <InputDefault label="Теги PWA" input_classes="" placeholder="..." />
+        <label className="title__view-1">Язык интерфейса PWA</label>
+        <CustomSelect placeholder="Английский" />
+        <label className="title__view-1">Теги PWA</label>
+        <CustomSelect placeholder="Выберите теги" />
       </div>
       <div className="flex gap-[22px]">
         <ButtonDefault
+          onClickHandler={() => setModalOpen(true)}
           btn_text="Создать коллекцию"
           btn_classes="btn__orange btn__orange-view-1"
         />
@@ -38,7 +45,16 @@ export const PwaForm: FC = () => {
           btn_classes="btn__white btn__orange-view-1"
         />
       </div>
-      .
+      <Dialog
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center">
+          <CollectionCreate onPopupHandler={() => setModalOpen(false)} />
+        </div>
+      </Dialog>
     </div>
   );
 };

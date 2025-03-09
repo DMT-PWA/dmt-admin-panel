@@ -6,6 +6,16 @@
   color: var(--color-black-1);
 }
 
+.text-view-1 {
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.text-view-2 {
+  font-size: 16px;
+  line-height: 150%;
+}
+
 .text__default.text__bold {
   font-weight: 700;
 }

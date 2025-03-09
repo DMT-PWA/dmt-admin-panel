@@ -1,5 +1,6 @@
 .input__default,
-textarea {
+textarea,
+.react-datepicker__input-container {
   border-width: 1px;
   border-style: solid;
   border-radius: 6px;
@@ -15,11 +16,19 @@ textarea {
   line-height: 17.85px;
 }
 
-input:focus,
-input:focus-visible,
+input:focus:not(.react-datepicker-ignore-onclickoutside),
+input:focus-visible:not(.react-datepicker-ignore-onclickoutside),
 textarea {
   outline: none;
   border: 1px solid var(--color-orange);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background-color: var(--color-orange);
 }
 
 textarea {

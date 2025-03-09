@@ -15,7 +15,7 @@ const LayoutWithSidebar = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/pwa" replace />} />
         <Route path="/pwa" element={<MainPage />} />
-        <Route path="/pwa_create" element={<PwaCreate />} />
+        <Route path="/pwa_create/*" element={<PwaCreate />} />
       </Routes>
     </div>
   );

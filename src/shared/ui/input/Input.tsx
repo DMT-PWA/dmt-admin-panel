@@ -2,19 +2,21 @@ import clsx from "clsx";
 import { ChangeEvent, FC } from "react";
 
 type InputProps = {
-  label?: string;
-  value?: string | number;
-  input_classes?: string;
-  container_classes?: string;
-  placeholder?: string;
-  type?: string;
-  onUpdateValue?: (event: ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+  value: string | number;
+  input_classes: string;
+  label_classes: string;
+  container_classes: string;
+  placeholder: string;
+  type: string;
+  onUpdateValue: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const InputDefault: FC<InputProps> = ({
+export const InputDefault: FC<Partial<InputProps>> = ({
   label,
   value,
   input_classes,
+  label_classes,
   container_classes,
   placeholder,
   type = "text",
@@ -27,7 +29,9 @@ export const InputDefault: FC<InputProps> = ({
         "justify-between": type === "checkbox",
       })}
     >
-      <label className="title__view-1">{label}</label>
+      <label className={clsx({ "title__view-1": !label_classes })}>
+        {label}
+      </label>
       <input
         type={type}
         value={value}

@@ -1,12 +1,12 @@
 import { Field, Label, Textarea } from "@headlessui/react";
 import { FC } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
-import { InputDefault } from "src/shared/ui/input";
+import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 
 export const PwaDescriptionForm: FC = () => {
   return (
-    <div className="container__view-2 flex-col flex-1 px-7 pb-[202px]">
+    <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
       <Title title="Описание" withContainer={false} classes="title__view-2" />
       <div className="flex flex-col gap-6">
         <div>
@@ -106,24 +106,12 @@ export const PwaDescriptionForm: FC = () => {
                 container_classes="flex-[0.5]"
               />
             </div>
-            <div className="flex">
-              <div className="relative w-full">
-                {/* Ползунок */}
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-
-                {/* Значение процента */}
-                <div
-                  className="absolute top-6 text-sm text-gray-700"
-                  style={{ left: `30%`, transform: "translateX(-20%)" }}
-                >
-                  50%
-                </div>
-              </div>
+            <div className="mt-5 flex justify-between">
+              <InputRange value={90} rating={5} />
+              <InputRange value={75} rating={4} />
+              <InputRange value={40} rating={3} />
+              <InputRange value={20} rating={2} />
+              <InputRange value={10} rating={1} />
             </div>
           </div>
         </div>
