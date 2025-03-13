@@ -10,14 +10,17 @@ import {
   removeImage,
   setCollectionImage,
   setImage,
+  setCollectionName,
+  resetState,
 } from "src/entities/collection";
+import { addCollection } from "src/entities/pwa_design";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
 };
 
 export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
-  const { collectionImage, images } = useAppSelector(
+  const { collectionImage, images, collectionName } = useAppSelector(
     (state) => state.collection
   );
 
@@ -47,6 +50,24 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
         dispatch(setImage({ index, image: reader.result as string }));
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const onSaveBtnHandler = () => {
+    if (collectionName.length > 0 && collectionImage !== null) {
+      dispatch(
+        addCollection({
+          collectionImage,
+          images,
+          collectionName,
+        })
+      );
+
+      dispatch(resetState());
+
+      onPopupHandler();
+
+      return;
     }
   };
 
@@ -91,6 +112,8 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
         <InputDefault
           label="Название коллекции"
           placeholder="Добавьте название коллекции"
+          value={collectionName}
+          onUpdateValue={(e) => dispatch(setCollectionName(e.target.value))}
           container_classes="flex flex-col gap-4.5 flex-auto"
         />
       </div>
@@ -134,7 +157,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
         <ButtonDefault
           btn_text="Сохранить коллекцию"
           btn_classes="btn__orange btn__orange-view-3"
-          onClickHandler={onPopupHandler}
+          onClickHandler={onSaveBtnHandler}
         />
         <ButtonDefault
           btn_text="Отмена"

@@ -1,0 +1,1 @@
+export { AvatarsCollectionModal } from "./ui";

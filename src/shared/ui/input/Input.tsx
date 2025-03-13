@@ -9,6 +9,8 @@ type InputProps = {
   container_classes: string;
   placeholder: string;
   type: string;
+  max: number;
+  disabled: boolean;
   onUpdateValue: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -19,6 +21,8 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   label_classes,
   container_classes,
   placeholder,
+  max,
+  disabled = false,
   type = "text",
   onUpdateValue,
 }) => {
@@ -29,12 +33,16 @@ export const InputDefault: FC<Partial<InputProps>> = ({
         "justify-between": type === "checkbox",
       })}
     >
-      <label className={clsx({ "title__view-1": !label_classes })}>
+      <label
+        className={clsx({ "title__view-1": !label_classes }, label_classes)}
+      >
         {label}
       </label>
       <input
         type={type}
         value={value}
+        max={max}
+        disabled={disabled}
         className={clsx(`input__default`, input_classes)}
         placeholder={placeholder}
         onChange={onUpdateValue}

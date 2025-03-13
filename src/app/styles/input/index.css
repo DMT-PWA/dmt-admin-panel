@@ -35,6 +35,16 @@ input[type="range"]:hover {
   cursor: default;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
 textarea {
   border: 1px solid #6d6d6d;
+}
+
+.react-datepicker__input-container input:focus {
+  border: none;
 }

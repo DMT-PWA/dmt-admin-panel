@@ -7,6 +7,7 @@ import { PhonePreview } from "src/widgets/PhonePreview";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
+import { PwaSettings } from "src/widgets/PwaSettings";
 
 export const PwaCreate: FC = () => {
   const pathname = useLocation().pathname;
@@ -25,6 +26,7 @@ export const PwaCreate: FC = () => {
           <Route path="description" element={<PwaDescriptionForm />} />
           <Route path="comments" element={<PwaComments />} />
           <Route path="comments_create" element={<PwaCommentsCreate />} />
+          <Route path="settings" element={<PwaSettings />} />
           <Route path="*" element={<PwaForm />} />
         </Routes>
 
@@ -34,7 +36,7 @@ export const PwaCreate: FC = () => {
       {isSaveBtnShown && (
         <ButtonDefault
           btn_text="Сохранить"
-          btn_classes="btn__orange btn__orange-view-1 m-width-[249px]"
+          btn_classes="btn__orange btn__orange-view-1 max-w-62.25 mt-5.5"
         />
       )}
     </div>

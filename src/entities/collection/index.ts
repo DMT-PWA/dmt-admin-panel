@@ -1,1 +1,9 @@
-export { collectionSliceReducer, setCollectionImage, removeCollectionImage, setImage, removeImage } from "./model"
+export {
+  collectionSliceReducer,
+  setCollectionImage,
+  removeCollectionImage,
+  setImage,
+  removeImage,
+  setCollectionName,
+  resetState,
+} from "./model";

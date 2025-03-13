@@ -1,0 +1,17 @@
+export {
+  commentsReducer,
+  setDeveloperAnswer,
+  addComment,
+  setAnswerDate,
+  setAnswerText,
+  setAuthorName,
+  setAvatar,
+  setCommentsText,
+  setDeveloperName,
+  setLikes,
+  setRaiting,
+  setReviewDate,
+  removeComment,
+  resetState,
+  type IUserComments,
+} from "./model";

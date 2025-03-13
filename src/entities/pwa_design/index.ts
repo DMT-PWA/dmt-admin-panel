@@ -1,1 +1,7 @@
-export { pwaDesignReducer, setPwaTitle } from "./model";
+export {
+  pwaDesignReducer,
+  setPwaTitle,
+  addCollection,
+  removeCollection,
+  fetchDesignInfo,
+} from "./model";

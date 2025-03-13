@@ -1,4 +1,11 @@
-import { Field, Label, Switch, Textarea } from "@headlessui/react";
+import {
+  Dialog,
+  DialogBackdrop,
+  Field,
+  Label,
+  Switch,
+  Textarea,
+} from "@headlessui/react";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -6,18 +13,81 @@ import { InputDefault } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import avatar_icon from "src/shared/assets/icons/avatar_icon.png";
 import DatePicker from "react-datepicker";
+import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
+import { AvatarsCollectionModal } from "src/features/avatars_collection_modal";
+import {
+  addComment,
+  setAnswerDate,
+  setAnswerText,
+  setAuthorName,
+  setAvatar,
+  setCommentsText,
+  setDeveloperName,
+  setLikes,
+  setRaiting,
+  setReviewDate,
+  setDeveloperAnswer,
+} from "src/entities/comments";
+import clsx from "clsx";
+import { format } from "date-fns";
 
 export const PwaCommentsCreate: FC = () => {
-  const [enabled, setEnabled] = useState(false);
+  const {
+    answer_date,
+    answer_text,
+    author_name,
+    comments_text,
+    developer_name,
+    likes_count,
+    raiting,
+    review_date,
+    developer_answer,
+    avatar,
+    comments_list,
+  } = useAppSelector((state) => state.comments);
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   const onClickHandler = () => navigate("/pwa_create/comments");
 
+  const onAddNewComment = () => {
+    dispatch(
+      addComment({
+        answer_date,
+        answer_text,
+        author_name,
+        comments_text,
+        developer_name,
+        likes_count,
+        raiting,
+        review_date,
+      })
+    );
+
+    onClickHandler();
+  };
+
+  const label = (text: string) => (
+    <Label
+      className={clsx("mb-2 text-view-2", {
+        "text-gray-4": !developer_answer,
+      })}
+    >
+      {text}
+    </Label>
+  );
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
       <div className="flex justify-between">
-        <Title title="Описание" withContainer={false} classes="title__view-2" />
+        <Title
+          title="Коментарии"
+          withContainer={false}
+          classes="title__view-2"
+        />
         <ButtonDefault
           btn_text="Вернуться назад"
           btn_classes="btn__white btn__white-view-1"
@@ -34,8 +104,8 @@ export const PwaCommentsCreate: FC = () => {
             <div className="flex flex-[0.5] justify-between">
               <h2 className="text__default">Ответ разработчика</h2>
               <Switch
-                checked={enabled}
-                onChange={setEnabled}
+                checked={developer_answer}
+                onChange={(value) => dispatch(setDeveloperAnswer(value))}
                 className="group inline-flex h-[16px] w-8 items-center rounded-full bg-[#697077] transition data-[checked]:bg-orange"
               >
                 <span className="size-3 translate-x-0.5 rounded-full bg-white transition group-data-[checked]:translate-x-4.5" />
@@ -48,6 +118,8 @@ export const PwaCommentsCreate: FC = () => {
                 <InputDefault
                   label="Имя автора"
                   input_classes=""
+                  onUpdateValue={(e) => dispatch(setAuthorName(e.target.value))}
+                  value={author_name}
                   container_classes="flex-[0.5]"
                   placeholder="Введите имя автора"
                 />
@@ -68,6 +140,7 @@ export const PwaCommentsCreate: FC = () => {
                     />
                     <ButtonDefault
                       btn_text="Открыть коллекцию"
+                      onClickHandler={() => setModalOpen(true)}
                       btn_classes="btn__white btn__white-view-2"
                     />
                   </Field>
@@ -79,6 +152,9 @@ export const PwaCommentsCreate: FC = () => {
                     <Label>Дата отзыва</Label>
                     <DatePicker
                       showIcon
+                      dateFormat="dd.MM.yyyy"
+                      selected={review_date}
+                      onChange={(value) => dispatch(setReviewDate(value))}
                       icon={
                         <svg
                           width="15"
@@ -101,15 +177,22 @@ export const PwaCommentsCreate: FC = () => {
                     label="Рейтинг"
                     input_classes=""
                     container_classes="flex-[0.5]"
-                    placeholder="Введите имя автора"
+                    placeholder="Введите рейтинг"
+                    type="number"
+                    max={5}
+                    value={raiting}
+                    onUpdateValue={(e) => dispatch(setRaiting(e.target.value))}
                   />
                 </div>
                 <Field>
                   <InputDefault
                     label="Количество лайков"
                     input_classes=""
+                    type="number"
                     container_classes="flex-[0.5] mt-2"
-                    placeholder="Введите имя автора"
+                    placeholder="Введите количество лайков"
+                    value={likes_count}
+                    onUpdateValue={(e) => dispatch(setLikes(e.target.value))}
                   />
                   <Field className="flex flex-col mt-2">
                     <Label className="mb-2 text-view-2">Текст коментария</Label>
@@ -117,6 +200,10 @@ export const PwaCommentsCreate: FC = () => {
                       className="min-h-[120px]"
                       placeholder="Введите текст "
                       name="whats_new"
+                      value={comments_text}
+                      onChange={(e) =>
+                        dispatch(setCommentsText(e.target.value))
+                      }
                     ></Textarea>
                   </Field>
                 </Field>
@@ -126,29 +213,67 @@ export const PwaCommentsCreate: FC = () => {
               <div className="flex flex-col gap-2">
                 <InputDefault
                   label="Имя разработчика"
-                  input_classes=""
+                  input_classes={clsx({ "!border-gray-5": !developer_answer })}
+                  disabled={!developer_answer}
                   container_classes="flex-[0.5]"
-                  placeholder="Введите имя автора"
+                  label_classes={clsx("title__view-1", {
+                    "!text-gray-4": !developer_answer,
+                  })}
+                  placeholder="Введите имя разработчика"
+                  value={developer_name}
+                  onUpdateValue={(e) =>
+                    dispatch(setDeveloperName(e.target.value))
+                  }
                 />
                 <Field className="flex flex-col mt-2">
-                  <Label className="mb-2 text-view-2">Текст ответа</Label>
+                  {label("Текст ответа")}
                   <Textarea
-                    className="min-h-[120px]"
+                    className={clsx("min-h-[120px]", {
+                      "!border-gray-5": !developer_answer,
+                    })}
                     placeholder="Введите ответ"
+                    disabled={!developer_answer}
                     name="whats_new"
+                    value={answer_text}
+                    onChange={(e) => dispatch(setAnswerText(e.target.value))}
                   ></Textarea>
                 </Field>
-                <InputDefault
-                  label="Дата ответа"
-                  input_classes=""
-                  container_classes="flex-[0.5] mt-2"
-                  placeholder="Введите имя автора"
-                />
+                <Field className="flex flex-col mt-2">
+                  {label("Дата ответа")}
+                  <DatePicker
+                    disabled={!developer_answer}
+                    value={answer_date}
+                    dateFormat="dd.MM.yyyy"
+                    selected={answer_date}
+                    onChange={(value) =>
+                      dispatch(setAnswerDate(format(value, "dd.MM.yyyy")))
+                    }
+                  />
+                </Field>
               </div>
             </div>
           </div>
+          <ButtonDefault
+            btn_text="Сохранить"
+            btn_classes="btn__orange btn__orange-view-1 w-62.25 mt-5.5"
+          />
+          <ButtonDefault
+            btn_text="Добавить новый коментарий"
+            btn_classes="btn__white btn__white-view-5 text-view-4 mt-5.5 ml-5.5"
+            onClickHandler={onAddNewComment}
+          />
         </div>
       </div>
+      <Dialog
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center">
+          <AvatarsCollectionModal onPopupHandler={() => setModalOpen(false)} />
+        </div>
+      </Dialog>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 export interface ICollection {
-    collectionImage: string | null;
-    images: (string | null)[]
+  collectionImage: string | null;
+  images: (string | null)[];
+  collectionName: string | null;
 }

@@ -1,6 +1,7 @@
 import { Dialog, DialogBackdrop } from "@headlessui/react";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+
 import { setPwaTitle } from "src/entities/pwa_design";
 import { CollectionCreate } from "src/features/collection_create";
 import { useAppSelector } from "src/shared/lib/store";
@@ -8,29 +9,38 @@ import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
+import { removeCollection, fetchDesignInfo } from "src/entities/pwa_design";
+import { CollectionsList } from "src/features/collections_list";
 
 export const PwaForm: FC = () => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
-  const title = useAppSelector((state) => state.pwa_design.pwa_title);
+  const { pwa_title, collections, languages } = useAppSelector(
+    (state) => state.pwa_design
+  );
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchDesignInfo());
+  }, []);
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
 
   return (
-    <div className="container__view-2 flex-col flex-1 px-7 pb-[202px]">
+    <div className="container__view-2 flex-col flex-1 px-7 pb-17.5 h-max">
       <Title title="Дизайн" withContainer={false} classes="title__view-2" />
       <div className="flex flex-col gap-6">
         <InputDefault
-          value={title}
+          value={pwa_title}
           label="Название PWA"
           input_classes="!border-0"
           placeholder="..."
           onUpdateValue={onSetPwaTitle}
         />
         <label className="title__view-1">Язык интерфейса PWA</label>
-        <CustomSelect placeholder="Английский" />
+
+        <CustomSelect options={languages} placeholder="Английский" />
         <label className="title__view-1">Теги PWA</label>
         <CustomSelect placeholder="Выберите теги" />
       </div>
@@ -42,10 +52,50 @@ export const PwaForm: FC = () => {
         />
         <ButtonDefault
           btn_text="Открыть коллекцию"
-          btn_classes="btn__white btn__orange-view-1"
+          btn_classes="btn__white btn__white-view-4 text-view-3"
+          onClickHandler={() => setCollectionsOpen(true)}
         />
       </div>
-      <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"></div>
+      {collections.length > 0
+        ? collections.map(
+            (
+              {
+                collectionImage,
+                images,
+              }: {
+                collectionImage: string;
+                images: (string | null)[];
+              },
+              index: number
+            ) => {
+              return (
+                <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
+                  <div key={index} className="flex gap-9.75">
+                    <div className="flex flex-col justify-between">
+                      <img src={collectionImage} width={92} height={92} />
+                      <ButtonDefault
+                        btn_text="Удалить"
+                        btn_classes="btn__orange btn__orange-view-4"
+                        onClickHandler={() => dispatch(removeCollection(index))}
+                      />
+                    </div>
+                    {images.map((el: string | null, index) => {
+                      return el ? (
+                        <div key={index} className="flex w-full h-full">
+                          <img
+                            src={el}
+                            alt="Uploaded"
+                            className="max-w-28.75 min-h-57 object-cover rounded-2.75"
+                          />
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              );
+            }
+          )
+        : null}
       <Dialog
         open={isModalOpen}
         onClose={() => setModalOpen(false)}
@@ -54,6 +104,16 @@ export const PwaForm: FC = () => {
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
           <CollectionCreate onPopupHandler={() => setModalOpen(false)} />
+        </div>
+      </Dialog>
+      <Dialog
+        open={isCollectionsOpen}
+        onClose={() => setCollectionsOpen(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center">
+          <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
         </div>
       </Dialog>
     </div>

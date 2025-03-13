@@ -7,7 +7,7 @@ type Button = {
   btn_classes: string;
   onClickHandler: (
     event: MouseEvent<HTMLButtonElement>
-  ) => void | Promise<void>;
+  ) => void | Promise<void> | (object | null)[];
   withArrow: boolean;
 };
 
