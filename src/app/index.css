@@ -13,10 +13,6 @@ h1 {
   font-family: "Inter", serif;
 }
 
-img {
-  height: max-content;
-}
-
 button {
   cursor: pointer;
 }

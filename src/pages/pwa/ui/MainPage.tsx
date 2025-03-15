@@ -11,7 +11,7 @@ const MainPage = () => {
 
   const handleClick = () => navigate("/pwa_create/design");
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(null);
 
   return (
     <div className="container__default">
@@ -45,6 +45,9 @@ const MainPage = () => {
           wrapperClassName="self-end"
           dateFormat="dd.MM.yyyy"
           placeholderText="Выбрать дату"
+          selected={date}
+          onChange={(value) => setDate(value)}
+          enableTabLoop={false}
           icon={
             <svg
               width="15"

@@ -3,4 +3,5 @@ export interface IDesign {
   languages: object[];
   pwa_tags: object[];
   collections: object[];
+  isChanged: boolean;
 }

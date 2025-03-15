@@ -4,4 +4,5 @@ export {
   addCollection,
   removeCollection,
   fetchDesignInfo,
+  setChanged,
 } from "./model";

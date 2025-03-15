@@ -20,12 +20,15 @@ export const CustomSelect: FC<Partial<ISelectProps>> = ({
     <Select
       options={options}
       placeholder={placeholder}
+      openMenuOnFocus
       className={classes}
       classNamePrefix={null}
       classNames={{
         input: () => "!py-0 !m-0",
-        option: () => "!px-4 !py-3 text-view-6",
+        option: () => "!px-4 !py-3 text-view-6 border-b-1 border-gray-6",
         indicatorSeparator: () => "hidden",
+        menu: () => "!mt-0",
+        menuList: () => "!pt-0",
       }}
       components={{
         Control: CustomSelectValue,

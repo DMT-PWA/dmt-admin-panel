@@ -1,15 +1,9 @@
 import { FC } from "react";
-import close_icon from "src/shared/assets/icons/close_icon.png";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
+import close_icon from "src/shared/assets/icons/close_icon.png";
 
-interface IAvatarsCollectionProps {
-  onPopupHandler: () => void;
-}
-
-export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
-  onPopupHandler,
-}) => {
+export const NotificationModal: FC = ({ onPopupHandler }) => {
   return (
     <div className="relative bg-white pt-11.25 pb-11 px-5.75">
       <button
@@ -23,21 +17,14 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
         classes="text__default text-view-5"
         withContainer={false}
       ></Title>
-      <div className="mt-14.5 mb-14.75 grid grid-cols-6 grid-rows-4 gap-7.25">
-        {[...Array(24)].map((_, index) => (
-          <div
-            key={index}
-            className="w-17.25 h-17.25 border-[1px] border-gray-1 rounded-lg"
-          ></div>
-        ))}
-      </div>
+
       <div className="flex gap-[43px]">
         <ButtonDefault
-          btn_text="Выбрать"
+          btn_text="Сохранить"
           btn_classes="btn__orange btn__orange-view-3 flex-1"
         />
         <ButtonDefault
-          btn_text="Отмена"
+          btn_text="Вернуться"
           btn_classes="btn__white btn__white-view-3 "
           onClickHandler={onPopupHandler}
         />

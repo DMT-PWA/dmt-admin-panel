@@ -8,6 +8,7 @@ import { ButtonDefault } from "src/shared/ui/button";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
+import { PwaMetrics } from "src/widgets/PwaMetrics";
 
 export const PwaCreate: FC = () => {
   const pathname = useLocation().pathname;
@@ -27,6 +28,7 @@ export const PwaCreate: FC = () => {
           <Route path="comments" element={<PwaComments />} />
           <Route path="comments_create" element={<PwaCommentsCreate />} />
           <Route path="settings" element={<PwaSettings />} />
+          <Route path="metrics" element={<PwaMetrics />} />
           <Route path="*" element={<PwaForm />} />
         </Routes>
 

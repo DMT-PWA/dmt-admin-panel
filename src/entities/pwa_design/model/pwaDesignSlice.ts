@@ -7,6 +7,7 @@ const defaultState: IDesign = {
   pwa_title: "",
   pwa_tags: [],
   collections: [],
+  isChanged: false,
 };
 
 export const pwaDesignSlice = createSlice({
@@ -22,6 +23,9 @@ export const pwaDesignSlice = createSlice({
     removeCollection: (state, action: PayloadAction<number>) => {
       state.collections.splice(action.payload, 1);
     },
+    setChanged: (state, action: PayloadAction<boolean>) => {
+      state.isChanged = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder.addCase(fetchDesignInfo.fulfilled, (state, action) => {
@@ -32,7 +36,7 @@ export const pwaDesignSlice = createSlice({
     }),
 });
 
-export const { setPwaTitle, addCollection, removeCollection } =
+export const { setPwaTitle, addCollection, removeCollection, setChanged } =
   pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

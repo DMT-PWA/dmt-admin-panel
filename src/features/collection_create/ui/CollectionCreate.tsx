@@ -128,7 +128,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
                 <img
                   src={image}
                   alt="Uploaded"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full rounded-lg"
                 />
                 <button
                   onClick={() => dispatch(removeImage(index))}

@@ -29,8 +29,8 @@ export const Sidebar: FC = () => {
             <img
               src={dots}
               className="mr-[17px]"
+              style={{ maxHeight: "22px" }}
               width={22}
-              height={22}
               alt="dots"
             />
             <span
@@ -62,7 +62,12 @@ export const Sidebar: FC = () => {
                 onClick={() => navigate(item.route)}
                 className={clsx(
                   "text__default cursor-pointer flex items-center h-[50px]",
-                  { "!text-orange": item.route === pathname }
+                  {
+                    "!text-orange":
+                      item.route === pathname ||
+                      (pathname === "/pwa_create/comments_create" &&
+                        item.slug === "comments"),
+                  }
                 )}
               >
                 {item.title}

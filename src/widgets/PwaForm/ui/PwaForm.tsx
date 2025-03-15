@@ -1,15 +1,18 @@
 import { Dialog, DialogBackdrop } from "@headlessui/react";
-import { ChangeEvent, FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
 
 import { setPwaTitle } from "src/entities/pwa_design";
 import { CollectionCreate } from "src/features/collection_create";
-import { useAppSelector } from "src/shared/lib/store";
+import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
-import { removeCollection, fetchDesignInfo } from "src/entities/pwa_design";
+import {
+  removeCollection,
+  fetchDesignInfo,
+  setChanged,
+} from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
 
 export const PwaForm: FC = () => {
@@ -19,11 +22,15 @@ export const PwaForm: FC = () => {
   const { pwa_title, collections, languages } = useAppSelector(
     (state) => state.pwa_design
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchDesignInfo());
   }, []);
+
+  useMemo(() => {
+    dispatch(setChanged(true));
+  }, [pwa_title]);
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
 
@@ -72,7 +79,12 @@ export const PwaForm: FC = () => {
                 <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
                   <div key={index} className="flex gap-9.75">
                     <div className="flex flex-col justify-between">
-                      <img src={collectionImage} width={92} height={92} />
+                      <img
+                        src={collectionImage}
+                        style={{ maxHeight: "92px", borderRadius: "10px" }}
+                        width={92}
+                        height={92}
+                      />
                       <ButtonDefault
                         btn_text="Удалить"
                         btn_classes="btn__orange btn__orange-view-4"
@@ -85,7 +97,7 @@ export const PwaForm: FC = () => {
                           <img
                             src={el}
                             alt="Uploaded"
-                            className="max-w-28.75 min-h-57 object-cover rounded-2.75"
+                            className="max-w-28.75 min-h-57 rounded-[11px]"
                           />
                         </div>
                       ) : null;

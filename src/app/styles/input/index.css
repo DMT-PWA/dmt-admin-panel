@@ -48,3 +48,13 @@ textarea {
 .react-datepicker__input-container input:focus {
   border: none;
 }
+
+input.with_icon::before {
+  display: block;
+  content: "";
+  background-image: url("~src/shared/assets/icons/copy_icon.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 16px;
+  height: 16px;
+}

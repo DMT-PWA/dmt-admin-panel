@@ -25,3 +25,10 @@
   line-height: 36px;
   @apply text-black-1;
 }
+
+.title__view-3 {
+  font-family: "Inter", serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 150%;
+}
