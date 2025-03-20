@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
-export const API_URL = "https://jsonplaceholder.typicode.com/";
+export const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 class ApiInstance {
   private axios: AxiosInstance;
@@ -8,7 +8,6 @@ class ApiInstance {
   constructor() {
     this.axios = axios.create({
       baseURL: API_URL,
-      timeout: 120000,
       headers: {
         "Content-Type": "application/json",
       },

@@ -1,7 +1,8 @@
-export interface IDesign {
+export interface IDesign<T> {
   pwa_title: string | null;
   languages: object[];
   pwa_tags: object[];
-  collections: object[];
+  collections: T;
   isChanged: boolean;
+  appData: object
 }

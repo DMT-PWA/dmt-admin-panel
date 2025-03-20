@@ -1,11 +1,16 @@
-import { FC } from "react";
+import { ChangeEvent, FC } from "react";
 
 type InputRangeProps = {
-  value: number;
+  value: number | string;
   rating: number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const InputRange: FC<InputRangeProps> = ({ value, rating }) => {
+export const InputRange: FC<InputRangeProps> = ({
+  value,
+  rating,
+  onChange,
+}) => {
   return (
     <div className="flex flex-col gap-[15px]">
       <span className="text__deafult text-view-1" style={{ left: `${value}%` }}>
@@ -15,7 +20,7 @@ export const InputRange: FC<InputRangeProps> = ({ value, rating }) => {
         type="range"
         min="0"
         max="100"
-        disabled
+        onChange={onChange}
         value={value}
         className="w-full h-0.75 bg-orange appearance-none cursor-pointer"
       />

@@ -126,7 +126,7 @@ export const PwaCommentsCreate: FC = () => {
                 <Field>
                   <Label className="text__default text-view-2">Аватар</Label>
                   <Field className="flex gap-5.25 mt-2">
-                    <div className="h-[43px] w-[43px] rounded-2 bg-[#E8E8E8] flex justify-center items-center">
+                    <div className="h-[43px] w-[43px] rounded-[8px] bg-[#E8E8E8] flex justify-center items-center">
                       <img
                         src={avatar_icon}
                         alt="avatar"

@@ -18,7 +18,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <div className="relative bg-white pt-[89px] pb-11 px-6.5">
+    <div className="relative bg-white pt-[89px] pb-11">
       <button
         className="absolute flex justify-center items-center top-3 right-3.25 w-8.25 h-8.25"
         onClick={onPopupHandler}
@@ -28,7 +28,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
 
       <InputDefault
         label="Список коллекций"
-        container_classes="max-w-79.25 mb-5"
+        container_classes="max-w-79.25 mb-5 pl-6.5"
         label_classes="text__default"
         placeholder="Поиск коллекции"
         input_classes="with_icon"
@@ -45,8 +45,14 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
         ) => {
           return (
             <div className="flex flex-col">
-              <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7">
-                <div className="flex items-center">
+              <div
+                className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer"
+                onClick={() => setOpen(isOpen ? false : true)}
+              >
+                <div
+                  className="flex items-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <img
                     src={circle_icon}
                     width={16}
@@ -54,9 +60,9 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
                     alt=""
                     className="mr-7.75"
                   />
-                  {item.collectionName}
+                  <span>{item.collectionName}</span>
                 </div>
-                <button onClick={() => setOpen(isOpen ? false : true)}>
+                <button>
                   <img
                     src={shevron}
                     alt=""
@@ -74,8 +80,11 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
                   <div className="flex flex-col justify-between">
                     <img
                       src={item.collectionImage}
-                      style={{ maxHeight: "73px", borderRadius: "10px" }}
-                      width={73}
+                      style={{
+                        height: "73px",
+                        maxWidth: "73px",
+                        borderRadius: "10px",
+                      }}
                     />
                   </div>
                   {item.images.map((el: string | null, index) => {
@@ -96,7 +105,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
         }
       )}
 
-      <div className="flex gap-[43px] mt-18">
+      <div className="flex gap-[43px] mt-18 px-6.25">
         <ButtonDefault
           btn_text="Выбрать"
           btn_classes="btn__orange btn__orange-view-3"

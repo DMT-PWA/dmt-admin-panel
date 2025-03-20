@@ -45,7 +45,7 @@ const columns = [
   {
     id: "actions",
     header: () => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-23">
         <button>
           <img
             src="src/shared/assets/icons/refresh.png"

@@ -1,0 +1,442 @@
+import { useState, useEffect, useCallback, FC } from "react";
+import {
+  CaroselReviewContainerTablet,
+  FeaturesContainer,
+  ReviewContent1,
+  ReviewsContent,
+  SessionSafety2,
+} from "src/entities/playStore";
+import { Reviewer } from "src/entities/reviewer";
+import { useMediaQuery } from "src/shared/lib/hooks";
+import { appData } from "src/shared/lib/data";
+import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
+import { format } from "date-fns";
+const frontend = import.meta.env.VITE_FRONTEND_URL;
+
+const Tablet: FC = (props) => {
+  const { collections } = useAppSelector((state) => state.pwa_design);
+  const isMobile = useMediaQuery("(max-width: 600px)");
+
+  const {
+    title,
+    developer_name,
+    description,
+    raiting,
+    last_update,
+    number_of_downloads,
+    grades,
+  } = useAppSelector((state) => state.pwa_description);
+
+  const formatDownloads = (downloads: number | string | null): string => {
+    return downloads > 100000 ? "100K+" : `${downloads}`;
+  };
+  const modifiedNumberOfDownloads = formatDownloads(
+    Number(number_of_downloads)
+  );
+
+  /*  const {
+    deferredPrompt,
+    initializeInstall,
+    handleInstallClick,
+    device,
+    isBot,
+    isIosSmartPhoneOnChrome,
+    isDarkMode,
+    isIosSmartPhoneOnSafari,
+    isIosTabletOnChrome,
+    isIosTabletOnSafari,
+    isIosDesktopOnChrome,
+    isIosDesktopOnSafari,
+    isAndroidSmartPhoneOnChrome,
+    isAndroidTabletOnChrome,
+    isAndroidDesktopOnChrome,
+    isWindowsSmartPhoneOnChrome,
+    isWindowsTabletOnChrome,
+    isWindowsDesktopOnChrome,
+    isOtherBrowser,
+    showLoadingBar,
+    progress,
+    isInstalled,
+  } = props; */
+  //===================================================================================================
+  //==========================={Translations Block}====================================================
+  //===================================================================================================
+  const {
+    open,
+    containsAds,
+    headerReviews,
+    hundredPlus,
+    downloads,
+    ageLimit,
+    ageRating,
+    install,
+    wishlist,
+    available,
+    aboutThisGame,
+    about,
+    updatedOn,
+    updatedDate,
+    ratingsAndReviews,
+    fourPointThree,
+    reviewObject,
+    findHelpful,
+    yes,
+    no,
+    contact,
+    newFeatures,
+    icon,
+    screenShots,
+    appSubTitle,
+  } = appData.malaysia.english;
+  //===================================================================================================
+  //================================={React states}====================================================
+  //===================================================================================================
+
+  const [isAppSupport, setIsAppSupport] = useState(false);
+  const [isInstall, setIsInstall] = useState(false);
+
+  async function installApp() {
+    setIsInstall(true);
+  }
+
+  const onAppHeaderChromeClick = useCallback(() => {
+    setTimeout(() => {
+      const anchor = document.querySelector(
+        "[data-scroll-to='AppHeaderChrome']"
+      );
+      if (anchor) {
+        anchor.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }, 300);
+  }, []);
+
+  const onAppHeaderSafariClick = useCallback(() => {
+    setTimeout(() => {
+      const anchor = document.querySelector(
+        "[data-scroll-to='AppHeaderSafari']"
+      );
+      if (anchor) {
+        anchor.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }, 300);
+  }, []);
+
+  const collection = collections[0] || null;
+
+  // const lastUpdate = format(last_update, "MMMM dd, yyyy");
+
+  return (
+    <>
+      <div className="max-w-93.75 max-h-203 relative flex flex-row items-start justify-start leading-[normal] tracking-[normal]">
+        <main
+          data-phone-container
+          className="h-full rounded-[40px] flex-1 bg-white overflow-y-auto flex flex-col items-start justify-start pt-0 px-0 box-border relative max-w-full text-left text-2xs text-dimgray font-roboto"
+        >
+          <section
+            data-scroll-to="AppHeaderSafari"
+            className={`self-stretch flex flex-row items-start justify-start pt-0 box-border max-w-full text-left text-sm text-whitesmoke-200 font-roboto`}
+          >
+            <div className="flex-1 flex flex-col items-start justify-start gap-5 max-w-full">
+              <div className="self-stretch overflow-hidden flex flex-row items-start justify-start bg-[url('/hero-game-tablet@3x.png')] bg-cover bg-no-repeat bg-[top] max-w-full">
+                <div className="flex-1 flex flex-col items-start justify-start pt-[10px] px-[20px] pb-[4px] tabletBlack:pb-8 box-border gap-10 max-w-full mq600:gap-5">
+                  <div className="self-stretch flex flex-row items-start justify-center pt-0 px-0 pb-[4px]"></div>
+                  <div className="self-stretch flex flex-col items-start justify-start gap-10 text-5xl mq450:gap-5">
+                    <div className="w-[282px] flex flex-row items-start justify-start relative gap-2">
+                      {collection ? (
+                        <img
+                          className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg"
+                          loading="lazy"
+                          alt=""
+                          src={collection.collectionImage}
+                        />
+                      ) : (
+                        <div className="w-14 h-14 relative rounded-xl bg-[#D6D6D6]"></div>
+                      )}
+                      <div className="flex-1 flex flex-col items-start justify-start gap-px text-gray-100">
+                        <div className="flex flex-col justify-center items-center">
+                          <div className="self-stretch flex flex-row items-center justify-center flex-wrap content-start gap-1">
+                            <span className="text-black tracking-tight m-0 flex-1 relative text-inherit leading-[32px] font-normal font-[inherit] mq450:text-lgi mq450:leading-[26px]">
+                              {title}
+                              <br />
+                            </span>
+                            {/* {isMobile ? (
+                                <img
+                                  className="h-[24px] w-[24px] relative overflow-hidden shrink-0"
+                                  alt=""
+                                  src="/badge_blue.svg"
+                                />
+                              ) : (
+                                <img
+                                  className="h-[24px] w-[24px] relative overflow-hidden shrink-0"
+                                  alt=""
+                                  src="/badge_green.svg"
+                                />
+                              )} */}
+                          </div>
+                          <div className="self-stretch flex flex-row items-start justify-start flex-wrap content-start text-onexBlue tabletBlack:text-seagreen-200">
+                            <span className="ml-[2px] relative tracking-[0.1px] font-medium text-[14px] tabletBlack:text-base leading-[24px]">
+                              {appSubTitle}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-row items-start justify-start flex-wrap content-start gap-x-[9px] gap-y-[7px] text-xs text-dimgray">
+                          <div className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
+                            {developer_name}
+                          </div>
+                          {/* <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block min-w-[96px]">
+                              {inAppPurchases}
+                            </div> */}
+                        </div>
+                      </div>
+                    </div>
+                    {/* ====================={updated}============================= */}
+                    <div className="w-full flex flex-row items-center justify-center gap-[18px] text-sm text-gray-100 overflow-x-auto whitespace-nowrap container-snap container-snap">
+                      <div className="flex flex-col gap-1.75 items-center justify-center">
+                        <div className="flex flex-row items-center justify-center gap-px">
+                          <div className="relative font-bold font-product_sans tracking-[0.25px] leading-4 inline-block min-w-[22px]">
+                            {raiting}
+                          </div>
+                          <div className="flex flex-col items-start justify-start px-0 pb-0">
+                            <img
+                              className="w-3 h-3 relative overflow-hidden shrink-0"
+                              alt=""
+                              src="/pwa_icons/icon-star-black.svg"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-row items-start justify-start text-xs text-dimgray">
+                          <div
+                          // className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px] whitespace-nowrap"
+                          >
+                            {headerReviews}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center justify-center pt-2 px-0 pb-0">
+                        <div className="w-[1px] h-5 relative bg-darkgray/60" />
+                      </div>
+
+                      <div className="flex flex-col gap-1.75 items-center justify-center">
+                        <div className="flex flex-row items-center justify-center py-0 px-2">
+                          <div className="relative font-bold  tracking-[0.25px] leading-4 inline-block min-w-[45px]">
+                            {modifiedNumberOfDownloads}
+                          </div>
+                        </div>
+                        <div className="flex flex-row items-start justify-start text-xs text-dimgray">
+                          <div
+                          //  className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px] whitespace-nowrap"
+                          >
+                            {downloads}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center justify-center pt-2 px-0 pb-0">
+                        <div className="w-[1px] h-5 relative bg-darkgray/60" />
+                      </div>
+
+                      <div className="flex flex-col gap-1.75 items-center justify-center">
+                        <div className="flex flex-row items-center justify-center p-[2px] border-black/50 border-[2px] mb-[1px]">
+                          <div className="relative font-bold  text-[8px] inline-block">
+                            {ageLimit}
+                          </div>
+                        </div>
+                        <div className="flex flex-row items-start justify-start text-xs text-dimgray">
+                          <div
+                          // className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px] whitespace-nowrap"
+                          >
+                            {ageRating}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      className={`cursor-pointer hover:opacity-80 [border:none] py-2 px-5 self-stretch rounded-1 tabletBlack:rounded-lg overflow-hidden flex flex-row items-start justify-center bg-onexBlue tabletBlack:bg-blue_default`}
+                      onClick={installApp}
+                    >
+                      <div className="relative text-sm tracking-[0.25px] leading-4 font-product_sans text-neutral-100 text-left inline-block min-w-[40px]">
+                        {install}
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <CaroselReviewContainerTablet
+            propWidth="100%"
+            propHeight="140px"
+            propFlex="unset"
+            screenShots={screenShots}
+          />
+          <section className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-left text-lg text-gray-100 font-roboto">
+            <div className="flex-1 flex flex-col items-start justify-start gap-5 shrink-0 max-w-full">
+              <div className="self-stretch h-6 flex flex-row items-center justify-between gap-5">
+                <div className="self-stretch w-full flex flex-row items-start justify-start">
+                  <div className="self-stretch flex-1 relative leading-[24px]">
+                    {aboutThisGame}
+                  </div>
+                </div>
+                <div className="overflow-hidden flex flex-col items-start justify-start py-[5px] px-1">
+                  <img
+                    className="w-4 h-3.5 relative"
+                    alt=""
+                    src="/pwa_icons/vector-5.svg"
+                  />
+                </div>
+              </div>
+              {/* ================={new about content}================================== */}
+              <div className="self-stretch h-fit overflow-hidden shrink-0 flex flex-col items-start justify-start gap-4">
+                <p
+                  className="text-smi text-dimgray tracking-[0.2px] leading-[20px]"
+                  dangerouslySetInnerHTML={{ __html: description }} // Use dangerouslySetInnerHTML
+                />
+              </div>
+              {last_update && (
+                <div className="w-fit h-fit flex flex-col items-start justify-start gap-1 text-sm">
+                  <div className="self-stretch flex-1 flex flex-row items-start justify-start">
+                    <div className="self-stretch flex-1 relative tracking-[0.25px] leading-[20px] whitespace-nowrap">
+                      {updatedOn}
+                    </div>
+                  </div>
+                  <div className="self-stretch flex-1 flex flex-row items-start justify-start text-smi text-dimgray">
+                    <div className="self-stretch flex-1 relative tracking-[0.2px] leading-[20px]">
+                      {last_update}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <FeaturesContainer />
+              {/* <SessionSafety2 /> */}
+            </div>
+          </section>
+          <div className="self-stretch h-11 shrink-0 flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full text-lg text-gray-100">
+            <div className="self-stretch flex-1 flex flex-row items-start justify-start relative shrink-0 max-w-full">
+              <div className="self-stretch w-full relative leading-[24px] inline-block">
+                {ratingsAndReviews}
+              </div>
+              <div className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[5px] px-1 box-border w-6">
+                <img
+                  className="w-4 h-3.5 relative"
+                  alt=""
+                  src="/pwa_icons/vector-5.svg"
+                />
+              </div>
+            </div>
+          </div>
+          {/* <div className="w-fit flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border shrink-0">
+              <div className="flex-1 flex flex-row items-start justify-start gap-[7px] shrink-0">
+                <div className="h-4 flex-1 relative tracking-[0.3px] leading-[16px] inline-block">
+                  {verified}
+                </div>
+                <div className="w-[15px] overflow-hidden shrink-0 flex flex-row items-center justify-start py-[1.3px] px-px box-border h-[15px]">
+                  <img
+                    className="h-[12.5px] w-[12.5px] relative"
+                    alt=""
+                    src="/vector-12.svg"
+                  />
+                </div>
+              </div>
+            </div> */}
+          <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-7 box-border max-w-full shrink-0">
+            <ReviewsContent
+              propMinWidth="82px"
+              propMinWidth1="144px"
+              reviewsContentWidth="unset"
+              reviewsContentFlex="1"
+              reviewsContentHeight="112px"
+              ratingScoreAlignSelf="stretch"
+              ratingScoreFlex="1"
+              scoreValueDisplay="unset"
+              scoreValueMinWidth="unset"
+              scoreValueAlignSelf="stretch"
+              scoreValueFlex="1"
+              reviewsInfoAlignSelf="stretch"
+              reviewsInfoHeight="16px"
+              reviewsCountAlignSelf="stretch"
+              reviewsCountWidth="33px"
+              mDisplay="unset"
+              mMinWidth="unset"
+              mAlignSelf="stretch"
+              mFlex="1"
+              reviewsTextAlignSelf="stretch"
+              reviewsTextFlex="1"
+              reviewsDisplay="unset"
+              reviewsMinWidth="unset"
+              reviewsAlignSelf="stretch"
+              reviewsFlex="1"
+              emptyBarsMinWidth="unset"
+              emptyBarsWidth="8px"
+              divMinWidth="unset"
+              divWidth="8px"
+              divMinWidth1="unset"
+              divWidth1="8px"
+              divMinWidth2="unset"
+              divWidth2="8px"
+              ratingMinWidth="unset"
+              ratingWidth="8px"
+              raitingValue={raiting}
+              grades={grades}
+            />
+          </section>
+          {/* =========+{Section: Reviews result }======================== */}
+          {reviewObject && (
+            <Reviewer
+              reviewData={reviewObject}
+              findHelpful={findHelpful}
+              yes={yes}
+              no={no}
+              onClick={onAppHeaderSafariClick}
+            />
+          )}
+          <ReviewContent1 />
+          <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
+            <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">
+              {newFeatures}
+            </div>
+          </section>
+          <footer className="self-stretch h-11 shrink-0 flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[29px] box-border max-w-full text-left text-lg text-gray-100 font-roboto">
+            <div className="self-stretch flex-1 flex flex-row items-start justify-start relative shrink-0 max-w-full">
+              <div className="self-stretch w-fit relative leading-[24px] inline-block">
+                {contact}
+              </div>
+              {isAppSupport ? (
+                <div
+                  className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[9px] px-[5px] box-border w-6"
+                  onClick={() => setIsAppSupport(false)}
+                >
+                  <img
+                    className="w-3.5 h-1.5 relative"
+                    alt=""
+                    src="/pwa_icons/vector-191.svg"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[9px] px-[5px] box-border w-6"
+                  onClick={() => setIsAppSupport(true)}
+                >
+                  <img
+                    className="w-3.5 h-1.5 relative"
+                    alt=""
+                    src="/pwa_icons/vector-19.svg"
+                  />
+                </div>
+              )}
+            </div>
+          </footer>
+          {isAppSupport && <></>}
+
+          <div className="self-stretch h-px shrink-0 flex flex-row items-start justify-start py-0 px-5 box-border max-w-full mb-[80px] mt-[20px]">
+            <div className="self-stretch flex-1 relative bg-whitesmoke-200 shrink-0 max-w-full z-[1]" />
+          </div>
+        </main>
+      </div>
+    </>
+  );
+};
+
+export default Tablet;

@@ -42,6 +42,12 @@
   @apply !text-gray-6;
 }
 
+.text-view-7 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
 .text__default.text__bold {
   font-weight: 700;
 }

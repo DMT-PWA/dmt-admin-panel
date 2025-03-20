@@ -40,3 +40,7 @@
   background-size: cover;
   background-image: url("src/shared/assets/images/phone_bg.png");
 }
+
+[data-phone-container="true"]::-webkit-scrollbar {
+  width: 0;
+}

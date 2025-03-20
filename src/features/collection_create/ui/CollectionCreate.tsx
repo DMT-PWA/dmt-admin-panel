@@ -80,7 +80,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
         <img src={close_icon} width={16.5} height={16.5} alt="" />
       </button>
       <div className="flex gap-6.25">
-        <div className="w-21.75 h-21.75 border-2 border-gray-300 rounded-lg flex items-center justify-center relative">
+        <div className="w-21.75 h-21.75 border-2 border-gray-1 rounded-lg flex items-center justify-center relative">
           {collectionImage ? (
             <div className="relative w-full h-full">
               <img
@@ -121,7 +121,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className="w-33.25 h-69.5 border-2 border-gray-300 rounded-lg flex items-center justify-center relative"
+            className="w-33.25 h-69.5 border-2 border-gray-1 rounded-lg flex items-center justify-center relative"
           >
             {image ? (
               <div className="relative w-full h-full">

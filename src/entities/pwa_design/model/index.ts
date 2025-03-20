@@ -6,4 +6,4 @@ export {
   setChanged,
 } from "./pwaDesignSlice";
 
-export { fetchDesignInfo } from "./pwaDesignThunk";
+export { fetchDesignInfo, fetchKek } from "./pwaDesignThunk";

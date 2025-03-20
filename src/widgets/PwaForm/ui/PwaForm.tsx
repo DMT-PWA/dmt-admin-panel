@@ -1,5 +1,5 @@
 import { Dialog, DialogBackdrop } from "@headlessui/react";
-import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 
 import { setPwaTitle } from "src/entities/pwa_design";
 import { CollectionCreate } from "src/features/collection_create";
@@ -11,26 +11,30 @@ import { Title } from "src/shared/ui/title";
 import {
   removeCollection,
   fetchDesignInfo,
-  setChanged,
+  fetchKek,
+  selectPwaDesignLanguages,
 } from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
+import { appData } from "src/shared/lib/data";
 
 export const PwaForm: FC = () => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
+
+  // const { languages } = appData;
 
   const { pwa_title, collections, languages } = useAppSelector(
     (state) => state.pwa_design
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
+  /* useEffect(() => {
     dispatch(fetchDesignInfo());
-  }, []);
+  }, []); */
 
-  useMemo(() => {
-    dispatch(setChanged(true));
-  }, [pwa_title]);
+  useEffect(() => {
+    dispatch(fetchKek());
+  }, []);
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
 
@@ -47,7 +51,11 @@ export const PwaForm: FC = () => {
         />
         <label className="title__view-1">Язык интерфейса PWA</label>
 
-        <CustomSelect options={languages} placeholder="Английский" />
+        <CustomSelect
+          options={languages}
+          value={languages[2]}
+          placeholder="Английский"
+        />
         <label className="title__view-1">Теги PWA</label>
         <CustomSelect placeholder="Выберите теги" />
       </div>
@@ -57,11 +65,13 @@ export const PwaForm: FC = () => {
           btn_text="Загрузить дизайн"
           btn_classes="btn__orange btn__orange-view-1"
         />
-        <ButtonDefault
-          btn_text="Открыть коллекцию"
-          btn_classes="btn__white btn__white-view-4 text-view-3"
-          onClickHandler={() => setCollectionsOpen(true)}
-        />
+        {collections.length > 0 && (
+          <ButtonDefault
+            btn_text="Открыть коллекцию"
+            btn_classes="btn__white btn__white-view-4 text-view-3"
+            onClickHandler={() => setCollectionsOpen(true)}
+          />
+        )}
       </div>
       {collections.length > 0
         ? collections.map(
@@ -76,7 +86,10 @@ export const PwaForm: FC = () => {
               index: number
             ) => {
               return (
-                <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
+                <div
+                  key={index}
+                  className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"
+                >
                   <div key={index} className="flex gap-9.75">
                     <div className="flex flex-col justify-between">
                       <img
@@ -93,7 +106,7 @@ export const PwaForm: FC = () => {
                     </div>
                     {images.map((el: string | null, index) => {
                       return el ? (
-                        <div key={index} className="flex w-full h-full">
+                        <div key={index} className="flex  h-full">
                           <img
                             src={el}
                             alt="Uploaded"

@@ -1,13 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
-import { fetchDesignInfo } from "./pwaDesignThunk";
+import { fetchDesignInfo, fetchKek } from "./pwaDesignThunk";
+import { languages } from "../lib/const"
 
 const defaultState: IDesign = {
-  languages: [],
+  languages: languages,
   pwa_title: "",
   pwa_tags: [],
   collections: [],
   isChanged: false,
+  appData: {},
 };
 
 export const pwaDesignSlice = createSlice({
@@ -27,13 +29,19 @@ export const pwaDesignSlice = createSlice({
       state.isChanged = action.payload;
     },
   },
-  extraReducers: (builder) =>
+  extraReducers: (builder) => {
     builder.addCase(fetchDesignInfo.fulfilled, (state, action) => {
       state.languages = [...action.payload].map((item) => ({
         value: item.id,
         label: item.title,
       }));
-    }),
+    });
+    builder.addCase(fetchKek.fulfilled, (state, action) => {
+
+      state.appData = action.payload
+    })
+  }
+
 });
 
 export const { setPwaTitle, addCollection, removeCollection, setChanged } =

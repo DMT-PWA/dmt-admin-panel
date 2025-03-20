@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getDesignInfo, IDesign } from "src/shared/api/design";
+import { getDesignInfo, getKek, IDesign, IKek } from "src/shared/api/design";
 
-export const fetchDesignInfo = createAsyncThunk<IDesign[], string>(
+export const fetchDesignInfo = createAsyncThunk<IDesign[]>(
   "posts",
   async () => {
     const response = await getDesignInfo("posts");
@@ -9,3 +9,9 @@ export const fetchDesignInfo = createAsyncThunk<IDesign[], string>(
     return response;
   }
 );
+
+export const fetchKek = createAsyncThunk<IKek[]>("design/fetchKek", async () => {
+  const response = await getKek("678fc03a2fc8dd36b0598db8", "English", "Malaysia")
+
+  return response
+})

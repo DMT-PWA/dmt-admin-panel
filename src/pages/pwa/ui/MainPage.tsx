@@ -42,8 +42,11 @@ const MainPage = () => {
         </div>
         <DatePicker
           showIcon
+          showPreviousMonths
+          monthsShown={2}
           wrapperClassName="self-end"
           dateFormat="dd.MM.yyyy"
+          popperPlacement="bottom-start"
           placeholderText="Выбрать дату"
           selected={date}
           onChange={(value) => setDate(value)}
