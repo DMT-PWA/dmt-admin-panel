@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
-import { fetchDesignInfo, fetchKek } from "./pwaDesignThunk";
+import { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
 import { languages } from "../lib/const"
 
 const defaultState: IDesign = {
@@ -36,7 +36,7 @@ export const pwaDesignSlice = createSlice({
         label: item.title,
       }));
     });
-    builder.addCase(fetchKek.fulfilled, (state, action) => {
+    builder.addCase(fetchPwaInfo.fulfilled, (state, action) => {
 
       state.appData = action.payload
     })

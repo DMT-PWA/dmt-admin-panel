@@ -1,1 +1,1 @@
-export { getDesignInfo, getKek, type IDesign, type IKek } from "./design";
+export { getDesignInfo, getPwaInfo, type IDesign, type IPwaInfo } from "./design";

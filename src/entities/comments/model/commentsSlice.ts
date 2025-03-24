@@ -1,17 +1,17 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICommentsState } from "./types";
 
 const initialState: ICommentsState = {
   developer_answer: false,
-  answer_date: null,
-  answer_text: "",
-  author_name: "",
-  comments_text: "",
-  developer_name: "",
-  likes_count: null,
-  raiting: null,
-  review_date: null,
-  avatar: null,
+  comment: {
+    author_name: "",
+    comments_text: "",
+    likes_count: null,
+    raiting: null,
+    review_date: null,
+    avatar: null,
+    author_answer: null
+  },
   comments_list: [],
 };
 
@@ -21,45 +21,50 @@ export const comments = createSlice({
   reducers: {
     setDeveloperAnswer: (state, action) => {
       state.developer_answer = action.payload;
+
+      state.comment.author_answer = action.payload === true ? {} : null;
     },
-    setAnswerDate: (state, action) => {
-      state.answer_date = action.payload;
+    setAnswerDate: (state, action: PayloadAction<Date | null>) => {
+      if (state.comment.author_answer) {
+        state.comment.author_answer.answer_date = action.payload
+      }
     },
     setAnswerText: (state, action) => {
-      state.answer_text = action.payload;
+      if (state.comment.author_answer) {
+
+        state.comment.author_answer.answer_text = action.payload;
+      }
     },
     setAuthorName: (state, action) => {
-      state.author_name = action.payload;
+      state.comment.author_name = action.payload;
     },
     setCommentsText: (state, action) => {
-      state.comments_text = action.payload;
+      state.comment.comments_text = action.payload;
     },
     setDeveloperName: (state, action) => {
-      state.developer_name = action.payload;
+      if (state.comment.author_answer) {
+        state.comment.author_answer.developer_name = action.payload;
+        return
+      }
     },
     setLikes: (state, action) => {
-      state.likes_count = action.payload;
+      state.comment.likes_count = action.payload;
     },
-    setRaiting: (state, action) => {
-      state.raiting = action.payload;
+    setRaiting: (state, action: PayloadAction<number>) => {
+      state.comment.raiting = action.payload;
     },
-    setReviewDate: (state, action) => {
-      state.review_date = action.payload;
+    setReviewDate: (state, action: PayloadAction<Date | null>) => {
+      state.comment.review_date = action.payload;
     },
     setAvatar: (state, action) => {
-      state.avatar = action.payload;
+      state.comment.avatar = action.payload;
     },
     addComment: (state, action) => {
       state.comments_list?.push(action.payload);
 
-      localStorage.setItem(
-        "comments_list",
-        JSON.stringify(state.comments_list)
-      );
     },
     removeComment: (state, action) => {
       state.comments_list?.splice(action.payload, 1);
-      localStorage.removeItem("comments_list");
     },
     resetState: () => initialState,
   },

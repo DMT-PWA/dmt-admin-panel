@@ -44,9 +44,9 @@ export const PhonePreview: FC = (props) => {
   const [browserName, setBrowserName] = useState(); // chrome, safari, Mobile Safari, edge
   const [deviceType, setDeviceType] = useState(); // desktop, smartPhone, tablet
 
-  useEffect(() => {
+  /*  useEffect(() => {
     signUp();
-  }, [device]);
+  }, [device]); */
 
   async function signUp() {
     // only when the device has been detected

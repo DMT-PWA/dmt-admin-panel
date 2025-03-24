@@ -12,7 +12,7 @@ export const InputRange: FC<InputRangeProps> = ({
   onChange,
 }) => {
   return (
-    <div className="flex flex-col gap-[15px]">
+    <div className="flex flex-auto flex-col gap-[15px]">
       <span className="text__deafult text-view-1" style={{ left: `${value}%` }}>
         Количество оценок {rating} в %
       </span>

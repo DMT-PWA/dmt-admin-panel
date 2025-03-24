@@ -30,40 +30,34 @@ import {
 } from "src/entities/comments";
 import clsx from "clsx";
 import { format } from "date-fns";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 export const PwaCommentsCreate: FC = () => {
-  const {
-    answer_date,
-    answer_text,
-    author_name,
-    comments_text,
-    developer_name,
-    likes_count,
-    raiting,
-    review_date,
-    developer_answer,
-    avatar,
-    comments_list,
-  } = useAppSelector((state) => state.comments);
+  const { comment, developer_answer } = useAppSelector(
+    (state) => state.comments
+  );
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
+  const {
+    author_name,
+    avatar,
+    comments_text,
+    likes_count,
+    raiting,
+    review_date,
+    author_answer,
+  } = comment;
+
+  const answer_text = author_answer?.answer_text;
+  const developer_name = author_answer?.developer_name;
+  const answer_date = author_answer?.answer_date;
+
   const onClickHandler = () => navigate("/pwa_create/comments");
 
   const onAddNewComment = () => {
-    dispatch(
-      addComment({
-        answer_date,
-        answer_text,
-        author_name,
-        comments_text,
-        developer_name,
-        likes_count,
-        raiting,
-        review_date,
-      })
-    );
+    dispatch(addComment(comment));
 
     onClickHandler();
   };
@@ -113,7 +107,7 @@ export const PwaCommentsCreate: FC = () => {
             </div>
           </div>
           <div className="bg-white flex gap-4.25 rounded-[6px] mt-4 pl-4 pr-[19px] pt-3 pb-[30px]">
-            <div>
+            <div className="flex-1/2">
               <div className="flex flex-col gap-2">
                 <InputDefault
                   label="Имя автора"
@@ -127,34 +121,39 @@ export const PwaCommentsCreate: FC = () => {
                   <Label className="text__default text-view-2">Аватар</Label>
                   <Field className="flex gap-5.25 mt-2">
                     <div className="h-[43px] w-[43px] rounded-[8px] bg-[#E8E8E8] flex justify-center items-center">
-                      <img
-                        src={avatar_icon}
-                        alt="avatar"
-                        width={17}
-                        height={21}
-                      />
+                      {avatar ? (
+                        <img
+                          src={avatar}
+                          alt="avatar"
+                          className="w-full h-full object-cover rounded-[8px]"
+                        />
+                      ) : (
+                        <img
+                          src={avatar_icon}
+                          alt="avatar"
+                          width={17}
+                          height={21}
+                        />
+                      )}
                     </div>
                     <ButtonDefault
-                      btn_text="Загрузить коллекцию"
-                      btn_classes="btn__orange btn__orange-view-2"
-                    />
-                    <ButtonDefault
-                      btn_text="Открыть коллекцию"
                       onClickHandler={() => setModalOpen(true)}
-                      btn_classes="btn__white btn__white-view-2"
+                      btn_text="Загрузить коллекцию"
+                      btn_classes="btn__orange btn__orange-view-2 flex-auto"
                     />
                   </Field>
                 </Field>
               </div>
               <div>
                 <div className="flex gap-[13px] pt-[22px]">
-                  <Field className="flex flex-col justify-between">
+                  <Field className="flex flex-col flex-1/2 justify-between">
                     <Label>Дата отзыва</Label>
                     <DatePicker
                       showIcon
+                      isClearable
                       dateFormat="dd.MM.yyyy"
                       selected={review_date}
-                      onChange={(value) => dispatch(setReviewDate(value))}
+                      onChange={(val) => dispatch(setReviewDate(val))}
                       icon={
                         <svg
                           width="15"
@@ -164,8 +163,8 @@ export const PwaCommentsCreate: FC = () => {
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
+                            fillRule="evenodd"
+                            clipRule="evenodd"
                             d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
                             fill="#717171"
                           />
@@ -176,12 +175,14 @@ export const PwaCommentsCreate: FC = () => {
                   <InputDefault
                     label="Рейтинг"
                     input_classes=""
-                    container_classes="flex-[0.5]"
+                    container_classes="flex-1/2"
                     placeholder="Введите рейтинг"
                     type="number"
                     max={5}
-                    value={raiting}
-                    onUpdateValue={(e) => dispatch(setRaiting(e.target.value))}
+                    value={raiting || ""}
+                    onUpdateValue={(e) =>
+                      dispatch(setRaiting(Number(e.target.value)))
+                    }
                   />
                 </div>
                 <Field>
@@ -191,8 +192,10 @@ export const PwaCommentsCreate: FC = () => {
                     type="number"
                     container_classes="flex-[0.5] mt-2"
                     placeholder="Введите количество лайков"
-                    value={likes_count}
-                    onUpdateValue={(e) => dispatch(setLikes(e.target.value))}
+                    value={likes_count || ""}
+                    onUpdateValue={(e) =>
+                      dispatch(setLikes(Number(e.target.value)))
+                    }
                   />
                   <Field className="flex flex-col mt-2">
                     <Label className="mb-2 text-view-2">Текст коментария</Label>
@@ -209,7 +212,7 @@ export const PwaCommentsCreate: FC = () => {
                 </Field>
               </div>
             </div>
-            <div className="flex-1">
+            <div className="flex-1/2">
               <div className="flex flex-col gap-2">
                 <InputDefault
                   label="Имя разработчика"
@@ -242,12 +245,11 @@ export const PwaCommentsCreate: FC = () => {
                   {label("Дата ответа")}
                   <DatePicker
                     disabled={!developer_answer}
-                    value={answer_date}
-                    dateFormat="dd.MM.yyyy"
+                    isClearable
                     selected={answer_date}
-                    onChange={(value) =>
-                      dispatch(setAnswerDate(format(value, "dd.MM.yyyy")))
-                    }
+                    dateFormat="dd.MM.yyyy"
+                    wrapperClassName="max-w-116.5"
+                    onChange={(date) => dispatch(setAnswerDate(date))}
                   />
                 </Field>
               </div>

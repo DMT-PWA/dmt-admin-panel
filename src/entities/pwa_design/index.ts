@@ -5,7 +5,7 @@ export {
   removeCollection,
   fetchDesignInfo,
   setChanged,
-  fetchKek
+  fetchPwaInfo
 } from "./model";
 
 export { selectPwaDesignLanguages } from "./model/selectors"

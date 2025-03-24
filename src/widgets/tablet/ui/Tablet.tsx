@@ -11,21 +11,32 @@ import { useMediaQuery } from "src/shared/lib/hooks";
 import { appData } from "src/shared/lib/data";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { format } from "date-fns";
+import clsx from "clsx";
 const frontend = import.meta.env.VITE_FRONTEND_URL;
 
-const Tablet: FC = (props) => {
+interface ITabletProps {
+  toAbout: () => void;
+}
+
+const Tablet: FC<ITabletProps> = (props) => {
+  const { toAbout } = props;
+
   const { collections } = useAppSelector((state) => state.pwa_design);
   const isMobile = useMediaQuery("(max-width: 600px)");
 
   const {
     title,
     developer_name,
-    description,
     raiting,
-    last_update,
     number_of_downloads,
     grades,
+    checkboxes_state,
+    about_description,
   } = useAppSelector((state) => state.pwa_description);
+
+  const { comments_list } = useAppSelector((state) => state.comments);
+
+  const { description, release_date, last_update } = about_description;
 
   const formatDownloads = (downloads: number | string | null): string => {
     return downloads > 100000 ? "100K+" : `${downloads}`;
@@ -34,30 +45,6 @@ const Tablet: FC = (props) => {
     Number(number_of_downloads)
   );
 
-  /*  const {
-    deferredPrompt,
-    initializeInstall,
-    handleInstallClick,
-    device,
-    isBot,
-    isIosSmartPhoneOnChrome,
-    isDarkMode,
-    isIosSmartPhoneOnSafari,
-    isIosTabletOnChrome,
-    isIosTabletOnSafari,
-    isIosDesktopOnChrome,
-    isIosDesktopOnSafari,
-    isAndroidSmartPhoneOnChrome,
-    isAndroidTabletOnChrome,
-    isAndroidDesktopOnChrome,
-    isWindowsSmartPhoneOnChrome,
-    isWindowsTabletOnChrome,
-    isWindowsDesktopOnChrome,
-    isOtherBrowser,
-    showLoadingBar,
-    progress,
-    isInstalled,
-  } = props; */
   //===================================================================================================
   //==========================={Translations Block}====================================================
   //===================================================================================================
@@ -123,8 +110,6 @@ const Tablet: FC = (props) => {
 
   const collection = collections[0] || null;
 
-  // const lastUpdate = format(last_update, "MMMM dd, yyyy");
-
   return (
     <>
       <div className="max-w-93.75 max-h-203 relative flex flex-row items-start justify-start leading-[normal] tracking-[normal]">
@@ -155,42 +140,64 @@ const Tablet: FC = (props) => {
                       <div className="flex-1 flex flex-col items-start justify-start gap-px text-gray-100">
                         <div className="flex flex-col justify-center items-center">
                           <div className="self-stretch flex flex-row items-center justify-center flex-wrap content-start gap-1">
-                            <span className="text-black tracking-tight m-0 flex-1 relative text-inherit leading-[32px] font-normal font-[inherit] mq450:text-lgi mq450:leading-[26px]">
+                            <span className="text-[#000000CC] tracking-[3%] m-0 flex-1 relative leading-[100%] font-normal font-[inherit]">
                               {title}
                               <br />
                             </span>
-                            {/* {isMobile ? (
-                                <img
-                                  className="h-[24px] w-[24px] relative overflow-hidden shrink-0"
-                                  alt=""
-                                  src="/badge_blue.svg"
-                                />
-                              ) : (
-                                <img
-                                  className="h-[24px] w-[24px] relative overflow-hidden shrink-0"
-                                  alt=""
-                                  src="/badge_green.svg"
-                                />
-                              )} */}
-                          </div>
-                          <div className="self-stretch flex flex-row items-start justify-start flex-wrap content-start text-onexBlue tabletBlack:text-seagreen-200">
-                            <span className="ml-[2px] relative tracking-[0.1px] font-medium text-[14px] tabletBlack:text-base leading-[24px]">
-                              {appSubTitle}
-                            </span>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start justify-start flex-wrap content-start gap-x-[9px] gap-y-[7px] text-xs text-dimgray">
-                          <div className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
+                        <div className="flex flex-row items-start justify-start flex-wrap content-start text-xs text-blue_default">
+                          <div className="relative font-bold tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
                             {developer_name}
                           </div>
-                          {/* <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block min-w-[96px]">
-                              {inAppPurchases}
-                            </div> */}
+                        </div>
+                        <div
+                          className={clsx(
+                            "flex flex-row items-center justify-center flex-wrap content-center gap-y-[7px] text-xs text-dimgray",
+                            {
+                              "gap-x-[6px]":
+                                checkboxes_state.some(
+                                  (item) => item.id === 0
+                                ) &&
+                                checkboxes_state.some((item) => item.id === 1),
+                            }
+                          )}
+                        >
+                          <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block">
+                            {checkboxes_state &&
+                              checkboxes_state.some(
+                                (item) => item.id === 0
+                              ) && <span>Contains ads</span>}
+                          </div>
+                          {checkboxes_state &&
+                            checkboxes_state.some((item) => item.id === 0) &&
+                            checkboxes_state.some((item) => item.id === 1) && (
+                              <img
+                                src="/pwa_icons/dot.png"
+                                width={2}
+                                height={2}
+                              />
+                            )}
+
+                          <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block">
+                            {checkboxes_state &&
+                              checkboxes_state.some(
+                                (item) => item.id === 1
+                              ) && <span>In-app purchases</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
                     {/* ====================={updated}============================= */}
-                    <div className="w-full flex flex-row items-center justify-center gap-[18px] text-sm text-gray-100 overflow-x-auto whitespace-nowrap container-snap container-snap">
+                    <div
+                      className={clsx(
+                        "w-full flex flex-row items-center justify-center text-sm text-gray-100 whitespace-nowrap container-snap container-snap",
+                        checkboxes_state &&
+                          checkboxes_state.some((item) => item.id === 2)
+                          ? "gap-2.75"
+                          : "gap-4.5"
+                      )}
+                    >
                       <div className="flex flex-col gap-1.75 items-center justify-center">
                         <div className="flex flex-row items-center justify-center gap-px">
                           <div className="relative font-bold font-product_sans tracking-[0.25px] leading-4 inline-block min-w-[22px]">
@@ -236,18 +243,32 @@ const Tablet: FC = (props) => {
                         <div className="w-[1px] h-5 relative bg-darkgray/60" />
                       </div>
 
-                      <div className="flex flex-col gap-1.75 items-center justify-center">
-                        <div className="flex flex-row items-center justify-center p-[2px] border-black/50 border-[2px] mb-[1px]">
-                          <div className="relative font-bold  text-[8px] inline-block">
-                            {ageLimit}
+                      {checkboxes_state &&
+                        checkboxes_state.some((item) => item.id === 2) && (
+                          <>
+                            <div className="flex flex-col items-center justify-center">
+                              <div className="w-[20px] h-[22px] flex flex-row items-center justify-center pb-1.5">
+                                <img src="/pwa_icons/editors-choice.png" />
+                              </div>
+                              <div className="flex flex-row items-start justify-start text-xs text-dimgray">
+                                <div>Editors’ Choice</div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-center pt-2 px-0 pb-0">
+                              <div className="w-[1px] h-5 relative bg-darkgray/60" />
+                            </div>
+                          </>
+                        )}
+
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="flex flex-row items-center justify-center pb-1.5">
+                          <div className="relative font-bold w-[15px] h-[15px] text-[8px] inline-block">
+                            <img src="/pwa_icons/age.png" />
                           </div>
                         </div>
                         <div className="flex flex-row items-start justify-start text-xs text-dimgray">
-                          <div
-                          // className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px] whitespace-nowrap"
-                          >
-                            {ageRating}
-                          </div>
+                          <div>{ageRating}</div>
                         </div>
                       </div>
                     </div>
@@ -280,13 +301,16 @@ const Tablet: FC = (props) => {
                     {aboutThisGame}
                   </div>
                 </div>
-                <div className="overflow-hidden flex flex-col items-start justify-start py-[5px] px-1">
+                <button
+                  className="overflow-hidden flex flex-col items-start justify-start py-[5px] px-1"
+                  onClick={toAbout}
+                >
                   <img
                     className="w-4 h-3.5 relative"
                     alt=""
                     src="/pwa_icons/vector-5.svg"
                   />
-                </div>
+                </button>
               </div>
               {/* ================={new about content}================================== */}
               <div className="self-stretch h-fit overflow-hidden shrink-0 flex flex-col items-start justify-start gap-4">
@@ -295,20 +319,6 @@ const Tablet: FC = (props) => {
                   dangerouslySetInnerHTML={{ __html: description }} // Use dangerouslySetInnerHTML
                 />
               </div>
-              {last_update && (
-                <div className="w-fit h-fit flex flex-col items-start justify-start gap-1 text-sm">
-                  <div className="self-stretch flex-1 flex flex-row items-start justify-start">
-                    <div className="self-stretch flex-1 relative tracking-[0.25px] leading-[20px] whitespace-nowrap">
-                      {updatedOn}
-                    </div>
-                  </div>
-                  <div className="self-stretch flex-1 flex flex-row items-start justify-start text-smi text-dimgray">
-                    <div className="self-stretch flex-1 relative tracking-[0.2px] leading-[20px]">
-                      {last_update}
-                    </div>
-                  </div>
-                </div>
-              )}
               <FeaturesContainer />
               {/* <SessionSafety2 /> */}
             </div>
@@ -327,20 +337,6 @@ const Tablet: FC = (props) => {
               </div>
             </div>
           </div>
-          {/* <div className="w-fit flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border shrink-0">
-              <div className="flex-1 flex flex-row items-start justify-start gap-[7px] shrink-0">
-                <div className="h-4 flex-1 relative tracking-[0.3px] leading-[16px] inline-block">
-                  {verified}
-                </div>
-                <div className="w-[15px] overflow-hidden shrink-0 flex flex-row items-center justify-start py-[1.3px] px-px box-border h-[15px]">
-                  <img
-                    className="h-[12.5px] w-[12.5px] relative"
-                    alt=""
-                    src="/vector-12.svg"
-                  />
-                </div>
-              </div>
-            </div> */}
           <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-7 box-border max-w-full shrink-0">
             <ReviewsContent
               propMinWidth="82px"
@@ -390,10 +386,11 @@ const Tablet: FC = (props) => {
               yes={yes}
               no={no}
               onClick={onAppHeaderSafariClick}
+              commentsList={comments_list}
             />
           )}
-          <ReviewContent1 />
-          <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
+          {/* <ReviewContent1 /> */}
+          {/* <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
             <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">
               {newFeatures}
             </div>
@@ -427,12 +424,12 @@ const Tablet: FC = (props) => {
                 </div>
               )}
             </div>
-          </footer>
+          </footer> */}
           {isAppSupport && <></>}
 
-          <div className="self-stretch h-px shrink-0 flex flex-row items-start justify-start py-0 px-5 box-border max-w-full mb-[80px] mt-[20px]">
+          {/*  <div className="self-stretch h-px shrink-0 flex flex-row items-start justify-start py-0 px-5 box-border max-w-full mb-[80px] mt-[20px]">
             <div className="self-stretch flex-1 relative bg-whitesmoke-200 shrink-0 max-w-full z-[1]" />
-          </div>
+          </div> */}
         </main>
       </div>
     </>

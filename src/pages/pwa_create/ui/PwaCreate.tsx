@@ -13,6 +13,11 @@ import { PwaMetrics } from "src/widgets/PwaMetrics";
 export const PwaCreate: FC = () => {
   const pathname = useLocation().pathname;
 
+  const shouldShowPhonePreview = ![
+    "/pwa_create/metrics",
+    "/pwa_create/settings",
+  ].includes(pathname);
+
   const isSaveBtnShown =
     pathname !== "/pwa_create/comments_create" &&
     pathname !== "/pwa_create/comments";
@@ -32,7 +37,7 @@ export const PwaCreate: FC = () => {
           <Route path="*" element={<PwaForm />} />
         </Routes>
 
-        <PhonePreview />
+        {shouldShowPhonePreview && <PhonePreview />}
       </div>
 
       {isSaveBtnShown && (

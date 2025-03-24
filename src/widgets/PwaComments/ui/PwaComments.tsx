@@ -14,7 +14,10 @@ export const PwaComments: FC = () => {
 
   const navigate = useNavigate();
 
-  const commentsList = JSON.parse(localStorage.getItem("comments_list"));
+  /* const commentsList =
+    localStorage.getItem("comments") !== null
+      ? JSON.parse(localStorage.getItem("comments")!)
+      : null; */
 
   return (
     <div className="flex flex-1 flex-col mt-[78px]">
@@ -36,7 +39,7 @@ export const PwaComments: FC = () => {
           />
         </div>
       </div>
-      {comments_list.length > 0 && (
+      {comments_list && comments_list.length > 0 && (
         <div className="container__view-1 flex-col min-h-[794px] mt-[26px] px-[27px] pt-7.75">
           <div className="bg-white flex flex-col gap-4.25 rounded-[6px] mt-4 pl-4 pr-[19px] pt-3 pb-[30px]">
             <h1 className="title__view-2">Список коментариев</h1>

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, ReactNode } from "react";
 
 type InputProps = {
   label: string;
@@ -12,6 +12,7 @@ type InputProps = {
   max: number;
   disabled: boolean;
   onUpdateValue: (event: ChangeEvent<HTMLInputElement>) => void;
+  children: ReactNode;
 };
 
 export const InputDefault: FC<Partial<InputProps>> = ({
@@ -25,6 +26,7 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   disabled = false,
   type = "text",
   onUpdateValue,
+  children,
 }) => {
   return (
     <div
@@ -47,6 +49,7 @@ export const InputDefault: FC<Partial<InputProps>> = ({
         placeholder={placeholder}
         onChange={onUpdateValue}
       />
+      {children}
     </div>
   );
 };

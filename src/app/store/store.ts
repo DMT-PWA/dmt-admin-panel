@@ -5,6 +5,7 @@ import { pwaDesignReducer } from "src/entities/pwa_design";
 import { sidebarModule } from "src/widgets/sidebar";
 import { collectionSliceReducer } from "src/entities/collection";
 import { commentsReducer } from "src/entities/comments";
+import { metricsReducer } from "src/entities/metrics"
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,9 @@ export const store = configureStore({
     pwa_create: pwaCreateReducer,
     collection: collectionSliceReducer,
     comments: commentsReducer,
+    metrics: metricsReducer
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false
+  }),
 });

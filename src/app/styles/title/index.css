@@ -32,3 +32,10 @@
   font-weight: 700;
   line-height: 150%;
 }
+
+.title__view-4 {
+  font-family: "Roboto", serif;
+  font-size: 18px;
+  font-weight: 24px;
+  @apply text-gray-100;
+}

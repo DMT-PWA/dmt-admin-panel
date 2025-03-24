@@ -1,28 +1,17 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tablet } from "src/widgets/tablet";
+import { AboutPage } from "src/entities/playStore";
+import { useAppSelector } from "src/shared/lib/store";
 
-const BlackPage = (props) => {
-  const {
-    isPWA,
-    deferredPrompt,
-    initializeInstall,
-    handleInstallClick,
-    showLoadingBar,
-    progress,
-    isInstalled,
-    domain,
-    device,
-    isBot,
-    os,
-    browserName,
-    deviceType,
-    country,
-    language,
-  } = props;
+const BlackPage: FC = (props) => {
+  const { isPWA, device, os, browserName, deviceType } = props;
   const navigate = useNavigate();
   // //=============={Device detector Logic}=====================================
   //====={ios devices}====================
+  const [stage, setStage] = useState<{ id: number; stage: string } | null>(
+    null
+  );
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isIosSmartPhoneOnChrome, setIsIosSmartPhoneOnChrome] = useState(false);
   const [isIosSmartPhoneOnSafari, setIsIosSmartPhoneOnSafari] = useState(false);
@@ -46,12 +35,29 @@ const BlackPage = (props) => {
   //========{others}==========
   const [isOtherBrowser, setIsOtherBrowser] = useState(false);
 
+  const {
+    android_version,
+    description,
+    last_update,
+    release_date,
+    version,
+    whats_new,
+  } = useAppSelector((state) => state.pwa_description.about_description);
+
+  const { number_of_downloads } = useAppSelector(
+    (state) => state.pwa_description
+  );
+
   // redirect to home screen if PWA
   async function redirectUser() {
     if (isPWA) {
       navigate("/");
     }
   }
+
+  useEffect(() => {
+    setStage({ id: 0, stage: "Main" });
+  }, []);
 
   useEffect(() => {
     redirectUser();
@@ -174,39 +180,44 @@ const BlackPage = (props) => {
     }
   }
 
+  const handleCurrentStage = () => {
+    if (stage?.stage === "Main") {
+      return <Tablet toAbout={() => setStage({ id: 1, stage: "About" })} />;
+    }
+
+    if (stage?.stage === "About") {
+      return (
+        <div
+          data-phone-container
+          className="flex flex-col pt-14.5 overflow-y-auto "
+        >
+          <div
+            className="self-start px-6.25 rotate-180"
+            onClick={() => setStage({ id: 0, stage: "Main" })}
+          >
+            <img
+              className="w-4 h-3.5 relative"
+              alt=""
+              src="/pwa_icons/vector-5.svg"
+            />
+          </div>
+          <AboutPage
+            android_version={android_version}
+            description={description}
+            last_update={last_update}
+            release_date={release_date}
+            version={version}
+            whats_new={whats_new}
+            number_of_downloads={number_of_downloads}
+          ></AboutPage>
+        </div>
+      );
+    }
+  };
+
   // if there is device and it is not a bot, then this page will render according to the logic
 
-  return (
-    <>
-      <Tablet
-        deferredPrompt={deferredPrompt}
-        initializeInstall={initializeInstall}
-        handleInstallClick={handleInstallClick}
-        device={device}
-        isBot={isBot}
-        isIosSmartPhoneOnChrome={isIosSmartPhoneOnChrome}
-        isDarkMode={isDarkMode}
-        isIosSmartPhoneOnSafari={isIosSmartPhoneOnSafari}
-        isIosTabletOnChrome={isIosTabletOnChrome}
-        isIosTabletOnSafari={isIosTabletOnSafari}
-        isIosDesktopOnChrome={isIosDesktopOnChrome}
-        isIosDesktopOnSafari={isIosDesktopOnSafari}
-        isAndroidSmartPhoneOnChrome={isAndroidSmartPhoneOnChrome}
-        isAndroidTabletOnChrome={isAndroidTabletOnChrome}
-        isAndroidDesktopOnChrome={isAndroidDesktopOnChrome}
-        isWindowsSmartPhoneOnChrome={isWindowsSmartPhoneOnChrome}
-        isWindowsTabletOnChrome={isWindowsTabletOnChrome}
-        isWindowsDesktopOnChrome={isWindowsDesktopOnChrome}
-        isOtherBrowser={isOtherBrowser}
-        domain={domain}
-        showLoadingBar={showLoadingBar}
-        progress={progress}
-        isInstalled={isInstalled}
-        country={country}
-        language={language}
-      />
-    </>
-  );
+  return <>{handleCurrentStage()}</>;
 };
 
 export default BlackPage;

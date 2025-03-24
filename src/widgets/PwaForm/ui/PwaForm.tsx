@@ -11,7 +11,7 @@ import { Title } from "src/shared/ui/title";
 import {
   removeCollection,
   fetchDesignInfo,
-  fetchKek,
+  fetchPwaInfo,
   selectPwaDesignLanguages,
 } from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
@@ -28,12 +28,18 @@ export const PwaForm: FC = () => {
   );
   const dispatch = useAppDispatch();
 
+  const [selectedLanguage, setSelectedLanguage] = useState(languages[2]);
+
+  const handleLanguageChange = (selectedOption) => {
+    setSelectedLanguage(selectedOption);
+  };
+
   /* useEffect(() => {
     dispatch(fetchDesignInfo());
   }, []); */
 
   useEffect(() => {
-    dispatch(fetchKek());
+    dispatch(fetchPwaInfo());
   }, []);
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
@@ -53,7 +59,8 @@ export const PwaForm: FC = () => {
 
         <CustomSelect
           options={languages}
-          value={languages[2]}
+          value={selectedLanguage}
+          onChange={handleLanguageChange}
           placeholder="Английский"
         />
         <label className="title__view-1">Теги PWA</label>

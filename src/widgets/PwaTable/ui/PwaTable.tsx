@@ -38,7 +38,7 @@ export const PwaTable: FC = () => {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pl-6 text-left text-sm font-medium text-gray-700"
+                  className="pl-6 text-left text-sm font-medium text-gray-700 border-b border-b-gray-7"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -58,7 +58,7 @@ export const PwaTable: FC = () => {
                 return (
                   <td
                     key={cell.id}
-                    className="px-6 py-4 text-sm text-gray-700 border-b border-gray-200"
+                    className="px-6 py-4 text-view-1 text-black-1 border-b border-b-gray-7"
                   >
                     <div className="flex gap-1.25 items-center">
                       {flexRender(

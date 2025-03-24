@@ -194,16 +194,22 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
           className="flex flex-row items-start justify-start py-0 pl-0 pr-1"
           style={ratingScoreStyle}
         >
-          <div
-            className="relative leading-[64px] inline-block min-w-[78px]"
-            style={scoreValueStyle}
-          >
-            <img
-              className="self-stretch h-4 relative max-w-full overflow-hidden shrink-0"
-              loading="lazy"
-              alt=""
-              src="/pwa_icons/five-star_blue.svg"
-            />
+          <div className="flex relative leading-[64px] min-w-[78px]">
+            {[...Array(5)].map((_, index) => {
+              const starSrc =
+                index < Math.floor(Number(raitingValue))
+                  ? "/pwa_icons/icon-start-blue.svg"
+                  : "/pwa_icons/icon-star-white.png";
+
+              return (
+                <img
+                  key={index}
+                  className="h-3 w-3 relative overflow-hidden shrink-0"
+                  alt=""
+                  src={starSrc}
+                />
+              );
+            })}
           </div>
         </div>
         <div className="flex flex-row items-start justify-start py-0 pl-0 pr-1 gap-0.5 text-2xs text-dimgray w-full">

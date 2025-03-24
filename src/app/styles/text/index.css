@@ -35,7 +35,7 @@
 }
 
 .text-view-6 {
-  font-size: 15px;
+  font-size: 15px !important;
   font-family: "Onest", serif;
   font-weight: 500;
   line-height: 100%;
@@ -46,6 +46,27 @@
   font-size: 12px;
   font-weight: 600;
   color: #6b7280;
+}
+
+.text-view-8 {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  line-height: 20px;
+  color: var(--color-gray-100);
+}
+
+.text-view-9 {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  line-height: 20px;
+  color: var(--color-gray-6);
+}
+
+.text-view-10 {
+  font-family: "Roboto", serif;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
 }
 
 .text__default.text__bold {

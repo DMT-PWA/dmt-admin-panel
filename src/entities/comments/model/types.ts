@@ -1,20 +1,9 @@
-type comments_list = object[] | null;
+import { IUserComment } from "src/shared/types"
 
-export interface IUserComments {
-  author_name: string | null;
-  avatar: string | null;
-  review_date: Date | null;
-  raiting: number | null;
-  likes_count: number | null;
-  comments_text: string | null;
-}
+type comments_list = Array<IUserComment> | null;
 
-export interface IDeveloperAnswer {
-  developer_name: string | null;
-  answer_text: string | null;
-  answer_date: Date | null;
-}
-export interface ICommentsState extends IDeveloperAnswer, IUserComments {
+export interface ICommentsState {
   developer_answer: boolean;
+  comment: IUserComment
   comments_list: comments_list;
 }
