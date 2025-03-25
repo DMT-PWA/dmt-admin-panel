@@ -1,4 +1,8 @@
-export const languages: object[] = [
+export const languages = [
+    {
+        value: "egyptArabic",
+        label: "Egypt Arabic",
+    },
     {
         value: "arabic",
         label: "Arabic",
@@ -8,12 +12,12 @@ export const languages: object[] = [
         label: "Dutch",
     },
     {
-        value: "english",
-        label: "English",
+        value: "netherlandsDutch",
+        label: "Netherlands Dutch",
     },
     {
-        value: "germany",
-        label: "Germany",
+        value: "english",
+        label: "English",
     },
     {
         value: "chinese",
@@ -26,6 +30,10 @@ export const languages: object[] = [
     {
         value: "malay",
         label: "Malay",
+    },
+    {
+        value: "singaporeMalay",
+        label: "Singapor Malay",
     },
     {
         value: "urdu",

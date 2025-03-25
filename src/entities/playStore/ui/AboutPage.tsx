@@ -1,23 +1,34 @@
 import { format } from "date-fns";
 import { FC } from "react";
-import { IAboutGameDescription } from "src/shared/types";
+import { translations } from "src/shared/lib/translations";
+import { IAboutGameDescription, Language } from "src/shared/types";
 
-interface IAboutGameProps extends IAboutGameDescription {
+interface IAboutGameProps extends IAboutGameDescription, Language {
   number_of_downloads: string | number | null;
+
+  currentLanguage: Language;
 }
 
 export const AboutPage: FC<IAboutGameProps> = ({
   android_version,
-  description,
   last_update,
   release_date,
   version,
-  whats_new,
   number_of_downloads,
+  currentLanguage,
 }) => {
+  const {
+    downloads: DOWNLOADS,
+    updatedOn,
+    containsAds,
+    ageRating,
+  } = translations[currentLanguage.value];
+
   const modifiedNumberOfDownload = (downloads: number | null) => {
     if (downloads) {
-      return Number(downloads) > 1000 ? "1,000+ downloads" : `${downloads}`;
+      return Number(downloads) > 1000
+        ? `1,000+ ${DOWNLOADS}`
+        : `${downloads} ${DOWNLOADS}`;
     }
   };
 
@@ -30,7 +41,7 @@ export const AboutPage: FC<IAboutGameProps> = ({
             <img src="/pwa_icons/age.png" />
           </div>
           <p className="text-view-10 flex flex-col gap-1">
-            <span className="font-medium">Rated for 18+</span>
+            <span className="font-medium">{ageRating}</span>
             <span className="font-normal">
               In-game purchases (includes random items)
             </span>
@@ -41,7 +52,7 @@ export const AboutPage: FC<IAboutGameProps> = ({
             <img src="/pwa_icons/ad-icon.png" />
           </div>
           <p className="text-view-10 flex flex-col gap-1">
-            <span className="font-medium">Contains ads</span>
+            <span className="font-medium">{containsAds}</span>
             <span className="font-normal">
               Ads are placed by the app developer.
             </span>
@@ -66,13 +77,13 @@ export const AboutPage: FC<IAboutGameProps> = ({
           <span className="text-view-10">{version}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-view-10 font-medium">Updated on</span>
+          <span className="text-view-10 font-medium">{updatedOn}</span>
           <span className="text-view-10">
             {last_update ? format(last_update, "dd MMM yyy") : null}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-view-10 font-medium">Downloads</span>
+          <span className="text-view-10 font-medium">{DOWNLOADS}</span>
           <span className="text-view-10">
             {modifiedNumberOfDownload(Number(number_of_downloads))}
           </span>

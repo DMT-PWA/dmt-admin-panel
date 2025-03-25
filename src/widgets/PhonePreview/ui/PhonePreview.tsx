@@ -48,31 +48,6 @@ export const PhonePreview: FC = (props) => {
     signUp();
   }, [device]); */
 
-  async function signUp() {
-    // only when the device has been detected
-    if (device) {
-      const userData = {
-        id: id ? id : "", // referralLink
-        user_id: userId ? userId : "",
-        device,
-        appDomain: frontend ? frontend : "",
-        appId: appId ? appId : "",
-      };
-
-      try {
-        const response = await axios.post(`${backend}/register`, userData);
-
-        if (response.data) {
-          let { userId } = response.data;
-          setUserId(userId);
-          // registration successful
-        }
-      } catch (error) {
-        console.log({ error });
-      }
-    }
-  }
-
   //========={app installer for android}============================================
 
   const handleInstallClick = async () => {

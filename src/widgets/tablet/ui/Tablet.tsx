@@ -9,17 +9,20 @@ import {
 import { Reviewer } from "src/entities/reviewer";
 import { useMediaQuery } from "src/shared/lib/hooks";
 import { appData } from "src/shared/lib/data";
+import { translations } from "src/shared/lib/translations";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { format } from "date-fns";
 import clsx from "clsx";
+import { Language } from "src/shared/types";
 const frontend = import.meta.env.VITE_FRONTEND_URL;
 
 interface ITabletProps {
+  currentLanguage: Language;
   toAbout: () => void;
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout } = props;
+  const { toAbout, currentLanguage } = props;
 
   const { collections } = useAppSelector((state) => state.pwa_design);
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -74,7 +77,7 @@ const Tablet: FC<ITabletProps> = (props) => {
     icon,
     screenShots,
     appSubTitle,
-  } = appData.malaysia.english;
+  } = translations[currentLanguage.value];
   //===================================================================================================
   //================================={React states}====================================================
   //===================================================================================================

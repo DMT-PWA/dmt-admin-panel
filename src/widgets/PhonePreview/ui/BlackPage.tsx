@@ -48,6 +48,8 @@ const BlackPage: FC = (props) => {
     (state) => state.pwa_description
   );
 
+  const { currentLanguage } = useAppSelector((state) => state.pwa_design);
+
   // redirect to home screen if PWA
   async function redirectUser() {
     if (isPWA) {
@@ -182,7 +184,12 @@ const BlackPage: FC = (props) => {
 
   const handleCurrentStage = () => {
     if (stage?.stage === "Main") {
-      return <Tablet toAbout={() => setStage({ id: 1, stage: "About" })} />;
+      return (
+        <Tablet
+          currentLanguage={currentLanguage}
+          toAbout={() => setStage({ id: 1, stage: "About" })}
+        />
+      );
     }
 
     if (stage?.stage === "About") {
@@ -209,6 +216,7 @@ const BlackPage: FC = (props) => {
             version={version}
             whats_new={whats_new}
             number_of_downloads={number_of_downloads}
+            currentLanguage={currentLanguage}
           ></AboutPage>
         </div>
       );

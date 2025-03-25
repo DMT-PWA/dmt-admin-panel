@@ -6,5 +6,4 @@ export {
   removeImage,
   setCollectionName,
   resetState,
-  type ICollection
 } from "./model";

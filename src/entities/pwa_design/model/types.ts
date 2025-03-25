@@ -1,8 +1,12 @@
-export interface IDesign<T> {
+import { Language } from "src/shared/types/designTypes"
+import { ICollection } from "src/shared/types"
+
+export interface IDesign {
   pwa_title: string | null;
   languages: object[];
   pwa_tags: object[];
-  collections: T;
+  collections: ICollection[];
   isChanged: boolean;
   appData: object
+  currentLanguage: Language
 }

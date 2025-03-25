@@ -5,6 +5,7 @@ import clsx from "clsx";
 import shevron from "src/shared/assets/icons/shevron.png";
 import dots from "src/shared/assets/icons/dots.png";
 import logo from "src/shared/assets/images/logo.png";
+import { useAppSelector } from "src/shared/lib/store";
 type listItem = {
   id: number;
   title: string;
@@ -13,6 +14,8 @@ type listItem = {
 };
 
 export const Sidebar: FC = () => {
+  const { appId } = useAppSelector((state) => state.pwa_create);
+
   const [isOpen, setOpen] = useState(true);
   const navigate = useNavigate();
 
@@ -59,12 +62,12 @@ export const Sidebar: FC = () => {
             {PWA_LIST.map((item: listItem) => (
               <li
                 key={item.id}
-                onClick={() => navigate(item.route)}
+                onClick={() => navigate(`${item.route}/${appId}`)}
                 className={clsx(
                   "text__default cursor-pointer flex items-center h-[50px]",
                   {
                     "!text-orange":
-                      item.route === pathname ||
+                      `${item.route}/${appId}` === pathname ||
                       (pathname === "/pwa_create/comments_create" &&
                         item.slug === "comments"),
                   }

@@ -10,9 +10,7 @@ const container = document.querySelector("#root") as HTMLElement;
 const root = createRoot(container);
 
 root.render(
-  <StrictMode>
-    <Provider store={store}>
-      <AppRouter />
-    </Provider>
-  </StrictMode>
+  <Provider store={store}>
+    <AppRouter />
+  </Provider>
 );

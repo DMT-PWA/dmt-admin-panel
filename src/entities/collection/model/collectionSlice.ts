@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ICollection } from "./types";
+import { ICollection } from "src/shared/types";
 
 const initialState: ICollection = {
   collectionImage: null,

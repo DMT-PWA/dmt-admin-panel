@@ -10,6 +10,7 @@ import {
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { InputDefault } from "src/shared/ui/input";
 import trash_orange from "src/shared/assets/icons/trash_icon_orange.png";
+import clsx from "clsx";
 
 export const PwaMetrics: FC = () => {
   const { facebookPixelList } = useAppSelector((state) => state.metrics);
@@ -29,7 +30,7 @@ export const PwaMetrics: FC = () => {
           <CustomSelect placeholder="Введите депозит" />
         </div>
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-1">Скачивание</label>
+          <label className="title__view-1 mb-2">Скачивание</label>
           <CustomSelect placeholder="" classes="mb-2" />
         </div>
       </div>
@@ -38,9 +39,12 @@ export const PwaMetrics: FC = () => {
         {facebookPixelList &&
           facebookPixelList.map((item, index: number) => {
             return (
-              <div key={index} className="flex items-end gap-3 flex-2/3">
+              <div key={index} className={clsx("flex items-end gap-3")}>
                 <InputDefault
-                  container_classes="flex flex-col flex-[0.333] relative"
+                  container_classes={clsx(
+                    "flex flex-col relative",
+                    index === 0 ? "flex-[0.333]" : "flex-[0.337]"
+                  )}
                   value={item.pixel ? item.pixel : ""}
                   input_classes="!border-none"
                   onUpdateValue={(e) =>
@@ -48,16 +52,42 @@ export const PwaMetrics: FC = () => {
                       setPixelValue({ id: index, value: e.target.value })
                     )
                   }
-                  children={<button className="absolute py-3 px-5">X</button>}
+                  children={
+                    item.pixel && (
+                      <button
+                        onClick={() =>
+                          dispatch(setPixelValue({ id: index, value: "" }))
+                        }
+                        className="absolute w-2.75 h-2.75 bottom-3.75 right-4"
+                      >
+                        <img src="/pwa_icons/clear-icon.png" />
+                      </button>
+                    )
+                  }
                 ></InputDefault>
 
                 <InputDefault
-                  container_classes="flex flex-col flex-[0.3333]"
+                  container_classes={clsx(
+                    "flex flex-col relative",
+                    index === 0 ? "flex-[0.333]" : "flex-[0.337]"
+                  )}
                   input_classes="!border-none"
-                  value={item.token ? item.token : ""}
+                  value={item.token || ""}
                   onUpdateValue={(e) =>
                     dispatch(
                       setTokenValue({ id: index, value: e.target.value })
+                    )
+                  }
+                  children={
+                    item.token && (
+                      <button
+                        onClick={() =>
+                          dispatch(setTokenValue({ id: index, value: "" }))
+                        }
+                        className="absolute w-2.75 h-2.75 bottom-3.75 right-4"
+                      >
+                        <img src="/pwa_icons/clear-icon.png" />
+                      </button>
                     )
                   }
                 ></InputDefault>

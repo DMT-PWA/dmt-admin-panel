@@ -7,5 +7,3 @@ export {
   setCollectionName,
   resetState,
 } from "./collectionSlice";
-
-export { type ICollection } from "./types"

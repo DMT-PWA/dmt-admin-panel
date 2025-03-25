@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
 import { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
 import { languages } from "../lib/const"
+import { Language, ICollection } from "src/shared/types/designTypes"
 
 const defaultState: IDesign = {
   languages: languages,
@@ -10,6 +11,7 @@ const defaultState: IDesign = {
   collections: [],
   isChanged: false,
   appData: {},
+  currentLanguage: languages.find(item => Object.values(item)[0] === "english")
 };
 
 export const pwaDesignSlice = createSlice({
@@ -19,7 +21,7 @@ export const pwaDesignSlice = createSlice({
     setPwaTitle(state, action: PayloadAction<string>) {
       state.pwa_title = action.payload;
     },
-    addCollection: (state, action: PayloadAction<object>) => {
+    addCollection: (state, action: PayloadAction<ICollection>) => {
       state.collections.push(action.payload);
     },
     removeCollection: (state, action: PayloadAction<number>) => {
@@ -28,6 +30,9 @@ export const pwaDesignSlice = createSlice({
     setChanged: (state, action: PayloadAction<boolean>) => {
       state.isChanged = action.payload;
     },
+    setLanguage: (state, action: PayloadAction<Language>) => {
+      state.currentLanguage = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchDesignInfo.fulfilled, (state, action) => {
@@ -44,7 +49,7 @@ export const pwaDesignSlice = createSlice({
 
 });
 
-export const { setPwaTitle, addCollection, removeCollection, setChanged } =
+export const { setPwaTitle, addCollection, removeCollection, setChanged, setLanguage } =
   pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

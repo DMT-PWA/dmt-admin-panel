@@ -1,15 +1,37 @@
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import DatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import { PwaTable } from "src/widgets/PwaTable";
-
+import { adminId } from "src/shared/lib/data";
+import { createPwa } from "src/features/appData/appDataAPI";
+import { setAppId } from "src/entities/pwa_create";
+import { useAppDispatch } from "src/shared/lib/store";
 const MainPage = () => {
+  const dispatch = useAppDispatch();
+
   const navigate = useNavigate();
 
-  const handleClick = () => navigate("/pwa_create/design");
+  async function createApp() {
+    const userData = {
+      adminId,
+    };
+
+    const response = await createPwa(userData);
+    if (response?._id) {
+      dispatch(setAppId(response?._id));
+      navigate(`/pwa_create/design/${response?._id}`);
+    }
+  }
+
+  async function saveApp(ev: MouseEvent<HTMLButtonElement>) {
+    ev.preventDefault();
+    await createApp();
+  }
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => saveApp(e);
 
   const [date, setDate] = useState(null);
 

@@ -3,7 +3,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Title } from "src/shared/ui/title";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import link_icon from "src/shared/assets/icons/link_icon.png";
@@ -14,8 +14,21 @@ import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
 import { data, columns } from "../lib";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { getAllPwa } from "src/features/appData/appDataAPI";
 
 export const PwaTable: FC = () => {
+  const [pwas, setPwas] = useState(null);
+
+  useEffect(() => {
+    const handler = async () => {
+      const pwas = await getAllPwa();
+
+      setPwas(pwas);
+    };
+
+    handler();
+  }, []);
+
   const table = useReactTable({
     data,
     columns,

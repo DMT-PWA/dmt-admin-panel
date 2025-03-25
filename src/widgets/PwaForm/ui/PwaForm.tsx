@@ -13,9 +13,14 @@ import {
   fetchDesignInfo,
   fetchPwaInfo,
   selectPwaDesignLanguages,
+  setLanguage,
 } from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
 import { appData } from "src/shared/lib/data";
+import {
+  updatePwaByCountryAndLanguage,
+  updatePwaGeneral,
+} from "src/features/appData/appDataAPI";
 
 export const PwaForm: FC = () => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -23,24 +28,149 @@ export const PwaForm: FC = () => {
 
   // const { languages } = appData;
 
-  const { pwa_title, collections, languages } = useAppSelector(
+  const { pwa_title, collections, languages, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
   const dispatch = useAppDispatch();
 
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[2]);
-
   const handleLanguageChange = (selectedOption) => {
-    setSelectedLanguage(selectedOption);
+    dispatch(setLanguage(selectedOption));
   };
 
   /* useEffect(() => {
     dispatch(fetchDesignInfo());
   }, []); */
 
-  useEffect(() => {
-    dispatch(fetchPwaInfo());
-  }, []);
+  async function updateDataGeneral() {
+    // create end
+
+    console.log("updating app");
+
+    if (!adminId) {
+      setErrorMessage("admin Id required");
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    if (!appId) {
+      setErrorMessage("app Id required");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    const userData = {
+      appId,
+      adminId,
+      icon,
+      logo,
+      appTitle: pwa_title,
+      appSubTitle,
+      domain,
+      subDomain,
+      domainApp,
+      domainLanding,
+      keitaroDomain,
+      keitaroFirstCampaign,
+      keitaroSecondCampaign,
+      oneSignalApiKey,
+      oneSignalAppId,
+      pixelId,
+      accessToken,
+      marketerTag,
+      backgroundPhotoMobile,
+      backgroundPhotoDesktop,
+      //==============={new update}===================================
+    };
+
+    if (!adminId) {
+      console.log("adminId required");
+      return;
+    }
+    const response = await updatePwaGeneral(userData);
+
+    if (response?._id) {
+      await clearDataGeneral(); // clean up all data before setting
+      // await fetchAllApps(); //update all pwa list
+      setAppData(response);
+    }
+  }
+
+  async function updateDataByCountryAndLanguage() {
+    // create end
+
+    console.log("updating app");
+
+    if (!adminId) {
+      setErrorMessage("admin Id required");
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    if (!appId) {
+      setErrorMessage("app Id required");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    if (!country) {
+      setErrorMessage("country required");
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    if (!language) {
+      setErrorMessage("language required");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
+      return;
+    }
+
+    let userData = {
+      appId,
+      adminId,
+      language,
+      headerReviews,
+      hundredPlus,
+      about,
+      updatedDate,
+      country: country.toLowerCase(),
+    };
+
+    if (reviewObject?.length > 0) {
+      userData = { ...userData, reviewObject };
+    }
+
+    if (screenShots?.length > 0) {
+      userData = { ...userData, screenShots };
+    }
+
+    if (!adminId) {
+      console.log("adminId required");
+      return;
+    }
+    const response = await updatePwaByCountryAndLanguage(userData);
+
+    if (response?._id) {
+      await clearDataByCountryAndLanguage(); // clean up all data before setting
+      // await fetchAllApps(); //update all pwa list
+      setAppData(response);
+    }
+  }
+
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
 
@@ -59,7 +189,7 @@ export const PwaForm: FC = () => {
 
         <CustomSelect
           options={languages}
-          value={selectedLanguage}
+          value={currentLanguage}
           onChange={handleLanguageChange}
           placeholder="Английский"
         />

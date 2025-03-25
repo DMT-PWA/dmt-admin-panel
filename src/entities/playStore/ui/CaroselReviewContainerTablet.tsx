@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { useAppSelector } from "src/shared/lib/store";
 
-import { ICollection } from "src/entities/collection";
+import { ICollection } from "src/shared/types";
 
 type CaroselReviewContainerTabletProps = {
   propWidth: number | string;
