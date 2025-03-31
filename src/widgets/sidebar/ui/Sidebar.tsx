@@ -5,7 +5,6 @@ import clsx from "clsx";
 import shevron from "src/shared/assets/icons/shevron.png";
 import dots from "src/shared/assets/icons/dots.png";
 import logo from "src/shared/assets/images/logo.png";
-import { useAppSelector } from "src/shared/lib/store";
 type listItem = {
   id: number;
   title: string;
@@ -13,13 +12,27 @@ type listItem = {
   slug: string;
 };
 
-export const Sidebar: FC = () => {
-  const { appId } = useAppSelector((state) => state.pwa_create);
+type PwaCreateProps = {
+  appId: string | undefined;
+};
 
+export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
   const [isOpen, setOpen] = useState(true);
   const navigate = useNavigate();
 
   const pathname = useLocation().pathname;
+
+  const CREATE_PAGE = pathname.startsWith("/pwa_create");
+
+  const handleSidebarRoute = (routeName: string) => {
+    return navigate(
+      `${CREATE_PAGE ? "pwa_create" : "pwa_edit"}/${appId}/${routeName}`
+    );
+  };
+
+  const canHiglightItem = (item: string) => {
+    return pathname.endsWith(item);
+  };
 
   return (
     <div className="container__sidebar">
@@ -62,15 +75,10 @@ export const Sidebar: FC = () => {
             {PWA_LIST.map((item: listItem) => (
               <li
                 key={item.id}
-                onClick={() => navigate(`${item.route}/${appId}`)}
+                onClick={() => handleSidebarRoute(item.route)}
                 className={clsx(
                   "text__default cursor-pointer flex items-center h-[50px]",
-                  {
-                    "!text-orange":
-                      `${item.route}/${appId}` === pathname ||
-                      (pathname === "/pwa_create/comments_create" &&
-                        item.slug === "comments"),
-                  }
+                  { "!text-orange": canHiglightItem(item.slug) }
                 )}
               >
                 {item.title}

@@ -5,8 +5,8 @@ import { IAboutGameDescription, Language } from "src/shared/types";
 
 interface IAboutGameProps extends IAboutGameDescription, Language {
   number_of_downloads: string | number | null;
-
-  currentLanguage: Language;
+  whats_new: string | null;
+  currentLanguage?: Language;
 }
 
 export const AboutPage: FC<IAboutGameProps> = ({
@@ -16,6 +16,7 @@ export const AboutPage: FC<IAboutGameProps> = ({
   version,
   number_of_downloads,
   currentLanguage,
+  whats_new = null,
 }) => {
   const {
     downloads: DOWNLOADS,
@@ -70,6 +71,19 @@ export const AboutPage: FC<IAboutGameProps> = ({
           </p>
         </div>
       </section>
+      {whats_new && (
+        <section className="flex my-8 flex-col gap-5.75">
+          <div className="flex items-center gap-2.25">
+            <h1 className="title__view-4">What’s new </h1>
+            <img
+              src="/pwa_icons/circle-blue.png"
+              style={{ height: "8px", width: "8px" }}
+              alt=""
+            />
+          </div>
+          <span className="text-view-10">{whats_new}</span>
+        </section>
+      )}
       <h1 className="title__view-4 my-11">Game info</h1>
       <section className="flex flex-col gap-10">
         <div className="flex justify-between">

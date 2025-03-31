@@ -18,7 +18,7 @@ export const PwaMetrics: FC = () => {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
+    <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">
       <Title title="Метрики" withContainer={false} classes="title__view-2" />
       <div className="flex gap-3">
         <div className="flex flex-col flex-1/3">

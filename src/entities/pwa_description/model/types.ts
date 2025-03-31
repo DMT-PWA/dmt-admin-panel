@@ -1,7 +1,7 @@
 import { checkbox } from "src/shared/types"
 
 export interface IMainDescription {
-    title: string;
+    title: string | null;
     developer_name: string,
     checkboxes_state: Array<checkbox>,
     raiting: string | null,

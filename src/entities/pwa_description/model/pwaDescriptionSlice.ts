@@ -5,7 +5,7 @@ type CombinedDescription = IMainDescription & Partial<IRating> & { about_descrip
 
 const defaultState: CombinedDescription = {
     age: null,
-    title: "DMT apps",
+    title: null,
     developer_name: "Dmt Apps Inc.",
     checkboxes_state: [],
     raiting: "4.7",

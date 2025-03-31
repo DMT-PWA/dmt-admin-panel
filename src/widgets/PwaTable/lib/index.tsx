@@ -37,6 +37,9 @@ const columns = [
   {
     accessorKey: "created",
     header: "Создано",
+    cell: ({ getValue }) => (
+      <span className="text-[#000000E0] font-inter text-sm">{getValue()}</span>
+    ),
   },
   {
     accessorKey: "defaultNaming",

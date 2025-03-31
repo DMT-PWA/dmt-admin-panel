@@ -89,11 +89,11 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
         <ButtonDefault
           btn_text="Выбрать"
           onClickHandler={handleAvatarChoose}
-          btn_classes="btn__orange btn__orange-view-3 flex-1"
+          btn_classes="btn__orange btn__orange-view-3 flex-1/2"
         />
         <ButtonDefault
           btn_text="Отмена"
-          btn_classes="btn__white btn__white-view-3 "
+          btn_classes="btn__white btn__white-view-3 flex-1/2"
           onClickHandler={onPopupHandler}
         />
       </div>

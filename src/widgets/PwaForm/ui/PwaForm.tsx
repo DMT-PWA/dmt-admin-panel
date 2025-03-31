@@ -10,135 +10,63 @@ import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
   removeCollection,
-  fetchDesignInfo,
-  fetchPwaInfo,
-  selectPwaDesignLanguages,
   setLanguage,
+  setLanguagesList,
+  setCountry,
 } from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
-import { appData } from "src/shared/lib/data";
-import {
-  updatePwaByCountryAndLanguage,
-  updatePwaGeneral,
-} from "src/features/appData/appDataAPI";
+import { useNavigate } from "react-router-dom";
+import { modifiedCountryList } from "src/entities/pwa_design";
+import { Country } from "src/shared/types";
+type PwaFormProps = {
+  appId: string | undefined;
+  isEdit?: boolean;
+};
 
-export const PwaForm: FC = () => {
+export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
-  // const { languages } = appData;
+  const navigate = useNavigate();
 
-  const { pwa_title, collections, languages, currentLanguage } = useAppSelector(
-    (state) => state.pwa_design
-  );
+  const {
+    pwa_title,
+    collections,
+    languages,
+    currentLanguage,
+    languagesList,
+    currentCountry,
+  } = useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
   const handleLanguageChange = (selectedOption) => {
     dispatch(setLanguage(selectedOption));
   };
 
-  /* useEffect(() => {
-    dispatch(fetchDesignInfo());
-  }, []); */
+  const handleCountryChange = (option: Country) => dispatch(setCountry(option));
 
-  async function updateDataGeneral() {
-    // create end
+  const handleNavigate = () => {
+    return navigate("/pwa");
+  };
 
-    console.log("updating app");
+  useEffect(() => {
+    const initCountry = modifiedCountryList.find(
+      (item) => item.label === "United Kingdom"
+    );
 
-    if (!adminId) {
-      setErrorMessage("admin Id required");
+    dispatch(setCountry(initCountry || null));
+  }, []);
 
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
+  useEffect(() => {
+    dispatch(setLanguagesList());
+    if (languagesList) dispatch(setLanguage(languagesList[0]));
+  }, [currentCountry, dispatch]);
 
-    if (!appId) {
-      setErrorMessage("app Id required");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
+  useEffect(() => {
+    if (languagesList) dispatch(setLanguage(languagesList[0]));
+  }, [languagesList, dispatch]);
 
-    const userData = {
-      appId,
-      adminId,
-      icon,
-      logo,
-      appTitle: pwa_title,
-      appSubTitle,
-      domain,
-      subDomain,
-      domainApp,
-      domainLanding,
-      keitaroDomain,
-      keitaroFirstCampaign,
-      keitaroSecondCampaign,
-      oneSignalApiKey,
-      oneSignalAppId,
-      pixelId,
-      accessToken,
-      marketerTag,
-      backgroundPhotoMobile,
-      backgroundPhotoDesktop,
-      //==============={new update}===================================
-    };
-
-    if (!adminId) {
-      console.log("adminId required");
-      return;
-    }
-    const response = await updatePwaGeneral(userData);
-
-    if (response?._id) {
-      await clearDataGeneral(); // clean up all data before setting
-      // await fetchAllApps(); //update all pwa list
-      setAppData(response);
-    }
-  }
-
-  async function updateDataByCountryAndLanguage() {
-    // create end
-
-    console.log("updating app");
-
-    if (!adminId) {
-      setErrorMessage("admin Id required");
-
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
-
-    if (!appId) {
-      setErrorMessage("app Id required");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
-
-    if (!country) {
-      setErrorMessage("country required");
-
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
-
-    if (!language) {
-      setErrorMessage("language required");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-      return;
-    }
-
+  /* async function updateDataByCountryAndLanguage() {
     let userData = {
       appId,
       adminId,
@@ -169,115 +97,146 @@ export const PwaForm: FC = () => {
       // await fetchAllApps(); //update all pwa list
       setAppData(response);
     }
-  }
+  } */
 
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
 
   return (
-    <div className="container__view-2 flex-col flex-1 px-7 pb-17.5 h-max">
-      <Title title="Дизайн" withContainer={false} classes="title__view-2" />
-      <div className="flex flex-col gap-6">
-        <InputDefault
-          value={pwa_title}
-          label="Название PWA"
-          input_classes="!border-0"
-          placeholder="..."
-          onUpdateValue={onSetPwaTitle}
-        />
-        <label className="title__view-1">Язык интерфейса PWA</label>
-
-        <CustomSelect
-          options={languages}
-          value={currentLanguage}
-          onChange={handleLanguageChange}
-          placeholder="Английский"
-        />
-        <label className="title__view-1">Теги PWA</label>
-        <CustomSelect placeholder="Выберите теги" />
-      </div>
-      <div className="flex gap-[22px]">
-        <ButtonDefault
-          onClickHandler={() => setModalOpen(true)}
-          btn_text="Загрузить дизайн"
-          btn_classes="btn__orange btn__orange-view-1"
-        />
-        {collections.length > 0 && (
+    <div className="flex flex-col flex-1">
+      {isEdit && (
+        <div className="container__view-1 justify-between mt-5.5 mb-6.5 !py-3 px-9.5">
+          <div className="flex gap-37.5">
+            <div>
+              <strong className="text-view-12">iD:</strong>
+              <span className="text-view-12 text-orange"> {appId}</span>
+            </div>
+            <div>
+              <strong className="text-view-12">Название:</strong>
+              <span className="text-view-12 text-orange"> Plinko OLZ NL</span>
+            </div>
+          </div>
           <ButtonDefault
-            btn_text="Открыть коллекцию"
-            btn_classes="btn__white btn__white-view-4 text-view-3"
-            onClickHandler={() => setCollectionsOpen(true)}
+            btn_text="Вернуться назад"
+            btn_classes="btn__default btn-view-2"
+            onClickHandler={handleNavigate}
+            withArrow
           />
-        )}
-      </div>
-      {collections.length > 0
-        ? collections.map(
-            (
-              {
-                collectionImage,
-                images,
-              }: {
-                collectionImage: string;
-                images: (string | null)[];
-              },
-              index: number
-            ) => {
-              return (
-                <div
-                  key={index}
-                  className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"
-                >
-                  <div key={index} className="flex gap-9.75">
-                    <div className="flex flex-col justify-between">
-                      <img
-                        src={collectionImage}
-                        style={{ maxHeight: "92px", borderRadius: "10px" }}
-                        width={92}
-                        height={92}
-                      />
-                      <ButtonDefault
-                        btn_text="Удалить"
-                        btn_classes="btn__orange btn__orange-view-4"
-                        onClickHandler={() => dispatch(removeCollection(index))}
-                      />
+        </div>
+      )}
+      <div className="container__view-2 flex-col px-7 pb-17.5 h-max">
+        <Title title="Дизайн" withContainer={false} classes="title__view-2" />
+        <div className="flex flex-col gap-6">
+          <InputDefault
+            value={pwa_title ?? ""}
+            label="Название PWA"
+            input_classes="!border-0"
+            placeholder="..."
+            onUpdateValue={onSetPwaTitle}
+          />
+          <label className="title__view-1">Страна PWA</label>
+
+          <CustomSelect
+            options={modifiedCountryList}
+            onChange={handleCountryChange}
+            placeholder="Английский"
+          />
+          <label className="title__view-1">Язык интерфейса PWA</label>
+
+          <CustomSelect
+            options={languagesList}
+            value={currentLanguage}
+            onChange={handleLanguageChange}
+            placeholder="Английский"
+          />
+          <label className="title__view-1">Теги PWA</label>
+          <CustomSelect placeholder="Выберите теги" />
+        </div>
+        <div className="flex gap-[22px]">
+          <ButtonDefault
+            onClickHandler={() => setModalOpen(true)}
+            btn_text="Загрузить дизайн"
+            btn_classes="btn__orange btn__orange-view-1"
+          />
+          {collections.length > 0 && (
+            <ButtonDefault
+              btn_text="Открыть коллекцию"
+              btn_classes="btn__white btn__white-view-4 text-view-3"
+              onClickHandler={() => setCollectionsOpen(true)}
+            />
+          )}
+        </div>
+        {collections.length > 0
+          ? collections.map(
+              (
+                {
+                  collectionImage,
+                  images,
+                }: {
+                  collectionImage: string;
+                  images: (string | null)[];
+                },
+                index: number
+              ) => {
+                return (
+                  <div
+                    key={index}
+                    className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"
+                  >
+                    <div key={index} className="flex gap-9.75">
+                      <div className="flex flex-col justify-between">
+                        <img
+                          src={collectionImage}
+                          style={{ maxHeight: "92px", borderRadius: "10px" }}
+                          width={92}
+                          height={92}
+                        />
+                        <ButtonDefault
+                          btn_text="Удалить"
+                          btn_classes="btn__orange btn__orange-view-4"
+                          onClickHandler={() =>
+                            dispatch(removeCollection(index))
+                          }
+                        />
+                      </div>
+                      {images.map((el: string | null, index) => {
+                        return el ? (
+                          <div key={index} className="flex  h-full">
+                            <img
+                              src={el}
+                              alt="Uploaded"
+                              className="max-w-28.75 min-h-57 rounded-[11px]"
+                            />
+                          </div>
+                        ) : null;
+                      })}
                     </div>
-                    {images.map((el: string | null, index) => {
-                      return el ? (
-                        <div key={index} className="flex  h-full">
-                          <img
-                            src={el}
-                            alt="Uploaded"
-                            className="max-w-28.75 min-h-57 rounded-[11px]"
-                          />
-                        </div>
-                      ) : null;
-                    })}
                   </div>
-                </div>
-              );
-            }
-          )
-        : null}
-      <Dialog
-        open={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        className="relative z-50"
-      >
-        <DialogBackdrop className="fixed inset-0 bg-black/30" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <CollectionCreate onPopupHandler={() => setModalOpen(false)} />
-        </div>
-      </Dialog>
-      <Dialog
-        open={isCollectionsOpen}
-        onClose={() => setCollectionsOpen(false)}
-        className="relative z-50"
-      >
-        <DialogBackdrop className="fixed inset-0 bg-black/30" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
-        </div>
-      </Dialog>
+                );
+              }
+            )
+          : null}
+        <Dialog
+          open={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          className="relative z-50"
+        >
+          <DialogBackdrop className="fixed inset-0 bg-black/30" />
+          <div className="fixed inset-0 flex w-screen items-center justify-center">
+            <CollectionCreate onPopupHandler={() => setModalOpen(false)} />
+          </div>
+        </Dialog>
+        <Dialog
+          open={isCollectionsOpen}
+          onClose={() => setCollectionsOpen(false)}
+          className="relative z-50"
+        >
+          <DialogBackdrop className="fixed inset-0 bg-black/30" />
+          <div className="fixed inset-0 flex w-screen items-center justify-center">
+            <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
+          </div>
+        </Dialog>
+      </div>
     </div>
   );
 };

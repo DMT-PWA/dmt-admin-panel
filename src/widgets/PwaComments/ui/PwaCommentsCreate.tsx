@@ -7,7 +7,7 @@ import {
   Textarea,
 } from "@headlessui/react";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
@@ -20,7 +20,6 @@ import {
   setAnswerDate,
   setAnswerText,
   setAuthorName,
-  setAvatar,
   setCommentsText,
   setDeveloperName,
   setLikes,
@@ -29,8 +28,6 @@ import {
   setDeveloperAnswer,
 } from "src/entities/comments";
 import clsx from "clsx";
-import { format } from "date-fns";
-import { UnknownAction } from "@reduxjs/toolkit";
 
 export const PwaCommentsCreate: FC = () => {
   const { comment, developer_answer } = useAppSelector(
@@ -39,6 +36,8 @@ export const PwaCommentsCreate: FC = () => {
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
+
+  const location = useLocation().pathname;
 
   const {
     author_name,
@@ -54,12 +53,16 @@ export const PwaCommentsCreate: FC = () => {
   const developer_name = author_answer?.developer_name;
   const answer_date = author_answer?.answer_date;
 
-  const onClickHandler = () => navigate("/pwa_create/comments");
+  const handleNavigate = () => {
+    const toComments = location.replace("comments_create", "comments");
+
+    navigate(toComments);
+  };
 
   const onAddNewComment = () => {
     dispatch(addComment(comment));
 
-    onClickHandler();
+    handleNavigate();
   };
 
   const label = (text: string) => (
@@ -85,7 +88,7 @@ export const PwaCommentsCreate: FC = () => {
         <ButtonDefault
           btn_text="Вернуться назад"
           btn_classes="btn__white btn__white-view-1"
-          onClickHandler={onClickHandler}
+          onClickHandler={handleNavigate}
           withArrow
         />
       </div>

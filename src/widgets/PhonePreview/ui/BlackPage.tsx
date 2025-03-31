@@ -48,7 +48,9 @@ const BlackPage: FC = (props) => {
     (state) => state.pwa_description
   );
 
-  const { currentLanguage } = useAppSelector((state) => state.pwa_design);
+  const { currentLanguage, currentCountry } = useAppSelector(
+    (state) => state.pwa_design
+  );
 
   // redirect to home screen if PWA
   async function redirectUser() {
@@ -187,6 +189,7 @@ const BlackPage: FC = (props) => {
       return (
         <Tablet
           currentLanguage={currentLanguage}
+          currentCountry={currentCountry}
           toAbout={() => setStage({ id: 1, stage: "About" })}
         />
       );

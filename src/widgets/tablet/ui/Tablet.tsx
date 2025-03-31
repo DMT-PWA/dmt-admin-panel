@@ -13,18 +13,20 @@ import { translations } from "src/shared/lib/translations";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { format } from "date-fns";
 import clsx from "clsx";
-import { Language } from "src/shared/types";
+import { Country, Language } from "src/shared/types";
 const frontend = import.meta.env.VITE_FRONTEND_URL;
 
 interface ITabletProps {
   currentLanguage: Language;
+  currentCountry: Country;
   toAbout: () => void;
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout, currentLanguage } = props;
+  const { toAbout, currentLanguage, currentCountry } = props;
 
   const { collections } = useAppSelector((state) => state.pwa_design);
+  const { collectionImage } = useAppSelector((state) => state.collection);
   const isMobile = useMediaQuery("(max-width: 600px)");
 
   const {
@@ -77,7 +79,10 @@ const Tablet: FC<ITabletProps> = (props) => {
     icon,
     screenShots,
     appSubTitle,
-  } = translations[currentLanguage.value];
+  } =
+    appData[currentCountry.label.toLowerCase()][
+      currentLanguage.label.toLowerCase()
+    ];
   //===================================================================================================
   //================================={React states}====================================================
   //===================================================================================================
@@ -130,12 +135,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                   <div className="self-stretch flex flex-row items-start justify-center pt-0 px-0 pb-[4px]"></div>
                   <div className="self-stretch flex flex-col items-start justify-start gap-10 text-5xl mq450:gap-5">
                     <div className="w-[282px] flex flex-row items-start justify-start relative gap-2">
-                      {collection ? (
+                      {collectionImage ? (
                         <img
                           className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg"
                           loading="lazy"
                           alt=""
-                          src={collection.collectionImage}
+                          src={collectionImage ?? ""}
                         />
                       ) : (
                         <div className="w-14 h-14 relative rounded-xl bg-[#D6D6D6]"></div>
@@ -266,8 +271,11 @@ const Tablet: FC<ITabletProps> = (props) => {
 
                       <div className="flex flex-col items-center justify-center">
                         <div className="flex flex-row items-center justify-center pb-1.5">
-                          <div className="relative font-bold w-[15px] h-[15px] text-[8px] inline-block">
-                            <img src="/pwa_icons/age.png" />
+                          <div className="relative font-bold text-[8px] inline-block">
+                            <img
+                              src="/pwa_icons/age.png"
+                              style={{ height: "14px", width: "21px" }}
+                            />
                           </div>
                         </div>
                         <div className="flex flex-row items-start justify-start text-xs text-dimgray">

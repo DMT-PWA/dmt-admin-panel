@@ -5,27 +5,62 @@ import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
 import { PwaForm } from "src/widgets/PwaForm";
 import { PhonePreview } from "src/widgets/PhonePreview";
 import { ButtonDefault } from "src/shared/ui/button";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
-import { updatePwaGeneral } from "src/features/appData/appDataAPI";
+import { getPwaById, updatePwaGeneral } from "src/features/appData/appDataAPI";
 import { useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
+import { setCollectionImage } from "src/entities/collection";
+import { useDispatch } from "react-redux";
+import { setTitle, setDeveloperName } from "src/entities/pwa_description";
 
-export const PwaCreate: FC = () => {
-  const { currentLanguage } = useAppSelector((state) => state.pwa_design);
-  const { appId } = useAppSelector((state) => state.pwa_create);
+type PwaCreateProps = {
+  appId: string | undefined;
+  isEdit?: boolean;
+};
+
+export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const { currentLanguage, currentCountry } = useAppSelector(
+    (state) => state.pwa_design
+  );
+
+  useEffect(() => {
+    setLoading(true);
+    fetchAppById();
+    setLoading(false);
+  }, [appId]);
+
+  async function fetchAppById() {
+    if (!appId) return;
+
+    const response = await getPwaById(appId);
+
+    if (response?._id) {
+      dispatch(setCollectionImage(response?.logo as string));
+      dispatch(setTitle(response.appTitle));
+      dispatch(setDeveloperName(response.appSubTitle));
+    }
+  }
+
   const { title, developer_name } = useAppSelector(
     (state) => state.pwa_description
   );
 
+  const { collectionImage } = useAppSelector((state) => state.collection);
+
   const pathname = useLocation().pathname;
 
-  const shouldShowPhonePreview = ![
-    "/pwa_create/metrics",
-    "/pwa_create/settings",
-  ].includes(pathname);
+  const shouldShowPhonePreview =
+    currentLanguage &&
+    !loading &&
+    !pathname.endsWith("settings") &&
+    !pathname.endsWith("metrics");
 
   const handleSavePwaGeneral = async () => {
     await updatePwaGeneral({
@@ -33,29 +68,32 @@ export const PwaCreate: FC = () => {
       appId,
       adminId,
       appSubTitle: developer_name,
+      logo: collectionImage,
     });
   };
 
-  const isSaveBtnShown =
-    pathname !== "/pwa_create/comments_create" &&
-    pathname !== "/pwa_create/comments";
+  const isSaveBtnShown = !pathname.endsWith("comments_create");
 
   return (
     <div className="container__default">
-      <Title title="Создание PWA" classes="title__default" />
+      <Title
+        title={isEdit ? "Редактирование  PWA" : "Создание PWA"}
+        classes="title__default"
+        withContainer={!isEdit}
+      />
 
       <div className="flex gap-[54px]">
         <Routes>
-          <Route path="design/:appId" element={<PwaForm />} />
-          <Route path="description/:appId" element={<PwaDescriptionForm />} />
-          <Route path="comments/:appId" element={<PwaComments />} />
           <Route
-            path="comments_create/:appId"
-            element={<PwaCommentsCreate />}
+            path="design"
+            element={<PwaForm appId={appId} isEdit={isEdit} />}
           />
-          <Route path="settings/:appId" element={<PwaSettings />} />
-          <Route path="metrics/:appId" element={<PwaMetrics />} />
-          {/* <Route path="*" element={<PwaForm />} /> */}
+          <Route path="description" element={<PwaDescriptionForm />} />
+          <Route path="comments" element={<PwaComments />} />
+          <Route path="comments_create" element={<PwaCommentsCreate />} />
+          <Route path="settings" element={<PwaSettings />} />
+          <Route path="metrics" element={<PwaMetrics />} />
+          <Route path="*" element={<PwaForm appId={appId} />} />
         </Routes>
 
         {shouldShowPhonePreview && <PhonePreview />}

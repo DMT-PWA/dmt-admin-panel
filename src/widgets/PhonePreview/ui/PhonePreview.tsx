@@ -21,7 +21,7 @@ export const PhonePreview: FC = (props) => {
     language,
   } = props;
   const params = useParams();
-  const { id } = params;
+
   //===={One signal}============
   //===={One signal}==========================
 

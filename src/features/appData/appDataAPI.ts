@@ -92,7 +92,7 @@ export const updatePwa = async (userData) => {
 export const updatePwaGeneral = async (userData) => {
   try {
     const response = await axios.patch(
-      `${BACKEND_URL}/pwa//update-general`,
+      `${BACKEND_URL}/pwa/update-general`,
       userData
     );
     return response.data;
@@ -125,7 +125,7 @@ export const updatePwaByCountryAndLanguage = async (userData) => {
 
 export const deletePwa = async (appId) => {
   try {
-    const response = await axios.patch(`${BACKEND_URL}/pwa/${appId}`);
+    const response = await axios.delete(`${BACKEND_URL}/pwa/${appId}`);
     return response.data;
   } catch (error) {
     const message =

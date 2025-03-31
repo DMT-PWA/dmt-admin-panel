@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
 import { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
-import { languages } from "../lib/const"
-import { Language, ICollection } from "src/shared/types/designTypes"
+import { languages, modifiedCountryList } from "../lib/const"
+import { Language, ICollection, Country } from "src/shared/types/designTypes"
 
 const defaultState: IDesign = {
   languages: languages,
@@ -11,7 +11,9 @@ const defaultState: IDesign = {
   collections: [],
   isChanged: false,
   appData: {},
-  currentLanguage: languages.find(item => Object.values(item)[0] === "english")
+  languagesList: null,
+  currentCountry: null,
+  currentLanguage: null
 };
 
 export const pwaDesignSlice = createSlice({
@@ -32,6 +34,74 @@ export const pwaDesignSlice = createSlice({
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
       state.currentLanguage = action.payload
+
+
+    },
+    setLanguagesList: (state) => {
+      if (state.currentCountry) {
+        switch (state.currentCountry.label.toLowerCase()) {
+          case "egypt":
+            state.languagesList = [{ label: "Arabic", value: 0 }, { label: "English", value: 1 }]
+
+            break;
+
+          case "iraq":
+            state.languagesList = [{ label: "Arabic", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "saudi arabia":
+            state.languagesList = [{ label: "Arabic", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "germany":
+            state.languagesList = [{ label: "Dutch", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "netherlands":
+            state.languagesList = [{ label: "Dutch", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "hong kong":
+            state.languagesList = [{ label: "Chinese", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "china":
+            state.languagesList = [{ label: "Chinese", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "indonesia":
+            state.languagesList = [{ label: "Arabic", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "malaysia":
+            state.languagesList = [{ label: "Malay", value: 0 }, { label: "English", value: 1 }]
+
+            break;
+          case "singapore":
+            state.languagesList = [{ label: "Malay", value: 0 }, { label: "English", value: 1 }]
+
+            break;
+          case "united kingdom":
+            state.languagesList = [{ label: "English", value: 0 }]
+            break;
+          case "pakistan":
+            state.languagesList = [{ label: "Urdu", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "russia":
+            state.languagesList = [{ label: "Russian", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "senegal":
+            state.languagesList = [{ label: "French", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "south Korea":
+            state.languagesList = [{ label: "Korean", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "turkey":
+            state.languagesList = [{ label: "Turkish", value: 0 }, { label: "English", value: 1 }]
+            break;
+          case "lithuania":
+            state.languagesList = [{ label: "Lithuanian", value: 0 }, { label: "English", value: 1 }]
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    setCountry: (state, action: PayloadAction<Country>) => {
+      state.currentCountry = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -49,7 +119,7 @@ export const pwaDesignSlice = createSlice({
 
 });
 
-export const { setPwaTitle, addCollection, removeCollection, setChanged, setLanguage } =
+export const { setPwaTitle, addCollection, removeCollection, setChanged, setLanguage, setLanguagesList, setCountry } =
   pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

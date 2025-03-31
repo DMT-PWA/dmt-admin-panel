@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IUserComments, removeComment } from "src/entities/comments";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -14,10 +14,13 @@ export const PwaComments: FC = () => {
 
   const navigate = useNavigate();
 
-  /* const commentsList =
-    localStorage.getItem("comments") !== null
-      ? JSON.parse(localStorage.getItem("comments")!)
-      : null; */
+  const location = useLocation().pathname;
+
+  const handleNavigate = () => {
+    const toCreate = location.replace("comments", "comments_create");
+
+    navigate(toCreate);
+  };
 
   return (
     <div className="flex flex-1 flex-col mt-[78px]">
@@ -35,7 +38,7 @@ export const PwaComments: FC = () => {
           <ButtonDefault
             btn_text="Добавить коментарий"
             btn_classes="btn__orange btn__orange-view-1 mt-2 max-w-48.5"
-            onClickHandler={() => navigate("/pwa_create/comments_create")}
+            onClickHandler={handleNavigate}
           />
         </div>
       </div>

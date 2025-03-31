@@ -22,7 +22,7 @@ const MainPage = () => {
     const response = await createPwa(userData);
     if (response?._id) {
       dispatch(setAppId(response?._id));
-      navigate(`/pwa_create/design/${response?._id}`);
+      navigate(`/pwa_create/${response?._id}/design`);
     }
   }
 
@@ -33,7 +33,14 @@ const MainPage = () => {
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => saveApp(e);
 
-  const [date, setDate] = useState(null);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(null);
+
+  const onChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   return (
     <div className="container__default">
@@ -70,8 +77,12 @@ const MainPage = () => {
           dateFormat="dd.MM.yyyy"
           popperPlacement="bottom-start"
           placeholderText="Выбрать дату"
-          selected={date}
-          onChange={(value) => setDate(value)}
+          className="max-w-25 mr-2.5"
+          selected={startDate}
+          selectsRange
+          startDate={startDate}
+          endDate={endDate}
+          onChange={onChange}
           enableTabLoop={false}
           icon={
             <svg
@@ -82,8 +93,8 @@ const MainPage = () => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
                 fill="#717171"
               />

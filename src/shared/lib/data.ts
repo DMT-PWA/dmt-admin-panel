@@ -56,7 +56,7 @@ export const appData = {
     malay: translations.singaporeMalay,
     english: translations.english,
   },
-  unitedKingdom: {
+  "united kingdom": {
     english: translations.english,
   },
   pakistan: {

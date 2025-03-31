@@ -68,6 +68,15 @@
   border-radius: 6px;
 }
 
+.btn-view-2 {
+  font-family: "Onest", serif;
+  font-size: 14px;
+  line-height: 150%;
+  font-weight: 600;
+  border: none;
+  color: var(--color-gray-1);
+}
+
 .btn__white {
   font-family: "Onest", serif;
   background-color: var(--color-white-1);

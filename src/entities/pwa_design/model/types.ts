@@ -1,4 +1,4 @@
-import { Language } from "src/shared/types/designTypes"
+import { Language, Country, LanguagesList } from "src/shared/types/designTypes"
 import { ICollection } from "src/shared/types"
 
 export interface IDesign {
@@ -7,6 +7,8 @@ export interface IDesign {
   pwa_tags: object[];
   collections: ICollection[];
   isChanged: boolean;
-  appData: object
-  currentLanguage: Language
+  appData: object;
+  languagesList: LanguagesList | null,
+  currentCountry: Country;
+  currentLanguage: Language | null
 }

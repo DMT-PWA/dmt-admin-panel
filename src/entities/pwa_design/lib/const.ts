@@ -1,4 +1,26 @@
-export const languages = [
+
+const countryList = [
+    "Egypt",
+    "Iraq",
+    "Saudi Arabia",
+    "Germany",
+    "Netherlands",
+    "Hong Kong",
+    "China",
+    "Indonesia",
+    "Malaysia",
+    "Singapore",
+    "United Kingdom",
+    "Pakistan",
+    "Russia",
+    "Senegal",
+    "South Korea",
+    "Turkey",
+    "Lithuania",
+];
+
+const modifiedCountryList = countryList.map((item, ind) => ({ value: ind, label: item }));
+const languages = [
     {
         value: "egyptArabic",
         label: "Egypt Arabic",
@@ -59,4 +81,6 @@ export const languages = [
         value: "lithuanian",
         label: "Lithuanian",
     },
-] 
+];
+
+export { countryList, languages, modifiedCountryList }

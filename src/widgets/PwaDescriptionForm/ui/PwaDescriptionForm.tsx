@@ -23,7 +23,7 @@ import { UnknownAction } from "@reduxjs/toolkit";
 export const PwaDescriptionForm: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { review_count, grades, checkboxes_state } = useAppSelector(
+  const { review_count, grades, checkboxes_state, title } = useAppSelector(
     (state) => state.pwa_description
   );
 
