@@ -184,7 +184,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
           style={ratingScoreStyle}
         >
           <div
-            className="relative leading-[64px] inline-block min-w-[78px]"
+            className="text-center relative leading-[64px] inline-block min-w-[78px]"
             style={scoreValueStyle}
           >
             {raitingValue}

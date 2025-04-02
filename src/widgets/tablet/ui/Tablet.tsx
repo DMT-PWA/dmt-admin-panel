@@ -120,7 +120,7 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   return (
     <>
-      <div className="max-w-93.75 max-h-203 relative flex flex-row items-start justify-start leading-[normal] tracking-[normal]">
+      <div className="max-w-93.75 w-full max-h-203 relative flex flex-row items-start justify-start leading-[normal] tracking-[normal]">
         <main
           data-phone-container
           className="h-full rounded-[40px] flex-1 bg-white overflow-y-auto flex flex-col items-start justify-start pt-0 px-0 box-border relative max-w-full text-left text-2xs text-dimgray font-roboto"
@@ -326,7 +326,7 @@ const Tablet: FC<ITabletProps> = (props) => {
               {/* ================={new about content}================================== */}
               <div className="self-stretch h-fit overflow-hidden shrink-0 flex flex-col items-start justify-start gap-4">
                 <p
-                  className="text-smi text-dimgray tracking-[0.2px] leading-[20px]"
+                  className="max-w-full text-smi text-dimgray tracking-[0.2px] leading-[20px] break-words whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{ __html: description }} // Use dangerouslySetInnerHTML
                 />
               </div>

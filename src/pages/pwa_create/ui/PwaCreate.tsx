@@ -9,13 +9,24 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
-import { getPwaById, updatePwaGeneral } from "src/features/appData/appDataAPI";
+import {
+  getPwaById,
+  getPwaByIdAndLanguage,
+  updatePwa,
+  updatePwaByCountryAndLanguage,
+  updatePwaGeneral,
+} from "src/features/appData/appDataAPI";
 import { useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import { setCollectionImage } from "src/entities/collection";
 import { useDispatch } from "react-redux";
-import { setTitle, setDeveloperName } from "src/entities/pwa_description";
-
+import {
+  setTitle,
+  setDeveloperName,
+  setNumberOfDownloads,
+  setRaiting,
+  updateAboutDescription,
+} from "src/entities/pwa_description";
 type PwaCreateProps = {
   appId: string | undefined;
   isEdit?: boolean;
@@ -30,29 +41,55 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
     (state) => state.pwa_design
   );
 
-  useEffect(() => {
-    setLoading(true);
-    fetchAppById();
-    setLoading(false);
-  }, [appId]);
-
-  async function fetchAppById() {
-    if (!appId) return;
-
-    const response = await getPwaById(appId);
-
-    if (response?._id) {
-      dispatch(setCollectionImage(response?.logo as string));
-      dispatch(setTitle(response.appTitle));
-      dispatch(setDeveloperName(response.appSubTitle));
-    }
-  }
-
-  const { title, developer_name } = useAppSelector(
+  const { number_of_downloads, about_description } = useAppSelector(
     (state) => state.pwa_description
   );
 
   const { collectionImage } = useAppSelector((state) => state.collection);
+
+  const { description } = about_description;
+
+  useEffect(() => {
+    setLoading(true);
+    fetchAppById();
+  }, [appId]);
+
+  useEffect(() => {
+    if (currentLanguage && currentCountry) {
+      fetchDataByCountry();
+    }
+    setLoading(false);
+  }, [currentLanguage]);
+
+  async function fetchAppById() {
+    if (!appId) return;
+
+    const { logo, _id, appTitle, appSubTitle } = await getPwaById(appId);
+
+    if (_id) {
+      dispatch(setCollectionImage(logo as string));
+      dispatch(setTitle(appTitle));
+      dispatch(setDeveloperName(appSubTitle));
+    }
+  }
+
+  const fetchDataByCountry = async () => {
+    if (!isEdit) return;
+
+    const { hundredPlus, fourPointThree, about } = await getPwaByIdAndLanguage(
+      appId ?? "",
+      currentLanguage?.label ?? "",
+      currentCountry?.label ?? ""
+    );
+
+    dispatch(setNumberOfDownloads(hundredPlus));
+    dispatch(setRaiting(fourPointThree));
+    dispatch(updateAboutDescription({ key: "description", value: about }));
+  };
+
+  const { title, developer_name } = useAppSelector(
+    (state) => state.pwa_description
+  );
 
   const pathname = useLocation().pathname;
 
@@ -63,12 +100,16 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
     !pathname.endsWith("metrics");
 
   const handleSavePwaGeneral = async () => {
-    await updatePwaGeneral({
-      appTitle: title,
+    return await updatePwa({
       appId,
       adminId,
-      appSubTitle: developer_name,
+      language: currentLanguage?.label,
+      country: currentCountry?.label.toLowerCase(),
+      appTitle: title,
       logo: collectionImage,
+      appSubTitle: developer_name,
+      hundredPlus: number_of_downloads,
+      about: description,
     });
   };
 

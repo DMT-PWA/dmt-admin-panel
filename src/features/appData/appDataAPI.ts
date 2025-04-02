@@ -54,13 +54,11 @@ export const getPwaById = async (appId) => {
   }
 };
 
-export const getPwaByIdAndLanguage = async (appId, language, country) => {
-  console.log({
-    appId,
-    language,
-    country,
-  });
-
+export const getPwaByIdAndLanguage = async (
+  appId: string,
+  language: string,
+  country: string
+) => {
   try {
     const response = await axios.get(
       `${BACKEND_URL}/pwa/${appId}/${language}/${country}`
@@ -106,7 +104,7 @@ export const updatePwaGeneral = async (userData) => {
   }
 };
 
-export const updatePwaByCountryAndLanguage = async (userData) => {
+export const updatePwaByCountryAndLanguage = async (userData: object) => {
   try {
     const response = await axios.patch(
       `${BACKEND_URL}/pwa/update-by-country-and-language`,
@@ -208,5 +206,17 @@ export const handleMultipleFileUpload = async (files) => {
   }
   if (uploadedFiles.length > 0) {
     return uploadedFiles;
+  }
+};
+
+export const createCollection = async (data) => {
+  console.log(data);
+
+  try {
+    const response = await axios.post(`${BACKEND_URL}/collection`, data);
+
+    return response.data;
+  } catch (e) {
+    throw new Error(e.message);
   }
 };

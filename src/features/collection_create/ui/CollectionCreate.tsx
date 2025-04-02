@@ -14,12 +14,17 @@ import {
   resetState,
 } from "src/entities/collection";
 import { addCollection } from "src/entities/pwa_design";
+import { ICollection } from "src/shared/types";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
+  collectionCreateHandler: (collection: ICollection) => void;
 };
 
-export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
+export const CollectionCreate: FC<CollectionCreate> = ({
+  onPopupHandler,
+  collectionCreateHandler,
+}) => {
   const { collectionImage, images, collectionName } = useAppSelector(
     (state) => state.collection
   );
@@ -62,6 +67,8 @@ export const CollectionCreate: FC<CollectionCreate> = ({ onPopupHandler }) => {
           collectionName,
         })
       );
+
+      collectionCreateHandler({ collectionImage, images, collectionName });
 
       dispatch(resetState());
 

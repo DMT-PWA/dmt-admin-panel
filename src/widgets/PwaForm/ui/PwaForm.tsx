@@ -17,7 +17,12 @@ import {
 import { CollectionsList } from "src/features/collections_list";
 import { useNavigate } from "react-router-dom";
 import { modifiedCountryList } from "src/entities/pwa_design";
-import { Country } from "src/shared/types";
+import { Country, ICollection } from "src/shared/types";
+import {
+  getPwaByIdAndLanguage,
+  createCollection,
+} from "src/features/appData/appDataAPI";
+import { adminId } from "src/shared/lib/data";
 type PwaFormProps = {
   appId: string | undefined;
   isEdit?: boolean;
@@ -51,7 +56,7 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
 
   useEffect(() => {
     const initCountry = modifiedCountryList.find(
-      (item) => item.label === "United Kingdom"
+      (item) => item.label === "Egypt"
     );
 
     dispatch(setCountry(initCountry || null));
@@ -59,48 +64,28 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
 
   useEffect(() => {
     dispatch(setLanguagesList());
-    if (languagesList) dispatch(setLanguage(languagesList[0]));
   }, [currentCountry, dispatch]);
 
   useEffect(() => {
-    if (languagesList) dispatch(setLanguage(languagesList[0]));
+    if (languagesList && languagesList?.length > 0)
+      dispatch(setLanguage(languagesList[1]));
   }, [languagesList, dispatch]);
-
-  /* async function updateDataByCountryAndLanguage() {
-    let userData = {
-      appId,
-      adminId,
-      language,
-      headerReviews,
-      hundredPlus,
-      about,
-      updatedDate,
-      country: country.toLowerCase(),
-    };
-
-    if (reviewObject?.length > 0) {
-      userData = { ...userData, reviewObject };
-    }
-
-    if (screenShots?.length > 0) {
-      userData = { ...userData, screenShots };
-    }
-
-    if (!adminId) {
-      console.log("adminId required");
-      return;
-    }
-    const response = await updatePwaByCountryAndLanguage(userData);
-
-    if (response?._id) {
-      await clearDataByCountryAndLanguage(); // clean up all data before setting
-      // await fetchAllApps(); //update all pwa list
-      setAppData(response);
-    }
-  } */
 
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
+
+  const collectionCreateHandler = async ({
+    collectionImage,
+    collectionName,
+    images,
+  }: ICollection) => {
+    await createCollection({
+      adminId,
+      name: collectionName,
+      icon: collectionImage,
+      screenShots: images,
+    });
+  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -138,6 +123,7 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
 
           <CustomSelect
             options={modifiedCountryList}
+            value={currentCountry}
             onChange={handleCountryChange}
             placeholder="Английский"
           />
@@ -223,7 +209,10 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
         >
           <DialogBackdrop className="fixed inset-0 bg-black/30" />
           <div className="fixed inset-0 flex w-screen items-center justify-center">
-            <CollectionCreate onPopupHandler={() => setModalOpen(false)} />
+            <CollectionCreate
+              onPopupHandler={() => setModalOpen(false)}
+              collectionCreateHandler={(val) => collectionCreateHandler(val)}
+            />
           </div>
         </Dialog>
         <Dialog

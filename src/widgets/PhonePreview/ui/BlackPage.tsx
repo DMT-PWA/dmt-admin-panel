@@ -220,6 +220,7 @@ const BlackPage: FC = (props) => {
             whats_new={whats_new}
             number_of_downloads={number_of_downloads}
             currentLanguage={currentLanguage}
+            currentCountry={currentCountry}
           ></AboutPage>
         </div>
       );

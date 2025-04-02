@@ -1,4 +1,4 @@
-import { translations } from "./translations"
+import { translations } from "./translations";
 
 export const appData = {
   _id: {
@@ -56,7 +56,7 @@ export const appData = {
     malay: translations.singaporeMalay,
     english: translations.english,
   },
-  "united kingdom": {
+  unitedKingdom: {
     english: translations.english,
   },
   pakistan: {
@@ -105,5 +105,4 @@ export const appData = {
   pixelId: "911082550969358",
 } as const;
 
-
-export const adminId = "67210571554f552165ee9b65"; 
+export const adminId = "67210571554f552165ee9b65";

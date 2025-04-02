@@ -1,12 +1,13 @@
 import { format } from "date-fns";
 import { FC } from "react";
 import { translations } from "src/shared/lib/translations";
-import { IAboutGameDescription, Language } from "src/shared/types";
-
+import { Country, IAboutGameDescription, Language } from "src/shared/types";
+import { appData } from "src/shared/lib/data";
 interface IAboutGameProps extends IAboutGameDescription, Language {
   number_of_downloads: string | number | null;
   whats_new: string | null;
   currentLanguage?: Language;
+  currentCountry: Country;
 }
 
 export const AboutPage: FC<IAboutGameProps> = ({
@@ -16,20 +17,20 @@ export const AboutPage: FC<IAboutGameProps> = ({
   version,
   number_of_downloads,
   currentLanguage,
+  currentCountry,
   whats_new = null,
 }) => {
-  const {
-    downloads: DOWNLOADS,
-    updatedOn,
-    containsAds,
-    ageRating,
-  } = translations[currentLanguage.value];
+  const country = currentCountry?.label.toLowerCase() as keyof typeof appData;
+  const lang = currentLanguage?.label.toLowerCase();
+
+  const { downloads, updatedOn, containsAds, ageRating } =
+    appData[country][lang];
 
   const modifiedNumberOfDownload = (downloads: number | null) => {
     if (downloads) {
       return Number(downloads) > 1000
-        ? `1,000+ ${DOWNLOADS}`
-        : `${downloads} ${DOWNLOADS}`;
+        ? `1,000+ ${downloads}`
+        : `${downloads} ${downloads}`;
     }
   };
 
@@ -97,7 +98,7 @@ export const AboutPage: FC<IAboutGameProps> = ({
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-view-10 font-medium">{DOWNLOADS}</span>
+          <span className="text-view-10 font-medium">{downloads}</span>
           <span className="text-view-10">
             {modifiedNumberOfDownload(Number(number_of_downloads))}
           </span>
