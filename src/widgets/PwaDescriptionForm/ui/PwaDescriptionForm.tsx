@@ -19,17 +19,25 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { UnknownAction } from "@reduxjs/toolkit";
-
+import { setDescription } from "src/features/appData/appDataAPI";
 export const PwaDescriptionForm: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { review_count, grades, checkboxes_state, title } = useAppSelector(
-    (state) => state.pwa_description
-  );
+  const { review_count, grades, checkboxes_state, title, about_description } =
+    useAppSelector((state) => state.pwa_description);
 
   const { release_date, last_update } = useAppSelector(
     (state) => state.pwa_description.about_description
   );
+
+  const updateDescriptionFields = (appId, language) => {
+    setDescription({
+      appId,
+      name: title,
+      about: about_description.description,
+      language,
+    });
+  };
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">

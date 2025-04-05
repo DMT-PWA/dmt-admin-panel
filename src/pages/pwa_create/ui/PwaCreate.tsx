@@ -37,7 +37,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { currentLanguage, currentCountry } = useAppSelector(
+  const { currentLanguage, currentCountry, currentCollection } = useAppSelector(
     (state) => state.pwa_design
   );
 
@@ -74,8 +74,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
   }
 
   const fetchDataByCountry = async () => {
-    if (!isEdit) return;
-
     const { hundredPlus, fourPointThree, about } = await getPwaByIdAndLanguage(
       appId ?? "",
       currentLanguage?.label ?? "",
@@ -110,6 +108,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
       appSubTitle: developer_name,
       hundredPlus: number_of_downloads,
       about: description,
+      collectionId: currentCollection?._id,
     });
   };
 

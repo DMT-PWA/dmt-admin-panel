@@ -6,16 +6,29 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
+import { setCurrentCollection } from "src/entities/pwa_design";
+import { ICollection } from "src/shared/types";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
 };
 
 export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
-  const { collections } = useAppSelector((state) => state.pwa_design);
+  const { collections, currentCollection } = useAppSelector(
+    (state) => state.pwa_design
+  );
   const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState(false);
+
+  const [collectionItem, setCollectionItem] = useState<ICollection | null>(
+    null
+  );
+
+  const collectionPickHandler = () => {
+    dispatch(setCurrentCollection(collectionItem));
+    onPopupHandler();
+  };
 
   return (
     <div className="relative bg-white pt-[89px] pb-11">
@@ -34,25 +47,17 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
         input_classes="with_icon"
       />
 
-      {collections.map(
-        (
-          item: {
-            collectionName: string;
-            collectionImage: string;
-            images: (string | null)[];
-          },
-          index: number
-        ) => {
-          return (
-            <div className="flex flex-col">
+      {collections.map((item: ICollection, index: number) => {
+        return (
+          <div className="flex flex-col">
+            <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer">
               <div
-                className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer"
-                onClick={() => setOpen(isOpen ? false : true)}
+                className="flex items-center"
+                onClick={() => setCollectionItem(item)}
               >
-                <div
-                  className="flex items-center"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                {currentCollection ? (
+                  <div className="mr-7.75 w-4 h-4 rounded-full border-1 border-[#21272A] bg-[#21272A]"></div>
+                ) : (
                   <img
                     src={circle_icon}
                     width={16}
@@ -60,55 +65,56 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
                     alt=""
                     className="mr-7.75"
                   />
-                  <span>{item.collectionName}</span>
-                </div>
-                <button>
-                  <img
-                    src={shevron}
-                    alt=""
-                    width={13.5}
-                    height={7.7}
-                    className={clsx(
-                      { "rotate-180": !isOpen },
-                      "transition-transform duration-300 ease-in-out"
-                    )}
-                  />
-                </button>
+                )}
+                <span>{item.collectionName}</span>
               </div>
-              {isOpen && (
-                <div key={index} className="flex px-16 py-4.5 gap-6">
-                  <div className="flex flex-col justify-between">
-                    <img
-                      src={item.collectionImage}
-                      style={{
-                        height: "73px",
-                        maxWidth: "73px",
-                        borderRadius: "10px",
-                      }}
-                    />
-                  </div>
-                  {item.images.map((el: string | null, index) => {
-                    return el ? (
-                      <div key={index} className="flex w-full h-full">
-                        <img
-                          src={el}
-                          alt="Uploaded"
-                          className="max-w-19 min-h-38 rounded-[11px]"
-                        />
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              )}
+              <button onClick={() => setOpen(isOpen ? false : true)}>
+                <img
+                  src={shevron}
+                  alt=""
+                  width={13.5}
+                  height={7.7}
+                  className={clsx(
+                    { "rotate-180": !isOpen },
+                    "transition-transform duration-300 ease-in-out"
+                  )}
+                />
+              </button>
             </div>
-          );
-        }
-      )}
+            {isOpen && (
+              <div key={index} className="flex px-16 py-4.5 gap-6">
+                <div className="flex flex-col justify-between">
+                  <img
+                    src={item.collectionImage}
+                    style={{
+                      height: "73px",
+                      maxWidth: "73px",
+                      borderRadius: "10px",
+                    }}
+                  />
+                </div>
+                {item.images.map((el: string | null, index) => {
+                  return el ? (
+                    <div key={index} className="flex w-full h-full">
+                      <img
+                        src={el}
+                        alt="Uploaded"
+                        className="max-w-19 min-h-38 rounded-[11px]"
+                      />
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       <div className="flex gap-[43px] mt-18 px-6.25">
         <ButtonDefault
           btn_text="Выбрать"
           btn_classes="btn__orange btn__orange-view-3"
+          onClickHandler={collectionPickHandler}
         />
         <ButtonDefault
           btn_text="Отмена"

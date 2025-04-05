@@ -14,6 +14,7 @@ const defaultState: IDesign = {
   languagesList: null,
   currentCountry: null,
   currentLanguage: null,
+  currentCollection: null,
 };
 
 export const pwaDesignSlice = createSlice({
@@ -23,7 +24,15 @@ export const pwaDesignSlice = createSlice({
     setPwaTitle(state, action: PayloadAction<string>) {
       state.pwa_title = action.payload;
     },
-    addCollection: (state, action: PayloadAction<ICollection>) => {
+    setCurrentCollection: (
+      state,
+      action: PayloadAction<
+        ((ICollection & { _id: string }) | ICollection) | null
+      >
+    ) => {
+      state.currentCollection = action.payload;
+    },
+    addCollection: (state, action) => {
       state.collections.push(action.payload);
     },
     removeCollection: (state, action: PayloadAction<number>) => {
@@ -171,6 +180,7 @@ export const {
   setLanguage,
   setLanguagesList,
   setCountry,
+  setCurrentCollection,
 } = pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

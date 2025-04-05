@@ -1,7 +1,7 @@
 import { Dialog, DialogBackdrop } from "@headlessui/react";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 
-import { setPwaTitle } from "src/entities/pwa_design";
+import { setCurrentCollection, setPwaTitle } from "src/entities/pwa_design";
 import { CollectionCreate } from "src/features/collection_create";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -16,11 +16,11 @@ import {
 } from "src/entities/pwa_design";
 import { CollectionsList } from "src/features/collections_list";
 import { useNavigate } from "react-router-dom";
-import { modifiedCountryList } from "src/entities/pwa_design";
+import { modifiedCountryList, addCollection } from "src/entities/pwa_design";
 import { Country, ICollection } from "src/shared/types";
 import {
-  getPwaByIdAndLanguage,
   createCollection,
+  getAllCollections,
 } from "src/features/appData/appDataAPI";
 import { adminId } from "src/shared/lib/data";
 type PwaFormProps = {
@@ -41,6 +41,7 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     currentLanguage,
     languagesList,
     currentCountry,
+    currentCollection,
   } = useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
@@ -70,6 +71,25 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     if (languagesList && languagesList?.length > 0)
       dispatch(setLanguage(languagesList[1]));
   }, [languagesList, dispatch]);
+
+  useEffect(() => {
+    getAllCollections().then((collections) => {
+      if (collections && collections.length > 0) {
+        collections.forEach(({ icon, screenShots, name, _id }) => {
+          return dispatch(
+            addCollection({
+              _id,
+              collectionImage: icon,
+              images: screenShots,
+              collectionName: name,
+            })
+          );
+        });
+      }
+    });
+
+    // dispatch(addCollection())
+  }, []);
 
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
@@ -152,56 +172,36 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             />
           )}
         </div>
-        {collections.length > 0
-          ? collections.map(
-              (
-                {
-                  collectionImage,
-                  images,
-                }: {
-                  collectionImage: string;
-                  images: (string | null)[];
-                },
-                index: number
-              ) => {
-                return (
-                  <div
-                    key={index}
-                    className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]"
-                  >
-                    <div key={index} className="flex gap-9.75">
-                      <div className="flex flex-col justify-between">
-                        <img
-                          src={collectionImage}
-                          style={{ maxHeight: "92px", borderRadius: "10px" }}
-                          width={92}
-                          height={92}
-                        />
-                        <ButtonDefault
-                          btn_text="Удалить"
-                          btn_classes="btn__orange btn__orange-view-4"
-                          onClickHandler={() =>
-                            dispatch(removeCollection(index))
-                          }
-                        />
-                      </div>
-                      {images.map((el: string | null, index) => {
-                        return el ? (
-                          <div key={index} className="flex  h-full">
-                            <img
-                              src={el}
-                              alt="Uploaded"
-                              className="max-w-28.75 min-h-57 rounded-[11px]"
-                            />
-                          </div>
-                        ) : null;
-                      })}
-                    </div>
+        {currentCollection && (
+          <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
+            <div className="flex gap-9.75">
+              <div className="flex flex-col justify-between">
+                <img
+                  src={currentCollection.collectionImage}
+                  style={{ maxHeight: "92px", borderRadius: "10px" }}
+                  width={92}
+                  height={92}
+                />
+                <ButtonDefault
+                  btn_text="Удалить"
+                  btn_classes="btn__orange btn__orange-view-4"
+                  onClickHandler={() => dispatch(setCurrentCollection(null))}
+                />
+              </div>
+              {currentCollection.images.map((el: string | null, index) => {
+                return el ? (
+                  <div key={index} className="flex  h-full">
+                    <img
+                      src={el}
+                      alt="Uploaded"
+                      className="max-w-28.75 min-h-57 rounded-[11px]"
+                    />
                   </div>
-                );
-              }
-            )
-          : null}
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
         <Dialog
           open={isModalOpen}
           onClose={() => setModalOpen(false)}

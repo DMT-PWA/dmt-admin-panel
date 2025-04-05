@@ -8,9 +8,10 @@ export {
   fetchPwaInfo,
   setLanguage,
   setLanguagesList,
-  setCountry
+  setCountry,
+  setCurrentCollection,
 } from "./model";
 
-export { selectPwaDesignLanguages } from "./model/selectors"
+export { selectPwaDesignLanguages } from "./model/selectors";
 
-export { modifiedCountryList } from "./lib/const"
+export { modifiedCountryList } from "./lib/const";

@@ -15,6 +15,7 @@ import {
 } from "src/entities/collection";
 import { addCollection } from "src/entities/pwa_design";
 import { ICollection } from "src/shared/types";
+import { handleFileUpload } from "src/features/appData/appDataAPI";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
@@ -31,30 +32,24 @@ export const CollectionCreate: FC<CollectionCreate> = ({
 
   const dispatch = useAppDispatch();
 
-  const handleColleactionImageChange = (
+  const handleColleactionImageChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        dispatch(setCollectionImage(reader.result as string));
-      };
-      reader.readAsDataURL(file);
+      const reader = await handleFileUpload(file);
+      dispatch(setCollectionImage(reader as string));
     }
   };
 
-  const handleImageChange = (
+  const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        dispatch(setImage({ index, image: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      const reader = await handleFileUpload(file);
+      dispatch(setImage({ index, image: reader as string }));
     }
   };
 

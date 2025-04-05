@@ -153,7 +153,7 @@ export const clonePwa = async (userData) => {
 
 //============={file upload}========================================
 
-export const handleFileUpload = async (uploadFile, name) => {
+export const handleFileUpload = async (uploadFile) => {
   const formData = new FormData();
   formData.append("file", uploadFile);
   // formData.append('public_id', name); // created new upload with unique file name // the public_id is the name of the file
@@ -210,8 +210,6 @@ export const handleMultipleFileUpload = async (files) => {
 };
 
 export const createCollection = async (data) => {
-  console.log(data);
-
   try {
     const response = await axios.post(`${BACKEND_URL}/collection`, data);
 
@@ -219,4 +217,16 @@ export const createCollection = async (data) => {
   } catch (e) {
     throw new Error(e.message);
   }
+};
+
+export const getAllCollections = async () => {
+  const { data } = await axios.get(`${BACKEND_URL}/collection`);
+
+  return data;
+};
+
+export const setDescription = async (data) => {
+  const response = await axios.post(`${BACKEND_URL}/description`, data);
+
+  return response.data;
 };

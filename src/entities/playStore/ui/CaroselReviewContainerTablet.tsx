@@ -13,8 +13,10 @@ type CaroselReviewContainerTabletProps = {
 const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
   props
 ) => {
+  const { currentCollection } = useAppSelector((state) => state.pwa_design);
+
   const emptyCollections = () => {
-    if (!collections[0]) {
+    if (!currentCollection) {
       return Array.from({ length: 4 }).map((_, i) => (
         <div
           key={`empty-${i}`}
@@ -23,7 +25,7 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       ));
     }
 
-    return collections[0].images.map((photo: string, i: number) => {
+    return currentCollection.images.map((photo: string, i: number) => {
       if (photo) {
         return (
           <img
@@ -52,8 +54,6 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       flex: propFlex,
     };
   }, [propWidth, propHeight, propFlex]);
-
-  const { collections } = useAppSelector((state) => state.pwa_design);
 
   return (
     <section
