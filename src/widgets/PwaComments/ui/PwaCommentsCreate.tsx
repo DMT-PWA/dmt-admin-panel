@@ -26,13 +26,23 @@ import {
   setRaiting,
   setReviewDate,
   setDeveloperAnswer,
+  createCommentHandler,
 } from "src/entities/comments";
+import { createComment } from "src/features/appData/appDataAPI";
 import clsx from "clsx";
+import { adminId } from "src/shared/lib/data";
+
+import { setCommentId } from "src/entities/pwa_create";
 
 export const PwaCommentsCreate: FC = () => {
-  const { comment, developer_answer } = useAppSelector(
+  const { comment, developer_answer, comments_list } = useAppSelector(
     (state) => state.comments
   );
+
+  const { title } = useAppSelector((state) => state.pwa_description);
+
+  const { currentLanguage } = useAppSelector((state) => state.pwa_design);
+
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
@@ -60,7 +70,9 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const onAddNewComment = () => {
-    dispatch(addComment(comment));
+    dispatch(
+      createCommentHandler({ adminId, language: currentLanguage?.label })
+    );
 
     handleNavigate();
   };

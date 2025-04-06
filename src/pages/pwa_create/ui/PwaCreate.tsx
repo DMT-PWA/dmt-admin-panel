@@ -12,28 +12,29 @@ import { PwaMetrics } from "src/widgets/PwaMetrics";
 import {
   getPwaById,
   getPwaByIdAndLanguage,
-  updatePwa,
-  updatePwaByCountryAndLanguage,
-  updatePwaGeneral,
 } from "src/features/appData/appDataAPI";
-import { useAppSelector } from "src/shared/lib/store";
+import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import { setCollectionImage } from "src/entities/collection";
-import { useDispatch } from "react-redux";
 import {
   setTitle,
   setDeveloperName,
   setNumberOfDownloads,
   setRaiting,
-  updateAboutDescription,
+  fetchDescriptionInfoById,
+  createDescriptionById,
+  updateDescription,
 } from "src/entities/pwa_description";
+import { setCurrentCollection } from "src/entities/pwa_design";
+import { updatePwaByLang } from "src/entities/pwa_create";
+
 type PwaCreateProps = {
-  appId: string | undefined;
+  appId: string;
   isEdit?: boolean;
 };
 
-export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
-  const dispatch = useDispatch();
+export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
+  const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -41,75 +42,118 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
     (state) => state.pwa_design
   );
 
-  const { number_of_downloads, about_description } = useAppSelector(
-    (state) => state.pwa_description
-  );
+  const { comment } = useAppSelector((state) => state.comments);
 
-  const { collectionImage } = useAppSelector((state) => state.collection);
-
-  const { description } = about_description;
+  const { commentId } = comment;
 
   useEffect(() => {
     setLoading(true);
+
     fetchAppById();
-  }, [appId]);
+
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (currentLanguage && currentCountry) {
-      fetchDataByCountry();
-    }
+    if (isEdit && currentLanguage && currentCountry) fetchDataByCountry();
+
     setLoading(false);
   }, [currentLanguage]);
 
   async function fetchAppById() {
     if (!appId) return;
 
-    const { logo, _id, appTitle, appSubTitle } = await getPwaById(appId);
+    const { _id, appTitle, appSubTitle } = await getPwaById(appId);
 
-    if (_id) {
-      dispatch(setCollectionImage(logo as string));
-      dispatch(setTitle(appTitle));
-      dispatch(setDeveloperName(appSubTitle));
-    }
+    if (!_id) return;
+
+    dispatch(setTitle(appTitle));
+    dispatch(setDeveloperName(appSubTitle));
   }
 
-  const fetchDataByCountry = async () => {
-    const { hundredPlus, fourPointThree, about } = await getPwaByIdAndLanguage(
+  async function fetchDataByCountry() {
+    const {
+      hundredPlus,
+      fourPointThree,
+      collectionId,
+      descriptionId,
+      commentId,
+    } = await getPwaByIdAndLanguage(
       appId ?? "",
       currentLanguage?.label ?? "",
       currentCountry?.label ?? ""
     );
 
+    const { name, screenShots, icon } = collectionId;
+
+    dispatch(fetchDescriptionInfoById(descriptionId));
+
     dispatch(setNumberOfDownloads(hundredPlus));
     dispatch(setRaiting(fourPointThree));
-    dispatch(updateAboutDescription({ key: "description", value: about }));
-  };
-
-  const { title, developer_name } = useAppSelector(
-    (state) => state.pwa_description
-  );
+    dispatch(setCollectionImage(icon as string));
+    dispatch(
+      setCurrentCollection({
+        collectionImage: icon,
+        collectionName: name,
+        images: screenShots,
+      })
+    );
+  }
 
   const pathname = useLocation().pathname;
 
   const shouldShowPhonePreview =
-    currentLanguage &&
-    !loading &&
-    !pathname.endsWith("settings") &&
-    !pathname.endsWith("metrics");
+    !loading && !pathname.endsWith("settings") && !pathname.endsWith("metrics");
 
-  const handleSavePwaGeneral = async () => {
-    return await updatePwa({
-      appId,
+  const handleSavePwaGeneral = () => {
+    const payload = {
       adminId,
-      language: currentLanguage?.label,
-      country: currentCountry?.label.toLowerCase(),
-      appTitle: title,
-      logo: collectionImage,
-      appSubTitle: developer_name,
-      hundredPlus: number_of_downloads,
-      about: description,
-      collectionId: currentCollection?._id,
-    });
+      language: currentLanguage?.label || "",
+    };
+
+    if (pathname.endsWith("design")) {
+      dispatch(
+        updatePwaByLang({
+          appId,
+          ...payload,
+          isExist: true,
+          country: currentCountry?.label.toLowerCase(),
+          collectionId: currentCollection._id,
+        })
+      );
+
+      return;
+    }
+
+    if (pathname.endsWith("description")) {
+      if (isEdit) {
+        dispatch(createDescriptionById(payload));
+      }
+      dispatch(
+        updateDescription({
+          appId,
+          ...payload,
+          isExist: true,
+          country: currentCountry?.label.toLowerCase(),
+        })
+      );
+
+      return;
+    }
+
+    if (pathname.endsWith("comments")) {
+      dispatch(
+        updatePwaByLang({
+          appId,
+          ...payload,
+          isExist: true,
+          country: currentCountry?.label.toLowerCase(),
+          commentId,
+        })
+      );
+
+      return;
+    }
   };
 
   const isSaveBtnShown = !pathname.endsWith("comments_create");
@@ -128,7 +172,15 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit = false }) => {
             path="design"
             element={<PwaForm appId={appId} isEdit={isEdit} />}
           />
-          <Route path="description" element={<PwaDescriptionForm />} />
+          <Route
+            path="description"
+            element={
+              <PwaDescriptionForm
+                adminId={adminId}
+                language={currentLanguage?.label || "English"}
+              />
+            }
+          />
           <Route path="comments" element={<PwaComments />} />
           <Route path="comments_create" element={<PwaCommentsCreate />} />
           <Route path="settings" element={<PwaSettings />} />

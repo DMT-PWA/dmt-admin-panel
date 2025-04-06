@@ -13,5 +13,8 @@ export {
   setReviewDate,
   removeComment,
   resetState,
+  getAllComments,
+  removeCommentById,
+  createCommentHandler,
   type IUserComments,
 } from "./model";

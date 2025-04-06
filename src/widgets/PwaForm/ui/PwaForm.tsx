@@ -24,7 +24,7 @@ import {
 } from "src/features/appData/appDataAPI";
 import { adminId } from "src/shared/lib/data";
 type PwaFormProps = {
-  appId: string | undefined;
+  appId: string;
   isEdit?: boolean;
 };
 
@@ -49,28 +49,55 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     dispatch(setLanguage(selectedOption));
   };
 
-  const handleCountryChange = (option: Country) => dispatch(setCountry(option));
+  const handleCountryChange = (option: Country) => {
+    dispatch(setCountry(option));
+  };
 
   const handleNavigate = () => {
     return navigate("/pwa");
   };
+  const lsData = localStorage.getItem(appId);
 
   useEffect(() => {
     const initCountry = modifiedCountryList.find(
       (item) => item.label === "Egypt"
-    );
+    ) || { label: "Egypt", value: 0 };
 
-    dispatch(setCountry(initCountry || null));
+    if (lsData) {
+      const { country, language } = JSON.parse(lsData);
+      dispatch(setCountry(country));
+      if (language) dispatch(setLanguage(language));
+
+      return;
+    }
+    const initialData = {
+      country: initCountry,
+      language: null,
+    };
+    localStorage.setItem(appId, JSON.stringify(initialData));
+    dispatch(setCountry(initCountry));
   }, []);
 
   useEffect(() => {
     dispatch(setLanguagesList());
-  }, [currentCountry, dispatch]);
+  }, []);
 
   useEffect(() => {
-    if (languagesList && languagesList?.length > 0)
-      dispatch(setLanguage(languagesList[1]));
-  }, [languagesList, dispatch]);
+    if (languagesList && currentCountry && languagesList?.length > 0) {
+      const englishLang = languagesList.find(
+        (item) => item.label === "English"
+      );
+      const currentLang = englishLang;
+
+      const updatedData = {
+        country: currentCountry,
+        language: currentLang,
+      };
+
+      localStorage.setItem(appId, JSON.stringify(updatedData));
+      dispatch(setLanguage(currentLang));
+    }
+  }, [currentCountry, dispatch]);
 
   useEffect(() => {
     getAllCollections().then((collections) => {
@@ -87,8 +114,6 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
         });
       }
     });
-
-    // dispatch(addCollection())
   }, []);
 
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>

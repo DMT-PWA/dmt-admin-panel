@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import close_icon from "src/shared/assets/icons/close_icon.png";
@@ -6,8 +6,10 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { setCurrentCollection } from "src/entities/pwa_design";
+import { addCollection, setCurrentCollection } from "src/entities/pwa_design";
 import { ICollection } from "src/shared/types";
+import { getAllCollections } from "src/features/appData/appDataAPI";
+import { set } from "date-fns";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
@@ -19,7 +21,13 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
   );
   const dispatch = useAppDispatch();
 
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState<null | number>(null);
+
+  const openHandler = (ind: number) => {
+    if (isOpen === ind) return setOpen(null);
+
+    return setOpen(ind);
+  };
 
   const [collectionItem, setCollectionItem] = useState<ICollection | null>(
     null
@@ -49,16 +57,14 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
 
       {collections.map((item: ICollection, index: number) => {
         return (
-          <div className="flex flex-col">
+          <div key={index} className="flex flex-col">
             <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer">
-              <div
-                className="flex items-center"
-                onClick={() => setCollectionItem(item)}
-              >
-                {currentCollection ? (
-                  <div className="mr-7.75 w-4 h-4 rounded-full border-1 border-[#21272A] bg-[#21272A]"></div>
+              <div className="flex items-center">
+                {collectionItem === item ? (
+                  <div className="mr-7.75 w-4 h-4 rounded-full border-1 border-[#21272A] bg-orange"></div>
                 ) : (
                   <img
+                    onClick={() => setCollectionItem(item)}
                     src={circle_icon}
                     width={16}
                     style={{ maxHeight: "16px" }}
@@ -68,20 +74,20 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
                 )}
                 <span>{item.collectionName}</span>
               </div>
-              <button onClick={() => setOpen(isOpen ? false : true)}>
+              <button onClick={() => openHandler(index)}>
                 <img
                   src={shevron}
                   alt=""
                   width={13.5}
                   height={7.7}
                   className={clsx(
-                    { "rotate-180": !isOpen },
+                    { "rotate-180": isOpen !== index },
                     "transition-transform duration-300 ease-in-out"
                   )}
                 />
               </button>
             </div>
-            {isOpen && (
+            {isOpen === index && (
               <div key={index} className="flex px-16 py-4.5 gap-6">
                 <div className="flex flex-col justify-between">
                   <img

@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICommentsState } from "./types";
+import { getAllComments, removeCommentById, createCommentHandler } from "./commentsThunk";
 
 const initialState: ICommentsState = {
   developer_answer: false,
   comment: {
+    commentId: null,
     author_name: "",
     comments_text: "",
     likes_count: null,
@@ -68,6 +70,23 @@ export const comments = createSlice({
     },
     resetState: () => initialState,
   },
+
+  extraReducers: (builder) => {
+    builder.addCase(getAllComments.fulfilled, (state, action) => {
+      state.comments_list = [...action.payload]
+    })
+
+    builder.addCase(removeCommentById.fulfilled, (state, action) => {
+      state.comments_list = [...action.payload]
+    })
+
+    builder.addCase(createCommentHandler.fulfilled, (state, action) => {
+      state.comment.commentId = action.payload._id;
+
+      state.comments_list?.push(action.payload);
+
+    })
+  }
 });
 
 export const {

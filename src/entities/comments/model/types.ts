@@ -4,6 +4,6 @@ type comments_list = Array<IUserComment> | null;
 
 export interface ICommentsState {
   developer_answer: boolean;
-  comment: IUserComment
+  comment: IUserComment & { commentId: string | null },
   comments_list: comments_list;
 }

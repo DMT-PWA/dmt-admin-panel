@@ -1,4 +1,4 @@
-import { checkbox } from "src/shared/types"
+import { checkbox, IAboutGameDescription } from "src/shared/types"
 
 export interface IMainDescription {
     title: string | null;
@@ -16,3 +16,6 @@ export interface IRating {
     raiting_second: string | null,
     grades: grade[]
 }
+
+export type CombinedDescription = IMainDescription &
+    Partial<IRating> & { about_description: IAboutGameDescription } & { descriptionId: string | number | null };

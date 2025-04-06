@@ -45,114 +45,112 @@ export const pwaDesignSlice = createSlice({
       state.currentLanguage = action.payload;
     },
     setLanguagesList: (state) => {
-      if (state.currentCountry) {
-        switch (state.currentCountry.label.toLowerCase()) {
-          case "egypt":
-            state.languagesList = [
-              { label: "Arabic", value: 0 },
-              { label: "English", value: 1 },
-            ];
+      switch (state.currentCountry.label.toLowerCase()) {
+        case "egypt":
+          state.languagesList = [
+            { label: "Arabic", value: 0 },
+            { label: "English", value: 1 },
+          ];
 
-            break;
+          break;
 
-          case "iraq":
-            state.languagesList = [
-              { label: "Arabic", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "saudi arabia":
-            state.languagesList = [
-              { label: "Arabic", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "germany":
-            state.languagesList = [
-              { label: "Dutch", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "netherlands":
-            state.languagesList = [
-              { label: "Dutch", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "hong kong":
-            state.languagesList = [
-              { label: "Chinese", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "china":
-            state.languagesList = [
-              { label: "Chinese", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "indonesia":
-            state.languagesList = [
-              { label: "Arabic", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "malaysia":
-            state.languagesList = [
-              { label: "Malay", value: 0 },
-              { label: "English", value: 1 },
-            ];
+        case "iraq":
+          state.languagesList = [
+            { label: "Arabic", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "saudi arabia":
+          state.languagesList = [
+            { label: "Arabic", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "germany":
+          state.languagesList = [
+            { label: "Dutch", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "netherlands":
+          state.languagesList = [
+            { label: "Dutch", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "hong kong":
+          state.languagesList = [
+            { label: "Chinese", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "china":
+          state.languagesList = [
+            { label: "Chinese", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "indonesia":
+          state.languagesList = [
+            { label: "Arabic", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "malaysia":
+          state.languagesList = [
+            { label: "Malay", value: 0 },
+            { label: "English", value: 1 },
+          ];
 
-            break;
-          case "singapore":
-            state.languagesList = [
-              { label: "Malay", value: 0 },
-              { label: "English", value: 1 },
-            ];
+          break;
+        case "singapore":
+          state.languagesList = [
+            { label: "Malay", value: 0 },
+            { label: "English", value: 1 },
+          ];
 
-            break;
-          case "unitedKingdom":
-            state.languagesList = [{ label: "English", value: 0 }];
-            break;
-          case "pakistan":
-            state.languagesList = [
-              { label: "Urdu", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "russia":
-            state.languagesList = [
-              { label: "Russian", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "senegal":
-            state.languagesList = [
-              { label: "French", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "south Korea":
-            state.languagesList = [
-              { label: "Korean", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "turkey":
-            state.languagesList = [
-              { label: "Turkish", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          case "lithuania":
-            state.languagesList = [
-              { label: "Lithuanian", value: 0 },
-              { label: "English", value: 1 },
-            ];
-            break;
-          default:
-            break;
-        }
+          break;
+        case "unitedKingdom":
+          state.languagesList = [{ label: "English", value: 0 }];
+          break;
+        case "pakistan":
+          state.languagesList = [
+            { label: "Urdu", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "russia":
+          state.languagesList = [
+            { label: "Russian", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "senegal":
+          state.languagesList = [
+            { label: "French", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "south Korea":
+          state.languagesList = [
+            { label: "Korean", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "turkey":
+          state.languagesList = [
+            { label: "Turkish", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        case "lithuania":
+          state.languagesList = [
+            { label: "Lithuanian", value: 0 },
+            { label: "English", value: 1 },
+          ];
+          break;
+        default:
+          break;
       }
     },
     setCountry: (state, action: PayloadAction<Country>) => {

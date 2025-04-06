@@ -79,7 +79,6 @@ const Reviewer: FC = (props) => {
                 </div>
               </div>
             </div>
-            {anyStars(review.review_date || "", review.raiting || 0)}
 
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
               <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">

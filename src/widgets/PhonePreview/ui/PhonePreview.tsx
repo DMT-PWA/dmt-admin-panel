@@ -10,16 +10,6 @@ const appId = import.meta.env.VITE_APP_ID;
 const domainName = import.meta.env.VITE_DOMAIN_NAME;
 
 export const PhonePreview: FC = (props) => {
-  const {
-    isPWA,
-    userId,
-    setUserId,
-    deferredPrompt,
-    initializeInstall,
-    isInstalled,
-    country,
-    language,
-  } = props;
   const params = useParams();
 
   //===={One signal}============
@@ -155,13 +145,9 @@ export const PhonePreview: FC = (props) => {
       >
         {
           <BlackPage
-            isPWA={isPWA}
-            deferredPrompt={deferredPrompt}
-            initializeInstall={initializeInstall}
             handleInstallClick={handleInstallClick}
             showLoadingBar={showLoadingBar}
             progress={progress}
-            isInstalled={isInstalled}
             originalPath={originalPath}
             reducedPath={reducedPath}
             // domain={domain}
@@ -173,8 +159,6 @@ export const PhonePreview: FC = (props) => {
             os={os}
             browserName={browserName}
             deviceType={deviceType}
-            country={country}
-            language={language}
           />
         }
       </div>

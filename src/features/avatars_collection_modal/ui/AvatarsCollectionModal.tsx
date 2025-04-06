@@ -6,6 +6,7 @@ import { Title } from "src/shared/ui/title";
 import avatar_icon from "src/shared/assets/icons/avatar_icon.png";
 import { setAvatar } from "src/entities/comments";
 import { useAppDispatch } from "src/shared/lib/store";
+import { handleFileUpload } from "src/features/appData/appDataAPI";
 interface IAvatarsCollectionProps {
   onPopupHandler: () => void;
 }
@@ -19,10 +20,13 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
+      // const imageUrl = URL.createObjectURL(file);
+      const imageUrl = await handleFileUpload(file);
       setTempAvatar(imageUrl);
     }
   };

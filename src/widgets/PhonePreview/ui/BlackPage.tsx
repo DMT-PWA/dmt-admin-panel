@@ -186,13 +186,7 @@ const BlackPage: FC = (props) => {
 
   const handleCurrentStage = () => {
     if (stage?.stage === "Main") {
-      return (
-        <Tablet
-          currentLanguage={currentLanguage}
-          currentCountry={currentCountry}
-          toAbout={() => setStage({ id: 1, stage: "About" })}
-        />
-      );
+      return <Tablet toAbout={() => setStage({ id: 1, stage: "About" })} />;
     }
 
     if (stage?.stage === "About") {

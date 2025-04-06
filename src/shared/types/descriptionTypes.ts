@@ -9,3 +9,12 @@ export interface IAboutGameDescription {
     android_version: string | null;
     whats_new: string | null;
 }
+
+export type DescriptionResponse = { adminId: string, name: string, about: string, language: string, _id: string };
+
+export type DescriptionPayload = {
+    adminId: string
+    name: string,
+    about: string,
+    language?: string
+}

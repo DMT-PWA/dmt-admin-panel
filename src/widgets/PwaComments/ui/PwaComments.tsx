@@ -1,6 +1,11 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IUserComments, removeComment } from "src/entities/comments";
+import {
+  IUserComments,
+  removeComment,
+  getAllComments,
+  removeCommentById,
+} from "src/entities/comments";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
@@ -21,6 +26,10 @@ export const PwaComments: FC = () => {
 
     navigate(toCreate);
   };
+
+  useEffect(() => {
+    dispatch(getAllComments());
+  }, []);
 
   return (
     <div className="flex flex-1 flex-col mt-[78px]">
@@ -49,13 +58,13 @@ export const PwaComments: FC = () => {
             {comments_list.map((item: IUserComments, ind: number) => {
               return (
                 <div key={ind} className="py-4 px-6 flex">
-                  <h2 className="text-view-4 flex-1">{item.author_name}</h2>
+                  <h2 className="text-view-4 flex-1">{item.name}</h2>
                   <div className="flex gap-4">
                     <button className="w-5 h-5">
                       <img src={pencil_icon} width={14} height={14} alt="" />
                     </button>
                     <button
-                      onClick={() => dispatch(removeComment(ind))}
+                      onClick={() => dispatch(removeCommentById(item._id))}
                       className="w-5 h-5"
                     >
                       <img src={trash_icon} width={14} height={16} alt="" />

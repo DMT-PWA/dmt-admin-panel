@@ -27,6 +27,18 @@ class ApiInstance {
 
     return response.data;
   }
+
+  async delete(endpoint: string) {
+    const response = await this.axios.delete(endpoint);
+
+    return response.data
+  }
+
+  async patch(endpoint: string, options) {
+    const response = await this.axios.patch(endpoint, options);
+
+    return response.data
+  }
 }
 
 export const apiInstance = new ApiInstance();

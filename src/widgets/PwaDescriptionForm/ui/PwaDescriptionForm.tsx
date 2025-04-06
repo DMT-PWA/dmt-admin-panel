@@ -1,5 +1,5 @@
 import { Field, Label, Textarea } from "@headlessui/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
@@ -14,30 +14,35 @@ import {
   setGrade,
   toggleCheckbox,
   updateAboutDescription,
+  createDescriptionById,
 } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
-import { UnknownAction } from "@reduxjs/toolkit";
-import { setDescription } from "src/features/appData/appDataAPI";
-export const PwaDescriptionForm: FC = () => {
+
+type DescriptionFormProps = {
+  adminId: string;
+  language: string;
+};
+
+export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
+  adminId,
+  language,
+}) => {
   const dispatch = useAppDispatch();
 
-  const { review_count, grades, checkboxes_state, title, about_description } =
+  const { descriptionId, grades, checkboxes_state, title, about_description } =
     useAppSelector((state) => state.pwa_description);
 
   const { release_date, last_update } = useAppSelector(
     (state) => state.pwa_description.about_description
   );
 
-  const updateDescriptionFields = (appId, language) => {
-    setDescription({
-      appId,
-      name: title,
-      about: about_description.description,
-      language,
-    });
-  };
+  useEffect(() => {
+    if (!descriptionId) {
+      dispatch(createDescriptionById({ adminId, language }));
+    }
+  }, []);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -50,6 +55,7 @@ export const PwaDescriptionForm: FC = () => {
               <InputDefault
                 label="Название"
                 input_classes=""
+                value={title || ""}
                 container_classes="flex-[0.5]"
                 placeholder="App Name"
                 onUpdateValue={(e) => dispatch(setTitle(e.target.value))}
@@ -112,6 +118,7 @@ export const PwaDescriptionForm: FC = () => {
               <Textarea
                 placeholder="Описание вашего приложения"
                 name="description"
+                value={about_description.description}
                 style={{ minHeight: "125px" }}
                 onChange={(e) =>
                   dispatch(

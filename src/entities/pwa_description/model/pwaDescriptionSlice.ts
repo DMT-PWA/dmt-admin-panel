@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IMainDescription, IRating } from "./types";
-import { checkbox, IAboutGameDescription } from "src/shared/types";
-type CombinedDescription = IMainDescription &
-  Partial<IRating> & { about_description: IAboutGameDescription };
+import { CombinedDescription } from "./types";
+import { checkbox, IAboutGameDescription, DescriptionResponse } from "src/shared/types";
+import { fetchDescriptionInfoById, createDescriptionById } from "./descriptionThunk"
+
 
 const defaultState: CombinedDescription = {
+  descriptionId: null,
   age: null,
   title: null,
   developer_name: "Dmt Apps Inc.",
@@ -78,6 +79,16 @@ const pwaDescriptionSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchDescriptionInfoById.fulfilled, (state, action) => {
+      state.title = action.payload.name;
+      state.about_description.description = action.payload.about;
+    });
+
+    builder.addCase(createDescriptionById.fulfilled, (state, action: PayloadAction<DescriptionResponse>) => {
+      state.descriptionId = action.payload._id
+    })
+  }
 });
 
 export const {
