@@ -1,4 +1,5 @@
-export { type IDeveloperAnswer, type IUserComment } from "./commentsTypes"
-export { type checkbox, type IAboutGameDescription, type DescriptionPayload, type DescriptionResponse } from "./descriptionTypes"
-export { type IMetrics, type FacebookPixelField } from "./metricsTypes"
-export { type Language, type ICollection, type Country } from "./designTypes"
+export type { IDeveloperAnswer, IUserComment } from "./commentsTypes"
+export type { checkbox, IAboutGameDescription, DescriptionPayload, DescriptionResponse } from "./descriptionTypes"
+export type { IMetrics, FacebookPixelField } from "./metricsTypes"
+export type { Language, ICollection, Country } from "./designTypes"
+export type SelectValueProp = { value: string; label: string } | undefined

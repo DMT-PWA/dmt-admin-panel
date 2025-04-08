@@ -9,7 +9,6 @@ import { InputDefault } from "src/shared/ui/input";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
-  removeCollection,
   setLanguage,
   setLanguagesList,
   setCountry,
@@ -17,7 +16,7 @@ import {
 import { CollectionsList } from "src/features/collections_list";
 import { useNavigate } from "react-router-dom";
 import { modifiedCountryList, addCollection } from "src/entities/pwa_design";
-import { Country, ICollection } from "src/shared/types";
+import { Country, ICollection, Language } from "src/shared/types";
 import {
   createCollection,
   getAllCollections,
@@ -37,7 +36,6 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const {
     pwa_title,
     collections,
-    languages,
     currentLanguage,
     languagesList,
     currentCountry,
@@ -45,7 +43,7 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   } = useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
-  const handleLanguageChange = (selectedOption) => {
+  const handleLanguageChange = (selectedOption: Language) => {
     dispatch(setLanguage(selectedOption));
   };
 
@@ -56,53 +54,11 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const handleNavigate = () => {
     return navigate("/pwa");
   };
-  const lsData = localStorage.getItem(appId);
 
   useEffect(() => {
-    const initCountry = modifiedCountryList.find(
-      (item) => item.label === "Egypt"
-    ) || { label: "Egypt", value: 0 };
-
-    if (lsData) {
-      const { country, language } = JSON.parse(lsData);
-      dispatch(setCountry(country));
-      if (language) dispatch(setLanguage(language));
-
-      return;
-    }
-    const initialData = {
-      country: initCountry,
-      language: null,
-    };
-    localStorage.setItem(appId, JSON.stringify(initialData));
-    dispatch(setCountry(initCountry));
-  }, []);
-
-  useEffect(() => {
-    dispatch(setLanguagesList());
-  }, []);
-
-  useEffect(() => {
-    if (languagesList && currentCountry && languagesList?.length > 0) {
-      const englishLang = languagesList.find(
-        (item) => item.label === "English"
-      );
-      const currentLang = englishLang;
-
-      const updatedData = {
-        country: currentCountry,
-        language: currentLang,
-      };
-
-      localStorage.setItem(appId, JSON.stringify(updatedData));
-      dispatch(setLanguage(currentLang));
-    }
-  }, [currentCountry, dispatch]);
-
-  useEffect(() => {
-    getAllCollections().then((collections) => {
-      if (collections && collections.length > 0) {
-        collections.forEach(({ icon, screenShots, name, _id }) => {
+    getAllCollections().then((items) => {
+      if (items && items.length > 0) {
+        items.forEach(({ icon, screenShots, name, _id }) => {
           return dispatch(
             addCollection({
               _id,

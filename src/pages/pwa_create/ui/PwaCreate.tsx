@@ -25,7 +25,13 @@ import {
   createDescriptionById,
   updateDescription,
 } from "src/entities/pwa_description";
-import { setCurrentCollection } from "src/entities/pwa_design";
+import {
+  modifiedCountryList,
+  setCountry,
+  setCurrentCollection,
+  setLanguage,
+  setLanguagesList,
+} from "src/entities/pwa_design";
 import { updatePwaByLang } from "src/entities/pwa_create";
 
 type PwaCreateProps = {
@@ -38,9 +44,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { currentLanguage, currentCountry, currentCollection } = useAppSelector(
-    (state) => state.pwa_design
-  );
+  const { currentLanguage, currentCountry, currentCollection, languagesList } =
+    useAppSelector((state) => state.pwa_design);
 
   const { comment } = useAppSelector((state) => state.comments);
 
@@ -53,6 +58,41 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    const initData = () => {
+      const lsData = localStorage.getItem(appId);
+      const defaultCountry = modifiedCountryList.find(
+        (item) => item.label === "Egypt"
+      ) || { label: "Egypt", value: 0 };
+
+      if (lsData) {
+        const { country, language } = JSON.parse(lsData);
+        dispatch(setCountry(country));
+        if (language) dispatch(setLanguage(language));
+        return;
+      }
+
+      const initialData = { country: defaultCountry, language: null };
+      localStorage.setItem(appId, JSON.stringify(initialData));
+      dispatch(setCountry(defaultCountry));
+    };
+
+    initData();
+    dispatch(setLanguagesList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (languagesList?.length && currentCountry) {
+      const englishLang = languagesList.find(
+        (item) => item.label === "English"
+      );
+      const updatedData = { country: currentCountry, language: englishLang };
+
+      localStorage.setItem(appId, JSON.stringify(updatedData));
+      dispatch(setLanguage(englishLang));
+    }
+  }, [currentCountry, languagesList, dispatch]);
 
   useEffect(() => {
     if (isEdit && currentLanguage && currentCountry) fetchDataByCountry();

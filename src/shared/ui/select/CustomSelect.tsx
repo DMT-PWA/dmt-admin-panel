@@ -1,12 +1,10 @@
 import { FC } from "react";
 import Select, { ActionMeta, SingleValue } from "react-select";
 
-type Option =
-  | {
-      readonly value: string;
-      readonly label: string;
-    }
-  | string;
+type Option = {
+  readonly value: string;
+  readonly label: string;
+};
 
 interface ISelectProps {
   placeholder: string;

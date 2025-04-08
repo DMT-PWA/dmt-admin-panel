@@ -18,6 +18,7 @@ export interface UpdatePwaPayload {
     collectionId?: string | undefined | null;
     descriptionId?: string | undefined | null;
     commentId?: string | undefined | null;
+    isExist: boolean
 }
 
 export interface UpdatePwaResponse {

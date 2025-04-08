@@ -1,0 +1,1 @@
+export { default as settingsReducer, setDomainApp, setDomainLanding, setMartketerTag } from "./model/settingsSlice"

@@ -1,8 +1,13 @@
 import { FC } from "react";
+import { useAppSelector } from "src/shared/lib/store";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 
 export const PwaSettings: FC = () => {
+  const { domainApp, domainLanding, marketerTag } = useAppSelector(
+    (state) => state.settings
+  );
+
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">
       <Title title="Настройки" withContainer={false} classes="title__view-2" />

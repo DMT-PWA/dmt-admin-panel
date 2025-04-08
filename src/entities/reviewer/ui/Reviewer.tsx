@@ -3,15 +3,7 @@ import { FC, useState } from "react";
 import { IUserComment } from "src/shared/types";
 
 const Reviewer: FC = (props) => {
-  const {
-    reviewData,
-    helpful = "people found this review helpful",
-    findHelpful = "Did you find this helpful?",
-    yes = "Yes",
-    no = "No",
-    onClick,
-    commentsList,
-  } = props;
+  const { commentsList } = props;
 
   const anyStars = (review_date: Date | string, review_raiting: number) => {
     const rating = Math.min(review_raiting, 5);

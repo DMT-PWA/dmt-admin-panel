@@ -78,23 +78,12 @@ const Tablet: FC<ITabletProps> = (props) => {
   //================================={React states}====================================================
   //===================================================================================================
 
-  const [isAppSupport, setIsAppSupport] = useState(false);
-  const [isInstall, setIsInstall] = useState(false);
+  const [isAppSupport] = useState(false);
+  const [, setIsInstall] = useState(false);
 
   async function installApp() {
     setIsInstall(true);
   }
-
-  const onAppHeaderChromeClick = useCallback(() => {
-    setTimeout(() => {
-      const anchor = document.querySelector(
-        "[data-scroll-to='AppHeaderChrome']"
-      );
-      if (anchor) {
-        anchor.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
-    }, 300);
-  }, []);
 
   const onAppHeaderSafariClick = useCallback(() => {
     setTimeout(() => {
@@ -106,8 +95,6 @@ const Tablet: FC<ITabletProps> = (props) => {
       }
     }, 300);
   }, []);
-
-  const collection = collections[0] || null;
 
   return (
     <>
@@ -386,16 +373,7 @@ const Tablet: FC<ITabletProps> = (props) => {
               />
             </section>
             {/* =========+{Section: Reviews result }======================== */}
-            {reviewObject && (
-              <Reviewer
-                reviewData={reviewObject}
-                findHelpful={findHelpful}
-                yes={yes}
-                no={no}
-                onClick={onAppHeaderSafariClick}
-                commentsList={comments_list}
-              />
-            )}
+            {reviewObject && <Reviewer commentsList={comments_list} />}
             {/* <ReviewContent1 /> */}
             {/* <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
             <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">

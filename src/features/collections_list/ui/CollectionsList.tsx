@@ -55,7 +55,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
         input_classes="with_icon"
       />
 
-      {collections.map((item: ICollection, index: number) => {
+      {collections.map((item, index: number) => {
         return (
           <div key={index} className="flex flex-col">
             <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer">

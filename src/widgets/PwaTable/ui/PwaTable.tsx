@@ -44,7 +44,8 @@ export const PwaTable: FC = () => {
 
   const formatTableData = useCallback((data) => {
     return data.map((obj) => ({
-      id: obj._id,
+      _id: obj._id,
+      id: obj.displayId,
       marketerTag: obj.marketerTag,
       name: obj.appTitle,
       defaultNaming: "Rqd - NL OLZ learning",
@@ -120,11 +121,6 @@ export const PwaTable: FC = () => {
                     {row.getVisibleCells().map((cell) => {
                       const isIdOrTag = ["id", "tag"].includes(cell.column.id);
 
-                      /*  const getSelectedRowData = data?.find(
-                      (item) => item.id === cell.getValue()
-                    );
-                    const { id } = getSelectedRowData; */
-
                       return (
                         <td
                           key={cell.id}
@@ -162,12 +158,12 @@ export const PwaTable: FC = () => {
                                     style={{ height: "16px", width: "16px" }}
                                   />
                                 </button>
-                                <button onClick={() => onCopyHandler(row.id)}>
+                                {/* <button onClick={() => onCopyHandler(row.id)}>
                                   <img
                                     src={pause_icon}
                                     style={{ height: "16px", width: "16px" }}
                                   />
-                                </button>
+                                </button> */}
                                 <Menu>
                                   <MenuButton>
                                     <img
@@ -183,7 +179,7 @@ export const PwaTable: FC = () => {
                                     <MenuItem>
                                       <button
                                         onClick={() =>
-                                          onUpdateHandler(row.getValue("id"))
+                                          onUpdateHandler(row.original._id)
                                         }
                                         className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
                                       >
