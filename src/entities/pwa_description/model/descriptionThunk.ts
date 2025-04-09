@@ -1,53 +1,65 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getDescriptionById, createDescription } from "src/shared/api/description";
-import { CombinedDescription } from "./types"
+import {
+  getDescriptionById,
+  createDescription,
+} from "src/shared/api/description";
+import { CombinedDescription } from "./types";
 import { DescriptionResponse, DescriptionPayload } from "src/shared/types";
 import { updatePwa } from "src/shared/api/create";
+import { RootState } from "src/shared/lib/store";
+import { UpdatePwaPayload } from "src/shared/types/createTypes";
 
-export const fetchDescriptionInfoById = createAsyncThunk("description/fetchDescriptionInfoById", async (data) => {
-
-    const response = await getDescriptionById(`description/${data._id}`)
+export const fetchDescriptionInfoById = createAsyncThunk(
+  "description/fetchDescriptionInfoById",
+  async (data: unknown) => {
+    const response = await getDescriptionById(`description/${data._id}`);
 
     if (!response) return;
 
-    return response
-})
+    return response;
+  }
+);
 
-export const createDescriptionById = createAsyncThunk<Promise<any>, { adminId: string, language: string }>("description/createDescriptionById", async (payload, { getState }) => {
+export const createDescriptionById = createAsyncThunk<
+  unknown,
+  { adminId: string; language: string },
+  {
+    state: RootState;
+  }
+>("description/createDescriptionById", async (payload, { getState }) => {
+  const state = getState().pwa_description as CombinedDescription;
 
+  const { title, about_description } = state;
 
-    const state = getState().pwa_description as CombinedDescription;
+  const fullPayload = {
+    ...payload,
+    name: title,
+    about: about_description.description,
+  };
 
-    const { title, about_description, } = state;
+  const response = await createDescription("description", fullPayload);
 
+  return response;
+});
 
+export const updateDescription = createAsyncThunk<
+  unknown,
+  Partial<UpdatePwaPayload>,
+  { state: RootState }
+>("description/updateDescription", async (payload, { getState }) => {
+  const state = getState().pwa_description as CombinedDescription;
 
-    const fullPayload = {
-        ...payload,
-        name: title,
-        about: about_description.description,
-    }
+  const { descriptionId, about_description } = state;
 
+  const { last_update } = about_description;
 
+  const fullPayload = {
+    ...payload,
+    descriptionId,
+    last_update,
+  };
 
-    const response = await createDescription("description", fullPayload);
+  const response = await updatePwa("pwa", fullPayload);
 
-    return response
-})
-
-export const updateDescription = createAsyncThunk("description/updateDescription", async (payload, { getState }) => {
-
-    const state = getState().pwa_description as CombinedDescription;
-
-    const { descriptionId } = state;
-
-
-    const fullPayload = {
-        ...payload,
-        descriptionId,
-    }
-
-    const response = await updatePwa('pwa', fullPayload);
-
-    return response
-})
+  return response;
+});

@@ -33,6 +33,7 @@ import {
   setLanguagesList,
 } from "src/entities/pwa_design";
 import { updatePwaByLang } from "src/entities/pwa_create";
+import { Language } from "src/shared/types";
 
 type PwaCreateProps = {
   appId: string;
@@ -44,8 +45,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { currentLanguage, currentCountry, currentCollection, languagesList } =
-    useAppSelector((state) => state.pwa_design);
+  const {
+    currentLanguage,
+    currentCountry,
+    currentCollection,
+    languagesList,
+    pwa_title,
+  } = useAppSelector((state) => state.pwa_design);
 
   const { comment } = useAppSelector((state) => state.comments);
 
@@ -80,7 +86,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
     initData();
     dispatch(setLanguagesList());
-  }, [dispatch]);
+  }, [dispatch, appId]);
 
   useEffect(() => {
     if (languagesList?.length && currentCountry) {
@@ -90,9 +96,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       const updatedData = { country: currentCountry, language: englishLang };
 
       localStorage.setItem(appId, JSON.stringify(updatedData));
-      dispatch(setLanguage(englishLang));
+      dispatch(setLanguage(englishLang as Language));
     }
-  }, [currentCountry, languagesList, dispatch]);
+  }, [currentCountry, languagesList, dispatch, appId]);
 
   useEffect(() => {
     if (isEdit && currentLanguage && currentCountry) fetchDataByCountry();
@@ -112,17 +118,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   }
 
   async function fetchDataByCountry() {
-    const {
-      hundredPlus,
-      fourPointThree,
-      collectionId,
-      descriptionId,
-      commentId,
-    } = await getPwaByIdAndLanguage(
-      appId ?? "",
-      currentLanguage?.label ?? "",
-      currentCountry?.label ?? ""
-    );
+    const { hundredPlus, fourPointThree, collectionId, descriptionId } =
+      await getPwaByIdAndLanguage(
+        appId ?? "",
+        currentLanguage?.label ?? "",
+        currentCountry?.label ?? ""
+      );
 
     const { name, screenShots, icon } = collectionId;
 
@@ -158,7 +159,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           ...payload,
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
-          collectionId: currentCollection._id,
+          collectionId: currentCollection?._id,
+          displayId: pwa_title || "",
         })
       );
 
@@ -166,9 +168,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     }
 
     if (pathname.endsWith("description")) {
-      if (isEdit) {
-        dispatch(createDescriptionById(payload));
-      }
+      if (isEdit) dispatch(createDescriptionById(payload));
+
       dispatch(
         updateDescription({
           appId,

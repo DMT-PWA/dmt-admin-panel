@@ -8,7 +8,7 @@ export interface IDesign {
   collections: ICollection[] | { collectionId: string & ICollection[] };
   isChanged: boolean;
   appData: object;
-  languagesList: LanguagesList | null;
+  languagesList: LanguagesList;
   currentCountry: Country;
   currentLanguage: Language | null;
   currentCollection: (ICollection & { _id: string }) | null;

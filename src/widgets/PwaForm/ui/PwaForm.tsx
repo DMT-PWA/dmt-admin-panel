@@ -145,7 +145,7 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             btn_text="Загрузить дизайн"
             btn_classes="btn__orange btn__orange-view-1"
           />
-          {collections.length > 0 && (
+          {collections && (
             <ButtonDefault
               btn_text="Открыть коллекцию"
               btn_classes="btn__white btn__white-view-4 text-view-3"

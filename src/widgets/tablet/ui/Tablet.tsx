@@ -23,7 +23,7 @@ interface ITabletProps {
 const Tablet: FC<ITabletProps> = (props) => {
   const { toAbout } = props;
 
-  const { currentCountry, currentLanguage } = useAppSelector(
+  const { currentCountry, currentLanguage, currentCollection } = useAppSelector(
     (state) => state.pwa_design
   );
 
@@ -32,10 +32,6 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   // const [lang, setLang] = useState(null);
   // const [country, setCountry] = useState(null);
-
-  const { collections } = useAppSelector((state) => state.pwa_design);
-  const { collectionImage } = useAppSelector((state) => state.collection);
-  const isMobile = useMediaQuery("(max-width: 600px)");
 
   const {
     title,
@@ -49,10 +45,12 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   const { comments_list } = useAppSelector((state) => state.comments);
 
-  const { description, release_date, last_update } = about_description;
+  const { description } = about_description;
+
+  const icon = currentCollection?.collectionImage;
 
   const formatDownloads = (downloads: number | string | null): string => {
-    return downloads > 100000 ? "100K+" : `${downloads}`;
+    return Number(downloads) > 100000 ? "100K+" : `${downloads}`;
   };
   const modifiedNumberOfDownloads = formatDownloads(
     Number(number_of_downloads)
@@ -85,17 +83,6 @@ const Tablet: FC<ITabletProps> = (props) => {
     setIsInstall(true);
   }
 
-  const onAppHeaderSafariClick = useCallback(() => {
-    setTimeout(() => {
-      const anchor = document.querySelector(
-        "[data-scroll-to='AppHeaderSafari']"
-      );
-      if (anchor) {
-        anchor.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
-    }, 300);
-  }, []);
-
   return (
     <>
       {currentCountry && currentLanguage && (
@@ -114,12 +101,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                     <div className="self-stretch flex flex-row items-start justify-center pt-0 px-0 pb-[4px]"></div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-10 text-5xl mq450:gap-5">
                       <div className="w-[282px] flex flex-row items-start justify-start relative gap-2">
-                        {collectionImage ? (
+                        {icon ? (
                           <img
                             className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg"
                             loading="lazy"
                             alt=""
-                            src={collectionImage ?? ""}
+                            src={icon ?? ""}
                           />
                         ) : (
                           <div className="w-14 h-14 relative rounded-xl bg-[#D6D6D6]"></div>
@@ -192,7 +179,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                         <div className="flex flex-col gap-1.75 items-center justify-center">
                           <div className="flex flex-row items-center justify-center gap-px">
                             <div className="relative font-bold font-product_sans tracking-[0.25px] leading-4 inline-block min-w-[22px]">
-                              {raiting}
+                              {raiting || 4.8}
                             </div>
                             <div className="flex flex-col items-start justify-start px-0 pb-0">
                               <img
@@ -368,7 +355,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                 divWidth2="8px"
                 ratingMinWidth="unset"
                 ratingWidth="8px"
-                raitingValue={raiting}
+                raitingValue={raiting || 4.8}
                 grades={grades}
               />
             </section>
