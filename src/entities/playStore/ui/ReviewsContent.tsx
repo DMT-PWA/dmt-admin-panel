@@ -2,10 +2,12 @@ import { FC, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useMediaQuery } from "src/shared/lib/hooks";
 import { appData } from "src/shared/lib/data";
+import clsx from "clsx";
 
 interface ReviewsContentProps {
   raitingValue: string | number | null;
   grades: { id: number; value: number | string; raiting: number }[];
+  isArabic: boolean;
 }
 
 const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
@@ -49,6 +51,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
     ratingWidth,
     raitingValue,
     grades,
+    isArabic = false,
   } = props;
   //===================================================================================================
   //==========================={Redux Block}====================================================
@@ -175,7 +178,10 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
 
   return (
     <div
-      className={`w-[327px] flex flex-row items-start justify-start gap-[23px] max-w-full text-left text-37xl text-gray-100 font-roboto mq450:flex-wrap ${className}`}
+      className={clsx(
+        `w-[327px] flex flex-row items-start justify-start gap-[23px] max-w-full text-left text-37xl text-gray-100 font-roboto mq450:flex-wrap ${className}`,
+        { "flex-row-reverse": isArabic }
+      )}
       style={reviewsContent2Style}
     >
       <div className="w-fit flex flex-col items-start justify-start gap-2 min-w-[82px]">
@@ -226,7 +232,12 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
       >
         <div className="self-stretch flex flex-col items-start justify-start">
           <div className="self-stretch flex flex-col items-start justify-start">
-            <div className="self-stretch flex flex-row items-start justify-start gap-[15px]">
+            <div
+              className={clsx(
+                "self-stretch flex flex-row items-start justify-start gap-[15px]",
+                { "flex-row-reverse": isArabic }
+              )}
+            >
               <div
                 className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[8px]"
                 style={emptyBarsStyle}
@@ -243,7 +254,12 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch flex flex-row items-start justify-start gap-[15px]">
+            <div
+              className={clsx(
+                "self-stretch flex flex-row items-start justify-start gap-[15px]",
+                { "flex-row-reverse": isArabic }
+              )}
+            >
               <div
                 className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[8px] z-[1]"
                 style={div1Style}
@@ -262,7 +278,12 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
             </div>
           </div>
           <div className="self-stretch flex flex-col items-start justify-start">
-            <div className="self-stretch flex flex-row items-start justify-start gap-[15px]">
+            <div
+              className={clsx(
+                "self-stretch flex flex-row items-start justify-start gap-[15px]",
+                { "flex-row-reverse": isArabic }
+              )}
+            >
               <div
                 className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[8px] z-[2]"
                 style={div2Style}
@@ -279,7 +300,12 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch flex flex-row items-start justify-start gap-[15px]">
+            <div
+              className={clsx(
+                "self-stretch flex flex-row items-start justify-start gap-[15px]",
+                { "flex-row-reverse": isArabic }
+              )}
+            >
               <div
                 className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[8px] z-[3]"
                 style={div3Style}
@@ -297,7 +323,12 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
               </div>
             </div>
           </div>
-          <div className="self-stretch flex flex-row items-start justify-start gap-[15px]">
+          <div
+            className={clsx(
+              "self-stretch flex flex-row items-start justify-start gap-[15px]",
+              { "flex-row-reverse": isArabic }
+            )}
+          >
             <div
               className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[8px] z-[4]"
               style={ratingStyle}

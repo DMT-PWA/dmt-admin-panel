@@ -4,8 +4,6 @@ import {
   createDescription,
 } from "src/shared/api/description";
 import { CombinedDescription } from "./types";
-import { DescriptionResponse, DescriptionPayload } from "src/shared/types";
-import { updatePwa } from "src/shared/api/create";
 import { RootState } from "src/shared/lib/store";
 import { UpdatePwaPayload } from "src/shared/types/createTypes";
 
@@ -49,17 +47,27 @@ export const updateDescription = createAsyncThunk<
 >("description/updateDescription", async (payload, { getState }) => {
   const state = getState().pwa_description as CombinedDescription;
 
-  const { descriptionId, about_description } = state;
+  const { title, about_description, number_of_downloads, raiting, review_count, checkboxes_state } = state;
 
-  const { last_update } = about_description;
+  const { release_date, last_update, android_version, description } = about_description;
+
 
   const fullPayload = {
     ...payload,
-    descriptionId,
-    last_update,
+    name: title,
+    lastUpdate: last_update,
+    releaseDate: release_date,
+    downloads: number_of_downloads,
+    androidVersion: android_version,
+    about: description,
+    raiting,
+    reviewCount: review_count,
+    isContainsAds: checkboxes_state[0].value,
+    isEditorsChoice: checkboxes_state[1].value,
+    isInAppPurchases: checkboxes_state[2].value
   };
 
-  const response = await updatePwa("pwa", fullPayload);
+  const response = await createDescription("description", fullPayload);
 
   return response;
 });

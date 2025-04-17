@@ -1,4 +1,4 @@
-import { translations } from "./translations";
+import { dataByTrasnslation } from "./translations";
 
 export const appData = {
   _id: {
@@ -16,73 +16,7 @@ export const appData = {
     "https://res.cloudinary.com/datkh2oxv/image/upload/v1737554792/dmt/1xbet-materials/bg-desktop_y4c8zy.svg",
   appTitle: "1xBet",
   appSubTitle: "1xBet",
-  egypt: {
-    arabic: translations.egyptArabic,
-    english: translations.english,
-  },
-  iraq: {
-    arabic: translations.arabic,
-    english: translations.english,
-  },
-  saudiArabia: {
-    arabic: translations.arabic,
-    english: translations.english,
-  },
-  germany: {
-    dutch: translations.dutch,
-    english: translations.english,
-  },
-  netherlands: {
-    dutch: translations.netherlandsDutch,
-    english: translations.english,
-  },
-  hongKong: {
-    chinese: translations.chinese,
-    english: translations.english,
-  },
-  china: {
-    chinese: translations.chinese,
-    english: translations.english,
-  },
-  indonesia: {
-    indonesian: translations.indonesian,
-    english: translations.english,
-  },
-  malaysia: {
-    malay: translations.malay,
-    english: translations.english,
-  },
-  singapore: {
-    malay: translations.singaporeMalay,
-    english: translations.english,
-  },
-  unitedKingdom: {
-    english: translations.english,
-  },
-  pakistan: {
-    urdu: translations.urdu,
-    english: translations.english,
-  },
-  russia: {
-    russian: translations.russian,
-    english: translations.english,
-  },
-  senegal: {
-    french: translations.french,
-    english: translations.english,
-  },
-  southKorea: {
-    korean: translations.korean,
-    english: translations.english,
-  },
-  turkey: {
-    turkish: translations.turkish,
-    english: translations.english,
-  },
-  lithuania: {
-    lithuanian: translations.lithuanian,
-    english: translations.english,
-  },
+  ...dataByTrasnslation,
   createdAt: {
     $date: "2025-01-21T15:41:46.020Z",
   },

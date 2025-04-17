@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import close_icon from "src/shared/assets/icons/close_icon.png";
@@ -6,19 +6,15 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { addCollection, setCurrentCollection } from "src/entities/pwa_design";
+import { setCurrentCollection } from "src/entities/pwa_design";
 import { ICollection } from "src/shared/types";
-import { getAllCollections } from "src/features/appData/appDataAPI";
-import { set } from "date-fns";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
 };
 
 export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
-  const { collections, currentCollection } = useAppSelector(
-    (state) => state.pwa_design
-  );
+  const { collections } = useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState<null | number>(null);

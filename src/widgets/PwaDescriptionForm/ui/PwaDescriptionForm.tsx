@@ -1,4 +1,10 @@
-import { Field, Label, Textarea } from "@headlessui/react";
+import {
+  Dialog,
+  DialogBackdrop,
+  Field,
+  Label,
+  Textarea,
+} from "@headlessui/react";
 import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
@@ -14,11 +20,19 @@ import {
   setGrade,
   toggleCheckbox,
   updateAboutDescription,
-  createDescriptionById,
 } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
+import { ButtonDefault } from "src/shared/ui/button";
+import { CollectionCreate } from "src/features/collection_create";
+import { ICollection } from "src/shared/types";
+import {
+  createCollection,
+  getAllCollections,
+} from "src/features/appData/appDataAPI";
+import { CollectionsList } from "src/features/collections_list";
+import { addCollection, setCurrentCollection } from "src/entities/pwa_design";
 
 type DescriptionFormProps = {
   adminId: string;
@@ -31,18 +45,68 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const { descriptionId, grades, checkboxes_state, title, about_description } =
-    useAppSelector((state) => state.pwa_description);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
+
+  const { grades, checkboxes_state, title, about_description } = useAppSelector(
+    (state) => state.pwa_description
+  );
 
   const { release_date, last_update } = useAppSelector(
     (state) => state.pwa_description.about_description
   );
 
+  const { collections, currentCollection } = useAppSelector(
+    (state) => state.pwa_design
+  );
+
+  const collectionCreateHandler = async ({
+    collectionImage,
+    collectionName,
+    images,
+  }: ICollection) => {
+    await createCollection({
+      adminId,
+      name: collectionName,
+      icon: collectionImage,
+      screenShots: images,
+    });
+  };
   useEffect(() => {
+    getAllCollections().then((items) => {
+      if (items && items.length > 0) {
+        items.forEach(
+          ({
+            icon,
+            screenShots,
+            name,
+            _id,
+          }: {
+            _id: string;
+            icon: string;
+            screenShots: string;
+            name: string;
+          }) => {
+            return dispatch(
+              addCollection({
+                _id,
+                collectionImage: icon,
+                images: screenShots,
+                collectionName: name,
+              })
+            );
+          }
+        );
+      }
+    });
+  }, [dispatch]);
+
+  /* useEffect(() => {
     if (!descriptionId) {
       dispatch(createDescriptionById({ adminId, language }));
     }
-  }, []);
+  }, []); */
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -110,6 +174,55 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 );
               })}
             </div>
+          </div>
+          <h2 className="text__default mt-6">Дизайн</h2>
+          <div className="bg-white rounded-[6px] mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
+            <div className="flex gap-[22px]">
+              <ButtonDefault
+                onClickHandler={() => setModalOpen(true)}
+                btn_text="Загрузить дизайн"
+                btn_classes="btn__orange btn__orange-view-1"
+              />
+              {collections && (
+                <ButtonDefault
+                  btn_text="Открыть коллекцию"
+                  btn_classes="btn__white btn__white-view-4 text-view-3"
+                  onClickHandler={() => setCollectionsOpen(true)}
+                />
+              )}
+            </div>
+            {currentCollection && (
+              <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
+                <div className="flex gap-9.75">
+                  <div className="flex flex-col justify-between">
+                    <img
+                      src={currentCollection.collectionImage}
+                      style={{ maxHeight: "92px", borderRadius: "10px" }}
+                      width={92}
+                      height={92}
+                    />
+                    <ButtonDefault
+                      btn_text="Удалить"
+                      btn_classes="btn__orange btn__orange-view-4"
+                      onClickHandler={() =>
+                        dispatch(setCurrentCollection(null))
+                      }
+                    />
+                  </div>
+                  {currentCollection.images.map((el: string | null, index) => {
+                    return el ? (
+                      <div key={index} className="flex  h-full">
+                        <img
+                          src={el}
+                          alt="Uploaded"
+                          className="max-w-28.75 min-h-57 rounded-[11px]"
+                        />
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
           </div>
           <h2 className="text__default mt-6">Описание</h2>
           <div className="bg-white rounded-[6px] mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
@@ -248,6 +361,29 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
           </div>
         </div>
       </div>
+      <Dialog
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center">
+          <CollectionCreate
+            onPopupHandler={() => setModalOpen(false)}
+            collectionCreateHandler={(val) => collectionCreateHandler(val)}
+          />
+        </div>
+      </Dialog>
+      <Dialog
+        open={isCollectionsOpen}
+        onClose={() => setCollectionsOpen(false)}
+        className="relative z-50"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center">
+          <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
+        </div>
+      </Dialog>
     </div>
   );
 };

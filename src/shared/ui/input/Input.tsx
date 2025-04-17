@@ -13,6 +13,7 @@ type InputProps = {
   disabled: boolean;
   onUpdateValue: (event: ChangeEvent<HTMLInputElement>) => void;
   children: ReactNode;
+  isRequired: boolean;
 };
 
 export const InputDefault: FC<Partial<InputProps>> = ({
@@ -27,6 +28,7 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   type = "text",
   onUpdateValue,
   children,
+  isRequired = false,
 }) => {
   return (
     <div
@@ -39,6 +41,9 @@ export const InputDefault: FC<Partial<InputProps>> = ({
         className={clsx({ "title__view-1": !label_classes }, label_classes)}
       >
         {label}
+        {isRequired && (
+          <span className="text-red-600 align-super size-[0.8rem]">*</span>
+        )}
       </label>
       <input
         type={type}

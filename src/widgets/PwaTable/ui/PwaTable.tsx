@@ -78,8 +78,8 @@ export const PwaTable: FC = () => {
   const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
 
   const deletePwaHandler = async (row) => {
-    await deletePwa(row.getValue("id"));
-    setPwas((prev) => prev.filter((item) => item.id !== row.getValue("id")));
+    await deletePwa(row.original._id);
+    setPwas((prev) => prev.filter((item) => item._id !== row.original._id));
   };
 
   const onUpdateHandler = (value: string) => {
@@ -272,7 +272,7 @@ export const PwaTable: FC = () => {
                     className={`w-8 h-8 rounded-md ${
                       currentPage + 1 === page ? "bg-[#FF9079] text-white" : ""
                     }`}
-                    onClick={() => table.setPageIndex(page - 1)}
+                    onClick={() => table.setPageIndex((page as number) - 1)}
                     disabled={currentPage + 1 === page}
                   >
                     {page}

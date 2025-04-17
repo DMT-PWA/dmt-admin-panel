@@ -33,7 +33,7 @@ const MainPage = () => {
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => saveApp(e);
 
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState(null);
 
   const onChange = (dates) => {

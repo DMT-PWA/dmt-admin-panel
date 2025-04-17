@@ -1,8 +1,6 @@
-import { Dialog, DialogBackdrop } from "@headlessui/react";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, memo } from "react";
 
-import { setCurrentCollection, setPwaTitle } from "src/entities/pwa_design";
-import { CollectionCreate } from "src/features/collection_create";
+import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
@@ -13,34 +11,20 @@ import {
   setLanguagesList,
   setCountry,
 } from "src/entities/pwa_design";
-import { CollectionsList } from "src/features/collections_list";
 import { useNavigate } from "react-router-dom";
-import { modifiedCountryList, addCollection } from "src/entities/pwa_design";
-import { Country, ICollection, Language } from "src/shared/types";
-import {
-  createCollection,
-  getAllCollections,
-} from "src/features/appData/appDataAPI";
-import { adminId } from "src/shared/lib/data";
+import { modifiedCountryList } from "src/entities/pwa_design";
+import { Country, Language } from "src/shared/types";
+
 type PwaFormProps = {
   appId: string;
   isEdit?: boolean;
 };
 
-export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
-
+const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const navigate = useNavigate();
 
-  const {
-    pwa_title,
-    collections,
-    currentLanguage,
-    languagesList,
-    currentCountry,
-    currentCollection,
-  } = useAppSelector((state) => state.pwa_design);
+  const { pwa_title, currentLanguage, languagesList, currentCountry } =
+    useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
   const handleLanguageChange = (selectedOption: Language) => {
@@ -55,38 +39,8 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     return navigate("/pwa");
   };
 
-  useEffect(() => {
-    getAllCollections().then((items) => {
-      if (items && items.length > 0) {
-        items.forEach(({ icon, screenShots, name, _id }) => {
-          return dispatch(
-            addCollection({
-              _id,
-              collectionImage: icon,
-              images: screenShots,
-              collectionName: name,
-            })
-          );
-        });
-      }
-    });
-  }, []);
-
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch(setPwaTitle(e.target.value));
-
-  const collectionCreateHandler = async ({
-    collectionImage,
-    collectionName,
-    images,
-  }: ICollection) => {
-    await createCollection({
-      adminId,
-      name: collectionName,
-      icon: collectionImage,
-      screenShots: images,
-    });
-  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -119,8 +73,12 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             input_classes="!border-0"
             placeholder="..."
             onUpdateValue={onSetPwaTitle}
+            isRequired={true}
           />
-          <label className="title__view-1">Страна PWA</label>
+          <label className="title__view-1">
+            Страна PWA
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
 
           <CustomSelect
             options={modifiedCountryList}
@@ -128,85 +86,40 @@ export const PwaForm: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             onChange={handleCountryChange}
             placeholder="Английский"
           />
-          <label className="title__view-1">Язык интерфейса PWA</label>
+          <label className="title__view-1">
+            Язык интерфейса PWA
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
 
+          {/* <div className="flex gap-8.75 items-end">
+            <InputDefault
+              value={languagesList[0]?.label}
+              container_classes="flex-[0.5]"
+              label="Название PWA"
+              input_classes="!border-0"
+            />
+            <button className="bg-white py-[13.5px] px-[16.5px] rounded-[8px] max-w-10.5 max-h-10.5">
+              <img
+                src="/pwa_icons/crosshair.png"
+                width={14}
+                height={14}
+                alt=""
+              />
+            </button>
+          </div> */}
           <CustomSelect
             options={languagesList}
             value={currentLanguage}
             onChange={handleLanguageChange}
+            isDisabled={true}
             placeholder="Английский"
           />
           <label className="title__view-1">Теги PWA</label>
           <CustomSelect placeholder="Выберите теги" />
         </div>
-        <div className="flex gap-[22px]">
-          <ButtonDefault
-            onClickHandler={() => setModalOpen(true)}
-            btn_text="Загрузить дизайн"
-            btn_classes="btn__orange btn__orange-view-1"
-          />
-          {collections && (
-            <ButtonDefault
-              btn_text="Открыть коллекцию"
-              btn_classes="btn__white btn__white-view-4 text-view-3"
-              onClickHandler={() => setCollectionsOpen(true)}
-            />
-          )}
-        </div>
-        {currentCollection && (
-          <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
-            <div className="flex gap-9.75">
-              <div className="flex flex-col justify-between">
-                <img
-                  src={currentCollection.collectionImage}
-                  style={{ maxHeight: "92px", borderRadius: "10px" }}
-                  width={92}
-                  height={92}
-                />
-                <ButtonDefault
-                  btn_text="Удалить"
-                  btn_classes="btn__orange btn__orange-view-4"
-                  onClickHandler={() => dispatch(setCurrentCollection(null))}
-                />
-              </div>
-              {currentCollection.images.map((el: string | null, index) => {
-                return el ? (
-                  <div key={index} className="flex  h-full">
-                    <img
-                      src={el}
-                      alt="Uploaded"
-                      className="max-w-28.75 min-h-57 rounded-[11px]"
-                    />
-                  </div>
-                ) : null;
-              })}
-            </div>
-          </div>
-        )}
-        <Dialog
-          open={isModalOpen}
-          onClose={() => setModalOpen(false)}
-          className="relative z-50"
-        >
-          <DialogBackdrop className="fixed inset-0 bg-black/30" />
-          <div className="fixed inset-0 flex w-screen items-center justify-center">
-            <CollectionCreate
-              onPopupHandler={() => setModalOpen(false)}
-              collectionCreateHandler={(val) => collectionCreateHandler(val)}
-            />
-          </div>
-        </Dialog>
-        <Dialog
-          open={isCollectionsOpen}
-          onClose={() => setCollectionsOpen(false)}
-          className="relative z-50"
-        >
-          <DialogBackdrop className="fixed inset-0 bg-black/30" />
-          <div className="fixed inset-0 flex w-screen items-center justify-center">
-            <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
-          </div>
-        </Dialog>
       </div>
     </div>
   );
 };
+
+export const PwaForm = memo(PwaFormComponent);

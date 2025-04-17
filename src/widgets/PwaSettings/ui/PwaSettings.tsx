@@ -15,13 +15,22 @@ export const PwaSettings: FC = () => {
         <div className="flex flex-col flex-1/3">
           <label className="title__view-1 mb-2">Теги</label>
           <CustomSelect placeholder="" classes="mb-2" />
-          <label className="title__view-1 mb-2">Нейминг/Ссылка</label>
+          <label className="title__view-1 mb-2">
+            Нейминг/Ссылка
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
           <CustomSelect placeholder="Введите нейминг" />
         </div>
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-2">Домен</label>
+          <label className="title__view-1 mb-2">
+            Домен
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
           <CustomSelect placeholder="Выберите домен" classes="mb-2" />
-          <label className="title__view-1 mb-2">White Page</label>
+          <label className="title__view-1 mb-2">
+            White Page
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
           <CustomSelect placeholder="Введите название PWA" />
         </div>
         <div className="flex flex-col flex-1/3">

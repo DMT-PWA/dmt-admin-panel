@@ -1,20 +1,13 @@
-import { useState, useEffect, useCallback, FC } from "react";
+import { useState, FC } from "react";
 import {
   CaroselReviewContainerTablet,
   FeaturesContainer,
-  ReviewContent1,
   ReviewsContent,
-  SessionSafety2,
+  usePhonePreview,
 } from "src/entities/playStore";
 import { Reviewer } from "src/entities/reviewer";
-import { useMediaQuery } from "src/shared/lib/hooks";
-import { appData } from "src/shared/lib/data";
-import { translations } from "src/shared/lib/translations";
-import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
-import { format } from "date-fns";
+import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { Country, Language } from "src/shared/types";
-const frontend = import.meta.env.VITE_FRONTEND_URL;
 
 interface ITabletProps {
   toAbout: () => void;
@@ -23,15 +16,16 @@ interface ITabletProps {
 const Tablet: FC<ITabletProps> = (props) => {
   const { toAbout } = props;
 
+  const [isAppSupport] = useState(false);
+  const [, setIsInstall] = useState(false);
   const { currentCountry, currentLanguage, currentCollection } = useAppSelector(
     (state) => state.pwa_design
   );
 
-  const country = currentCountry?.label.toLowerCase();
-  const lang = currentLanguage?.label.toLowerCase();
-
-  // const [lang, setLang] = useState(null);
-  // const [country, setCountry] = useState(null);
+  const { isArabic, langData } = usePhonePreview(
+    currentLanguage,
+    currentCountry
+  );
 
   const {
     title,
@@ -52,9 +46,7 @@ const Tablet: FC<ITabletProps> = (props) => {
   const formatDownloads = (downloads: number | string | null): string => {
     return Number(downloads) > 100000 ? "100K+" : `${downloads}`;
   };
-  const modifiedNumberOfDownloads = formatDownloads(
-    Number(number_of_downloads)
-  );
+  const modifiedNumberOfDownloads = formatDownloads(number_of_downloads);
 
   //===================================================================================================
   //==========================={Translations Block}====================================================
@@ -71,13 +63,12 @@ const Tablet: FC<ITabletProps> = (props) => {
     yes,
     no,
     screenShots,
-  } = appData[country][lang || "english"];
+  } = langData;
+
+  // const isArabic = currentLanguage?.label === "Arabic";
   //===================================================================================================
   //================================={React states}====================================================
   //===================================================================================================
-
-  const [isAppSupport] = useState(false);
-  const [, setIsInstall] = useState(false);
 
   async function installApp() {
     setIsInstall(true);
@@ -99,8 +90,13 @@ const Tablet: FC<ITabletProps> = (props) => {
                 <div className="self-stretch overflow-hidden flex flex-row items-start justify-start bg-[url('/hero-game-tablet@3x.png')] bg-cover bg-no-repeat bg-[top] max-w-full">
                   <div className="flex-1 flex flex-col items-start justify-start pt-[10px] px-[20px] pb-[4px] tabletBlack:pb-8 box-border gap-10 max-w-full mq600:gap-5">
                     <div className="self-stretch flex flex-row items-start justify-center pt-0 px-0 pb-[4px]"></div>
-                    <div className="self-stretch flex flex-col items-start justify-start gap-10 text-5xl mq450:gap-5">
-                      <div className="w-[282px] flex flex-row items-start justify-start relative gap-2">
+                    <div className="self-stretch flex flex-col justify-start gap-10 text-5xl mq450:gap-5">
+                      <div
+                        className={clsx(
+                          "w-[282px] flex justify-start items-start relative gap-2",
+                          isArabic ? "flex-row-reverse" : "flex-row"
+                        )}
+                      >
                         {icon ? (
                           <img
                             className="w-14 h-14 relative rounded-xl overflow-hidden shadow-lg"
@@ -111,7 +107,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                         ) : (
                           <div className="w-14 h-14 relative rounded-xl bg-[#D6D6D6]"></div>
                         )}
-                        <div className="flex-1 flex flex-col items-start justify-start gap-px text-gray-100">
+                        <div
+                          className={clsx(
+                            "flex-1 flex flex-col justify-start gap-px text-gray-100",
+                            isArabic ? "items-end" : "items-start"
+                          )}
+                        >
                           <div className="flex flex-col justify-center items-center">
                             <div className="self-stretch flex flex-row items-center justify-center flex-wrap content-start gap-1">
                               <span className="text-[#000000CC] tracking-[3%] m-0 flex-1 relative leading-[100%] font-normal font-[inherit]">
@@ -131,10 +132,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                               {
                                 "gap-x-[6px]":
                                   checkboxes_state.some(
-                                    (item) => item.id === 0
+                                    (item) =>
+                                      item.id === 0 && item.value === true
                                   ) &&
                                   checkboxes_state.some(
-                                    (item) => item.id === 1
+                                    (item) =>
+                                      item.id === 1 && item.value === true
                                   ),
                               }
                             )}
@@ -142,13 +145,15 @@ const Tablet: FC<ITabletProps> = (props) => {
                             <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block">
                               {checkboxes_state &&
                                 checkboxes_state.some(
-                                  (item) => item.id === 0
+                                  (item) => item.id === 0 && item.value === true
                                 ) && <span>Contains ads</span>}
                             </div>
                             {checkboxes_state &&
-                              checkboxes_state.some((item) => item.id === 0) &&
                               checkboxes_state.some(
-                                (item) => item.id === 1
+                                (item) => item.id === 0 && item.value === true
+                              ) &&
+                              checkboxes_state.some(
+                                (item) => item.id === 1 && item.value === true
                               ) && (
                                 <img
                                   src="/pwa_icons/dot.png"
@@ -160,7 +165,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                             <div className="relative text-2xs tracking-[0.3px] leading-[16px] inline-block">
                               {checkboxes_state &&
                                 checkboxes_state.some(
-                                  (item) => item.id === 1
+                                  (item) => item.id === 1 && item.value === true
                                 ) && <span>In-app purchases</span>}
                             </div>
                           </div>
@@ -171,7 +176,9 @@ const Tablet: FC<ITabletProps> = (props) => {
                         className={clsx(
                           "w-full flex flex-row items-center justify-center text-sm text-gray-100 whitespace-nowrap container-snap container-snap",
                           checkboxes_state &&
-                            checkboxes_state.some((item) => item.id === 2)
+                            checkboxes_state.some(
+                              (item) => item.id === 2 && item.value === true
+                            )
                             ? "gap-2.75"
                             : "gap-4.5"
                         )}
@@ -222,7 +229,9 @@ const Tablet: FC<ITabletProps> = (props) => {
                         </div>
 
                         {checkboxes_state &&
-                          checkboxes_state.some((item) => item.id === 2) && (
+                          checkboxes_state.some(
+                            (item) => item.id === 2 && item.value === true
+                          ) && (
                             <>
                               <div className="flex flex-col items-center justify-center">
                                 <div className="w-[20px] h-[22px] flex flex-row items-center justify-center pb-1.5">
@@ -276,8 +285,18 @@ const Tablet: FC<ITabletProps> = (props) => {
             />
             <section className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-left text-lg text-gray-100 font-roboto">
               <div className="flex-1 flex flex-col items-start justify-start gap-5 shrink-0 max-w-full">
-                <div className="self-stretch h-6 flex flex-row items-center justify-between gap-5">
-                  <div className="self-stretch w-full flex flex-row items-start justify-start">
+                <div
+                  className={clsx(
+                    "self-stretch h-6 flex flex-row items-center justify-between gap-5",
+                    { "flex-row-reverse": isArabic }
+                  )}
+                >
+                  <div
+                    className={clsx(
+                      "self-stretch w-full flex flex-row items-start justify-start",
+                      { "text-end": isArabic }
+                    )}
+                  >
                     <div className="self-stretch flex-1 relative leading-[24px]">
                       {aboutThisGame}
                     </div>
@@ -287,7 +306,9 @@ const Tablet: FC<ITabletProps> = (props) => {
                     onClick={toAbout}
                   >
                     <img
-                      className="w-4 h-3.5 relative"
+                      className={clsx("w-4 h-3.5 relative", {
+                        "rotate-180": isArabic,
+                      })}
                       alt=""
                       src="/pwa_icons/vector-5.svg"
                     />
@@ -305,17 +326,29 @@ const Tablet: FC<ITabletProps> = (props) => {
               </div>
             </section>
             <div className="self-stretch h-11 shrink-0 flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full text-lg text-gray-100">
-              <div className="self-stretch flex-1 flex flex-row items-start justify-start relative shrink-0 max-w-full">
-                <div className="self-stretch w-full relative leading-[24px] inline-block">
+              <div
+                className={clsx(
+                  "flex-1 self-stretch h-6 flex flex-row items-center justify-between gap-5",
+                  { "flex-row-reverse": isArabic }
+                )}
+              >
+                <div
+                  className={clsx(
+                    "self-stretch w-full flex flex-row items-start",
+                    isArabic ? "justify-end" : "justify-start"
+                  )}
+                >
                   {ratingsAndReviews}
                 </div>
-                <div className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[5px] px-1 box-border w-6">
+                <button className="overflow-hidden flex flex-col items-start justify-start py-[5px] px-1">
                   <img
-                    className="w-4 h-3.5 relative"
+                    className={clsx("w-4 h-3.5 relative", {
+                      "rotate-180": isArabic,
+                    })}
                     alt=""
                     src="/pwa_icons/vector-5.svg"
                   />
-                </div>
+                </button>
               </div>
             </div>
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-7 box-border max-w-full shrink-0">
@@ -357,10 +390,19 @@ const Tablet: FC<ITabletProps> = (props) => {
                 ratingWidth="8px"
                 raitingValue={raiting || 4.8}
                 grades={grades}
+                isArabic={isArabic}
               />
             </section>
             {/* =========+{Section: Reviews result }======================== */}
-            {reviewObject && <Reviewer commentsList={comments_list} />}
+            {reviewObject && (
+              <Reviewer
+                commentsList={comments_list}
+                reviewData={reviewObject}
+                findHelpful={findHelpful}
+                yes={yes}
+                no={no}
+              />
+            )}
             {/* <ReviewContent1 /> */}
             {/* <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
             <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">

@@ -13,9 +13,12 @@ export {
   setReviewDate,
   removeComment,
   resetState,
-
+  setComments,
+  setAllComments,
+  resetComment,
+  setCommentGroupName
 } from "./commentsSlice";
 
-export type { IUserComments } from "./types";
+export type { CommentsList, ReviewObject, AllComments } from "./types";
 
 export { getAllComments, removeCommentById, createCommentHandler } from "./commentsThunk"

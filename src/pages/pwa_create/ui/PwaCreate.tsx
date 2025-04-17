@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 
 import { Title } from "src/shared/ui/title";
 import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
@@ -9,30 +9,30 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
-import {
-  getPwaById,
-  getPwaByIdAndLanguage,
-} from "src/features/appData/appDataAPI";
+import { getPwaByIdAndLanguage } from "src/features/appData/appDataAPI";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import { setCollectionImage } from "src/entities/collection";
 import {
-  setTitle,
   setDeveloperName,
   setNumberOfDownloads,
   setRaiting,
-  fetchDescriptionInfoById,
   createDescriptionById,
   updateDescription,
 } from "src/entities/pwa_description";
 import {
-  modifiedCountryList,
+  setPwaTitle,
   setCountry,
   setCurrentCollection,
   setLanguage,
   setLanguagesList,
 } from "src/entities/pwa_design";
-import { updatePwaByLang } from "src/entities/pwa_create";
+import {
+  updatePwaByLang,
+  getPwaById,
+  usePwaCreate,
+} from "src/entities/pwa_create";
+import { setComments } from "src/entities/comments";
 import { Language } from "src/shared/types";
 
 type PwaCreateProps = {
@@ -43,110 +43,110 @@ type PwaCreateProps = {
 export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = useState<boolean>(false);
-
   const {
-    currentLanguage,
-    currentCountry,
-    currentCollection,
-    languagesList,
-    pwa_title,
-  } = useAppSelector((state) => state.pwa_design);
+    handleNavigateNext,
+    handleNavigatePrev,
+    showBackButton,
+    showNextButton,
+    showSaveButton,
+    showPreview,
+  } = usePwaCreate(isEdit);
+
+  const [loading] = useState<boolean>(false);
+
+  const { currentLanguage, currentCountry, currentCollection, pwa_title } =
+    useAppSelector((state) => state.pwa_design);
 
   const { comment } = useAppSelector((state) => state.comments);
 
   const { commentId } = comment;
 
+  const fetchAppById = useCallback(async () => {
+    const resp = await dispatch(getPwaById(appId));
+    const { appSubTitle, appTitle } = resp.payload;
+
+    dispatch(setPwaTitle(appTitle));
+    dispatch(setDeveloperName(appSubTitle));
+  }, [appId, dispatch]);
+
+  const fetchDataByCountry = useCallback(
+    async (country: string, lang: string) => {
+      if (!appId || !country || !lang) return;
+
+      const {
+        hundredPlus,
+        fourPointThree,
+        collectionId,
+        appSubTitle,
+        appTitle,
+      } = await getPwaByIdAndLanguage(appId, lang, country);
+
+      const { name, screenShots, icon, reviewObject } = collectionId;
+
+      dispatch(setComments([{ ...reviewObject }]));
+
+      dispatch(setPwaTitle(appTitle));
+      dispatch(setDeveloperName(appSubTitle));
+
+      // dispatch(fetchDescriptionInfoById(descriptionId));
+
+      dispatch(setNumberOfDownloads(hundredPlus));
+      dispatch(setRaiting(fourPointThree));
+      dispatch(setCollectionImage(icon as string));
+      dispatch(
+        setCurrentCollection({
+          collectionImage: icon,
+          collectionName: name,
+          images: screenShots,
+        })
+      );
+    },
+    [appId, dispatch]
+  );
+
   useEffect(() => {
-    setLoading(true);
-
-    fetchAppById();
-
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const initData = () => {
+    if (isEdit) {
       const lsData = localStorage.getItem(appId);
-      const defaultCountry = modifiedCountryList.find(
-        (item) => item.label === "Egypt"
-      ) || { label: "Egypt", value: 0 };
-
       if (lsData) {
         const { country, language } = JSON.parse(lsData);
         dispatch(setCountry(country));
-        if (language) dispatch(setLanguage(language));
-        return;
+        dispatch(setLanguage(language));
       }
-
-      const initialData = { country: defaultCountry, language: null };
-      localStorage.setItem(appId, JSON.stringify(initialData));
-      dispatch(setCountry(defaultCountry));
-    };
-
-    initData();
-    dispatch(setLanguagesList());
-  }, [dispatch, appId]);
-
-  useEffect(() => {
-    if (languagesList?.length && currentCountry) {
-      const englishLang = languagesList.find(
-        (item) => item.label === "English"
-      );
-      const updatedData = { country: currentCountry, language: englishLang };
-
-      localStorage.setItem(appId, JSON.stringify(updatedData));
-      dispatch(setLanguage(englishLang as Language));
+    } else {
+      fetchAppById();
+      dispatch(setCountry({ label: "Egypt", value: 0 }));
+      dispatch(setLanguage({ label: "English", value: 1 }));
     }
-  }, [currentCountry, languagesList, dispatch, appId]);
+
+    dispatch(setLanguagesList());
+  }, [isEdit, appId, fetchAppById, dispatch]);
 
   useEffect(() => {
-    if (isEdit && currentLanguage && currentCountry) fetchDataByCountry();
-
-    setLoading(false);
-  }, [currentLanguage]);
-
-  async function fetchAppById() {
-    if (!appId) return;
-
-    const { _id, appTitle, appSubTitle } = await getPwaById(appId);
-
-    if (!_id) return;
-
-    dispatch(setTitle(appTitle));
-    dispatch(setDeveloperName(appSubTitle));
-  }
-
-  async function fetchDataByCountry() {
-    const { hundredPlus, fourPointThree, collectionId, descriptionId } =
-      await getPwaByIdAndLanguage(
-        appId ?? "",
-        currentLanguage?.label ?? "",
-        currentCountry?.label ?? ""
-      );
-
-    const { name, screenShots, icon } = collectionId;
-
-    dispatch(fetchDescriptionInfoById(descriptionId));
-
-    dispatch(setNumberOfDownloads(hundredPlus));
-    dispatch(setRaiting(fourPointThree));
-    dispatch(setCollectionImage(icon as string));
-    dispatch(
-      setCurrentCollection({
-        collectionImage: icon,
-        collectionName: name,
-        images: screenShots,
-      })
-    );
-  }
+    if (isEdit && currentCountry?.label && currentLanguage?.label) {
+      fetchDataByCountry(currentCountry.label, currentLanguage.label);
+    }
+  }, [
+    isEdit,
+    currentCountry?.label,
+    currentLanguage?.label,
+    fetchDataByCountry,
+  ]);
 
   const pathname = useLocation().pathname;
 
-  const shouldShowPhonePreview =
-    !loading && !pathname.endsWith("settings") && !pathname.endsWith("metrics");
+  const handleCreate = () => {
+    localStorage.setItem(
+      appId,
+      JSON.stringify({ country: currentCountry, language: currentLanguage })
+    );
+  };
 
   const handleSavePwaGeneral = () => {
+    localStorage.setItem(
+      appId,
+      JSON.stringify({ country: currentCountry, language: currentLanguage })
+    );
+
     const payload = {
       adminId,
       language: currentLanguage?.label || "",
@@ -160,7 +160,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
           collectionId: currentCollection?._id,
-          displayId: pwa_title || "",
+          appTitle: pwa_title || "",
         })
       );
 
@@ -197,8 +197,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     }
   };
 
-  const isSaveBtnShown = !pathname.endsWith("comments_create");
-
   return (
     <div className="container__default">
       <Title
@@ -211,7 +209,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         <Routes>
           <Route
             path="design"
-            element={<PwaForm appId={appId} isEdit={isEdit} />}
+            element={!loading && <PwaForm appId={appId} isEdit={isEdit} />}
           />
           <Route
             path="description"
@@ -222,22 +220,64 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
               />
             }
           />
-          <Route path="comments" element={<PwaComments />} />
+          <Route path="comments" element={<PwaComments isEdit={isEdit} />} />
           <Route path="comments_create" element={<PwaCommentsCreate />} />
           <Route path="settings" element={<PwaSettings />} />
           <Route path="metrics" element={<PwaMetrics />} />
           <Route path="*" element={<PwaForm appId={appId} />} />
         </Routes>
 
-        {shouldShowPhonePreview && <PhonePreview />}
+        {!loading && showPreview && <PhonePreview />}
       </div>
 
-      {isSaveBtnShown && (
+      {showSaveButton && (
         <ButtonDefault
           btn_text="Сохранить"
           btn_classes="btn__orange btn__orange-view-1 max-w-62.25 mt-5.5"
           onClickHandler={() => handleSavePwaGeneral()}
         />
+      )}
+
+      {!showSaveButton && (
+        <div className="max-w-66.75 flex justify-between mt-5.5">
+          {showBackButton && (
+            <button
+              onClick={handleNavigatePrev}
+              className="btn__default btn__gray flex gap-3.25 py-3 pl-2.25 pr-10.5"
+            >
+              <div className="flex items-center -rotate-90">
+                <img src="/pwa_icons/shevron.png" width={20} height={20} />
+              </div>
+              Назад
+            </button>
+          )}
+          {showNextButton && (
+            <button
+              onClick={() =>
+                handleNavigateNext(() =>
+                  dispatch(
+                    updateDescription({
+                      appId,
+                      adminId,
+                      language: currentLanguage?.label,
+                      country: currentCountry?.label.toLowerCase(),
+                    })
+                  )
+                )
+              }
+              className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 py-3 pr-2.25 pl-10.5"
+            >
+              Далее
+              <div className="flex items-center">
+                <img
+                  src="/pwa_icons/shevron-white.png"
+                  width={20}
+                  height={20}
+                />
+              </div>
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

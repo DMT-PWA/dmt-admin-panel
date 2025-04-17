@@ -3,7 +3,15 @@ import { FC, useState } from "react";
 import { IUserComment } from "src/shared/types";
 
 const Reviewer: FC = (props) => {
-  const { commentsList } = props;
+  const {
+    reviewData,
+    helpful = "people found this review helpful",
+    findHelpful = "Did you find this helpful?",
+    yes = "Yes",
+    no = "No",
+    onClick,
+    commentsList,
+  } = props;
 
   const anyStars = (review_date: Date | string, review_raiting: number) => {
     const rating = Math.min(review_raiting, 5);
@@ -37,7 +45,7 @@ const Reviewer: FC = (props) => {
     <>
       {commentsList &&
         commentsList?.map((review: IUserComment, index: number) => (
-          <div>
+          <div key={index}>
             <div
               className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-sm text-gray-100"
               key={index}
@@ -71,6 +79,9 @@ const Reviewer: FC = (props) => {
                 </div>
               </div>
             </div>
+
+            {review.review_date &&
+              anyStars(review.review_date || "", Number(review.raiting) || 0)}
 
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
               <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">

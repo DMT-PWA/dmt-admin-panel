@@ -1924,3 +1924,78 @@ export const translations = {
     ],
   },
 };
+
+
+export const dataByTrasnslation = {
+  egypt: {
+    arabic: translations.egyptArabic,
+    english: translations.english,
+  },
+  iraq: {
+    arabic: translations.arabic,
+    english: translations.english,
+  },
+  saudiArabia: {
+    arabic: translations.arabic,
+    english: translations.english,
+  },
+  germany: {
+    dutch: translations.dutch,
+    english: translations.english,
+  },
+  netherlands: {
+    dutch: translations.netherlandsDutch,
+    english: translations.english,
+  },
+  hongKong: {
+    chinese: translations.chinese,
+    english: translations.english,
+  },
+  china: {
+    chinese: translations.chinese,
+    english: translations.english,
+  },
+  indonesia: {
+    indonesian: translations.indonesian,
+    english: translations.english,
+  },
+  malaysia: {
+    malay: translations.malay,
+    english: translations.english,
+  },
+  singapore: {
+    malay: translations.singaporeMalay,
+    english: translations.english,
+  },
+  unitedKingdom: {
+    english: translations.english,
+  },
+  pakistan: {
+    urdu: translations.urdu,
+    english: translations.english,
+  },
+  russia: {
+    russian: translations.russian,
+    english: translations.english,
+  },
+  senegal: {
+    french: translations.french,
+    english: translations.english,
+  },
+  southKorea: {
+    korean: translations.korean,
+    english: translations.english,
+  },
+  turkey: {
+    turkish: translations.turkish,
+    english: translations.english,
+  },
+  lithuania: {
+    lithuanian: translations.lithuanian,
+    english: translations.english,
+  },
+}
+
+export type Countries = keyof typeof dataByTrasnslation;
+
+export type Translations = ReturnType<typeof dataByTrasnslation>

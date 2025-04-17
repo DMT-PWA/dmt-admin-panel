@@ -16,5 +16,10 @@ export {
   getAllComments,
   removeCommentById,
   createCommentHandler,
-  type IUserComments,
+  setComments,
+  setAllComments,
+  resetComment,
+  setCommentGroupName,
 } from "./model";
+
+export type { AllComments, ReviewObject, CommentsList } from "./model"

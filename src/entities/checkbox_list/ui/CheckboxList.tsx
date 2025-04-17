@@ -1,4 +1,4 @@
-import { ChangeEvent, FC } from "react";
+import { FC } from "react";
 import { Checkbox, Label, Field } from "@headlessui/react";
 import { checkbox } from "src/shared/types";
 

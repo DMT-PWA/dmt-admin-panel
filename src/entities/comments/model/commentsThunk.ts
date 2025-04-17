@@ -10,7 +10,7 @@ export const getAllComments = createAsyncThunk("comments/getAllComments", async 
     return response
 })
 
-export const removeCommentById = createAsyncThunk("comments/removeCommentById", async (id, { dispatch }) => {
+export const removeCommentById = createAsyncThunk("comments/removeCommentById", async (id: string, { dispatch }) => {
     await removeComment(`comment/${id}`);
 
     const response = dispatch(getAllComments());
@@ -22,24 +22,21 @@ export const createCommentHandler = createAsyncThunk("comments/createCommentHand
 
     const state = getState().comments as ICommentsState;
 
-    const { comment, comments_list } = state;
+    const { comment_group_name, comments_list } = state;
 
-    const { author_name, comments_text, likes_count,
-        raiting,
-        review_date,
-        avatar } = comment
+
+    const newCommentsList = comments_list?.map((item) => ({
+        date: item.review_date,
+        name: item.author_name,
+        photo: item.avatar,
+        rating: item.raiting,
+        review: item.comments_text
+    }))
 
     const fullPayload = {
         ...data,
-        name: author_name,
-        reviewObject: [...comments_list, {
-            name: author_name,
-            date: review_date,
-            rating: raiting,
-            photo: avatar,
-            review: comments_text,
-            helpfulCount: likes_count
-        }]
+        name: comment_group_name,
+        reviewObject: newCommentsList
     }
 
 

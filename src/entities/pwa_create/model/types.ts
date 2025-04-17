@@ -30,3 +30,10 @@ export interface UpdatePwaResponse {
   updatedAt: string;
   createdAt: string;
 }
+
+export type CreateInitPayload = {
+  appId: string,
+  adminId: string,
+  language: string,
+  country: string,
+}

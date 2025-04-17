@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 import { FC } from "react";
-import { translations } from "src/shared/lib/translations";
 import { Country, IAboutGameDescription, Language } from "src/shared/types";
-import { appData } from "src/shared/lib/data";
+import { usePhonePreview } from "src/entities/playStore";
+import clsx from "clsx";
 interface IAboutGameProps extends IAboutGameDescription, Language {
   number_of_downloads: string | number | null;
   whats_new: string | null;
@@ -20,11 +20,12 @@ export const AboutPage: FC<IAboutGameProps> = ({
   currentCountry,
   whats_new = null,
 }) => {
-  const country = currentCountry?.label.toLowerCase() as keyof typeof appData;
-  const lang = currentLanguage?.label.toLowerCase();
+  const { isArabic, langData } = usePhonePreview(
+    currentLanguage,
+    currentCountry
+  );
 
-  const { downloads, updatedOn, containsAds, ageRating } =
-    appData[country][lang];
+  const { downloads, updatedOn, containsAds, ageRating } = langData;
 
   const modifiedNumberOfDownload = (downloads: number | null) => {
     if (downloads) {
@@ -37,8 +38,14 @@ export const AboutPage: FC<IAboutGameProps> = ({
   return (
     <div className="px-6.25 pt-3 pb-85">
       <section className="flex flex-col gap-12.5">
-        <h1 className="title__view-4">More info</h1>
-        <div className="flex gap-5.5">
+        <h1 className={clsx("title__view-4", { "text-right": isArabic })}>
+          More info
+        </h1>
+        <div
+          className={clsx("flex gap-5.5", {
+            "flex-row-reverse text-right": isArabic,
+          })}
+        >
           <div className="h-8.5 w-8.5">
             <img src="/pwa_icons/age.png" />
           </div>
@@ -49,7 +56,11 @@ export const AboutPage: FC<IAboutGameProps> = ({
             </span>
           </p>
         </div>
-        <div className="flex gap-5.5">
+        <div
+          className={clsx("flex gap-5.5", {
+            "flex-row-reverse text-right": isArabic,
+          })}
+        >
           <div className="h-5 w-6">
             <img src="/pwa_icons/ad-icon.png" />
           </div>
@@ -60,7 +71,11 @@ export const AboutPage: FC<IAboutGameProps> = ({
             </span>
           </p>
         </div>
-        <div className="flex gap-5.5">
+        <div
+          className={clsx("flex gap-5.5", {
+            "flex-row-reverse text-right": isArabic,
+          })}
+        >
           <div className="h-5.25 w-7">
             <img src="/pwa_icons/gamepad.png" />
           </div>
@@ -85,19 +100,33 @@ export const AboutPage: FC<IAboutGameProps> = ({
           <span className="text-view-10">{whats_new}</span>
         </section>
       )}
-      <h1 className="title__view-4 my-11">Game info</h1>
+      <h1 className={clsx("title__view-4 my-11", { "text-right": isArabic })}>
+        Game info
+      </h1>
       <section className="flex flex-col gap-10">
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Version</span>
           <span className="text-view-10">{version}</span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">{updatedOn}</span>
           <span className="text-view-10">
             {last_update ? format(last_update, "dd MMM yyy") : null}
           </span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">{downloads}</span>
           <span className="text-view-10">
             {modifiedNumberOfDownload(Number(number_of_downloads))}
@@ -105,25 +134,45 @@ export const AboutPage: FC<IAboutGameProps> = ({
         </div>
       </section>
       <section className="flex flex-col mt-11 gap-11">
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Download size</span>
           <span className="text-view-10">54.5 MB</span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Required OS</span>
           <span className="text-view-10">{android_version}</span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Offered by</span>
           <span className="text-view-10">Realis</span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Released on</span>
           <span className="text-view-10">
             {release_date ? format(release_date, "dd MMM yyyy") : null}
           </span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className={clsx("flex justify-between", {
+            "flex-row-reverse": isArabic,
+          })}
+        >
           <span className="text-view-10 font-medium">Compatibility </span>
           <span className="text-view-10">Works on your device</span>
         </div>

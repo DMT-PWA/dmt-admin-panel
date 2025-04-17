@@ -6,6 +6,9 @@ import {
   removeFacebookPixelField,
   setPixelValue,
   setTokenValue,
+  deposit,
+  install,
+  registration,
 } from "src/entities/metrics";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { InputDefault } from "src/shared/ui/input";
@@ -22,20 +25,32 @@ export const PwaMetrics: FC = () => {
       <Title title="Метрики" withContainer={false} classes="title__view-2" />
       <div className="flex gap-3">
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-2">Регистрация</label>
-          <CustomSelect placeholder="" classes="mb-2" />
+          <label className="title__view-1 mb-2">
+            Регистрация
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
+          <CustomSelect options={registration} placeholder="" classes="mb-2" />
         </div>
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-2">Депозит</label>
-          <CustomSelect placeholder="Введите депозит" />
+          <label className="title__view-1 mb-2">
+            Депозит
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
+          <CustomSelect options={deposit} placeholder="Введите депозит" />
         </div>
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-2">Скачивание</label>
-          <CustomSelect placeholder="" classes="mb-2" />
+          <label className="title__view-1 mb-2">
+            Скачивание
+            <span className="text-red-600 align-super size-[0.8rem]">*</span>
+          </label>
+          <CustomSelect options={install} placeholder="" classes="mb-2" />
         </div>
       </div>
       <div className="flex flex-col gap-3.25">
-        <label className="title__view-1">Facebook Pixel</label>
+        <label className="title__view-1">
+          Facebook Pixel
+          <span className="text-red-600 align-super size-[0.8rem]">*</span>
+        </label>
         {facebookPixelList &&
           facebookPixelList.map((item, index: number) => {
             return (
@@ -52,6 +67,7 @@ export const PwaMetrics: FC = () => {
                       setPixelValue({ id: index, value: e.target.value })
                     )
                   }
+                  placeholder="Pixel ID or Track ID"
                   children={
                     item.pixel && (
                       <button
@@ -78,6 +94,7 @@ export const PwaMetrics: FC = () => {
                       setTokenValue({ id: index, value: e.target.value })
                     )
                   }
+                  placeholder="Access token or API Key"
                   children={
                     item.token && (
                       <button

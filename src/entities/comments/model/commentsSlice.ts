@@ -3,8 +3,8 @@ import { ICommentsState } from "./types";
 import { getAllComments, removeCommentById, createCommentHandler } from "./commentsThunk";
 
 const initialState: ICommentsState = {
-  developer_answer: false,
   comment: {
+    developer_answer: false,
     commentId: null,
     author_name: "",
     comments_text: "",
@@ -14,7 +14,9 @@ const initialState: ICommentsState = {
     avatar: null,
     author_answer: null
   },
+  comment_group_name: null,
   comments_list: [],
+  all_comments: [],
 };
 
 export const comments = createSlice({
@@ -22,7 +24,7 @@ export const comments = createSlice({
   initialState,
   reducers: {
     setDeveloperAnswer: (state, action) => {
-      state.developer_answer = action.payload;
+      state.comment.developer_answer = action.payload;
 
       state.comment.author_answer = action.payload === true ? {} : null;
     },
@@ -61,19 +63,32 @@ export const comments = createSlice({
     setAvatar: (state, action) => {
       state.comment.avatar = action.payload;
     },
+
+    setComments: (state, action) => { state.comments_list = action.payload },
+
+    setAllComments: (state, action) => {
+      state.all_comments = [...action.payload]
+    },
+
     addComment: (state, action) => {
       state.comments_list?.push(action.payload);
-
     },
+
+    setCommentGroupName: (state, action: PayloadAction<string>) => {
+      state.comment_group_name = action.payload;
+    },
+
     removeComment: (state, action) => {
       state.comments_list?.splice(action.payload, 1);
     },
     resetState: () => initialState,
+
+    resetComment: (state) => { state.comment = initialState.comment }
   },
 
   extraReducers: (builder) => {
     builder.addCase(getAllComments.fulfilled, (state, action) => {
-      state.comments_list = [...action.payload]
+      state.all_comments = [...action.payload]
     })
 
     builder.addCase(removeCommentById.fulfilled, (state, action) => {
@@ -82,9 +97,6 @@ export const comments = createSlice({
 
     builder.addCase(createCommentHandler.fulfilled, (state, action) => {
       state.comment.commentId = action.payload._id;
-
-      state.comments_list?.push(action.payload);
-
     })
   }
 });
@@ -103,6 +115,10 @@ export const {
   setReviewDate,
   removeComment,
   resetState,
+  setComments,
+  setAllComments,
+  resetComment,
+  setCommentGroupName
 } = comments.actions;
 
 export default comments.reducer;

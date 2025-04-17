@@ -58,6 +58,14 @@
   border-radius: 6px;
 }
 
+.btn__orange.btn__orange-view-6 {
+  font-family: "Onest", serif;
+  font-size: 14px;
+  line-height: 150%;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
 .btn-view-1 {
   padding: 12px 11px;
   min-width: 167px;
@@ -119,4 +127,15 @@
 
 .btn__white.btn__white-view-5 {
   @apply rounded-[6px] py-[11px] px-5 border-none bg-white;
+}
+
+.btn__gray {
+  font-family: "Onest", serif;
+  background-color: var(--color-white-1);
+  font-weight: 600;
+  color: var(--color-gray-6);
+  font-size: 14px;
+  line-height: 150%;
+  border: none;
+  border-radius: 6px;
 }

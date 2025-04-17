@@ -15,6 +15,7 @@ interface ISelectProps {
     selectedOption: SingleValue<{ value: string; label: string }>,
     actionMeta: ActionMeta<{ value: string; label: string }>
   ) => void;
+  isDisabled: boolean;
 }
 
 export const CustomSelect: FC<Partial<ISelectProps>> = ({
@@ -23,6 +24,7 @@ export const CustomSelect: FC<Partial<ISelectProps>> = ({
   classes,
   value = null,
   onChange,
+  isDisabled = false,
 }) => {
   return (
     <Select
@@ -30,6 +32,7 @@ export const CustomSelect: FC<Partial<ISelectProps>> = ({
       placeholder={placeholder}
       value={value}
       openMenuOnFocus
+      isDisabled={isDisabled}
       onChange={onChange}
       className={`custom-select ${classes}`}
       classNamePrefix="react-select"

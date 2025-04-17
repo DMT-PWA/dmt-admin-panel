@@ -23,7 +23,9 @@ const metricsSlice = createSlice({
 
         setTokenValue: (state, action: PayloadAction<{ id: number, value: string | number }>) => {
             state.facebookPixelList[action.payload.id].token = action.payload.value;
-        }
+        },
+
+        setRegistration: (state, action) => { }
     }
 })
 

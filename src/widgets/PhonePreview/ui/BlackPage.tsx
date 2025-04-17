@@ -12,28 +12,24 @@ const BlackPage: FC = (props) => {
   const [stage, setStage] = useState<{ id: number; stage: string } | null>(
     null
   );
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isIosSmartPhoneOnChrome, setIsIosSmartPhoneOnChrome] = useState(false);
-  const [isIosSmartPhoneOnSafari, setIsIosSmartPhoneOnSafari] = useState(false);
-  const [isIosTabletOnChrome, setIsIosTabletOnChrome] = useState(false);
-  const [isIosTabletOnSafari, setIsIosTabletOnSafari] = useState(false);
-  const [isIosDesktopOnChrome, setIsIosDesktopOnChrome] = useState(false);
-  const [isIosDesktopOnSafari, setIsIosDesktopOnSafari] = useState(false);
+  const [, setIsDarkMode] = useState(false);
+  const [, setIsIosSmartPhoneOnChrome] = useState(false);
+  const [, setIsIosSmartPhoneOnSafari] = useState(false);
+  const [, setIsIosTabletOnChrome] = useState(false);
+  const [, setIsIosTabletOnSafari] = useState(false);
+  const [, setIsIosDesktopOnChrome] = useState(false);
+  const [, setIsIosDesktopOnSafari] = useState(false);
   //====={android devices on chrome}====================
-  const [isAndroidSmartPhoneOnChrome, setIsAndroidSmartPhoneOnChrome] =
-    useState(false);
-  const [isAndroidTabletOnChrome, setIsAndroidTabletOnChrome] = useState(false);
-  const [isAndroidDesktopOnChrome, setIsAndroidDesktopOnChrome] =
-    useState(false);
+  const [, setIsAndroidSmartPhoneOnChrome] = useState(false);
+  const [, setIsAndroidTabletOnChrome] = useState(false);
+  const [, setIsAndroidDesktopOnChrome] = useState(false);
 
-  const [isWindowsSmartPhoneOnChrome, setIsWindowsSmartPhoneOnChrome] =
-    useState(false);
-  const [isWindowsTabletOnChrome, setIsWindowsTabletOnChrome] = useState(false);
-  const [isWindowsDesktopOnChrome, setIsWindowsDesktopOnChrome] =
-    useState(false);
+  const [, setIsWindowsSmartPhoneOnChrome] = useState(false);
+  const [, setIsWindowsTabletOnChrome] = useState(false);
+  const [, setIsWindowsDesktopOnChrome] = useState(false);
 
   //========{others}==========
-  const [isOtherBrowser, setIsOtherBrowser] = useState(false);
+  const [, setIsOtherBrowser] = useState(false);
 
   const {
     android_version,
