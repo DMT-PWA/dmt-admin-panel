@@ -38,8 +38,10 @@ export const usePwaCreate = (isEdit: boolean = false) => {
 
     const showPreview = currentRoute === 'description' || currentRoute === 'comments' || currentRoute === 'comments_create';
 
+    const finishCreateButton = !isEdit && currentRoute === 'metrics';
+
     return {
-        handleNavigateNext, handleNavigatePrev, showBackButton, showNextButton, showSaveButton, showPreview
+        handleNavigateNext, handleNavigatePrev, showBackButton, showNextButton, showSaveButton, showPreview, finishCreateButton
     }
 
 }

@@ -49,9 +49,8 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
-  const { grades, checkboxes_state, title, about_description } = useAppSelector(
-    (state) => state.pwa_description
-  );
+  const { grades, checkboxes_state, title, about_description, descriptionId } =
+    useAppSelector((state) => state.pwa_description);
 
   const { release_date, last_update } = useAppSelector(
     (state) => state.pwa_description.about_description

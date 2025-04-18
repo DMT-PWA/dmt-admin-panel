@@ -139,3 +139,12 @@
   border: none;
   border-radius: 6px;
 }
+
+button[role="tab"] {
+  font-family: "Inter", serif;
+  @apply px-17 py-3.5 bg-[#F5F5F5] font-bold text-[17px];
+}
+
+button[role="tab"][data-selected] {
+  @apply text-orange;
+}

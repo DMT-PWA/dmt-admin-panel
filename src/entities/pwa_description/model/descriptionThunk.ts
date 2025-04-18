@@ -27,12 +27,12 @@ export const createDescriptionById = createAsyncThunk<
 >("description/createDescriptionById", async (payload, { getState }) => {
   const state = getState().pwa_description as CombinedDescription;
 
-  const { title, about_description } = state;
+  const { title, descriptionId } = state;
 
   const fullPayload = {
     ...payload,
     name: title,
-    about: about_description.description,
+    about: descriptionId,
   };
 
   const response = await createDescription("description", fullPayload);
@@ -44,16 +44,25 @@ export const updateDescription = createAsyncThunk<
   unknown,
   Partial<UpdatePwaPayload>,
   { state: RootState }
->("description/updateDescription", async (payload, { getState }) => {
+>("description/updateDescription", async (payload, { getState, dispatch }) => {
   const state = getState().pwa_description as CombinedDescription;
 
-  const { title, about_description, number_of_downloads, raiting, review_count, checkboxes_state } = state;
+  const { adminId, language, appId, isExist, country } = payload;
 
-  const { release_date, last_update, android_version, description } = about_description;
+  const {
+    title,
+    about_description,
+    number_of_downloads,
+    raiting,
+    review_count,
+    checkboxes_state,
+  } = state;
 
+  const { release_date, last_update, android_version, description } =
+    about_description;
 
   const fullPayload = {
-    ...payload,
+    adminId, language, appId, isExist, country,
     name: title,
     lastUpdate: last_update,
     releaseDate: release_date,
@@ -64,7 +73,7 @@ export const updateDescription = createAsyncThunk<
     reviewCount: review_count,
     isContainsAds: checkboxes_state[0].value,
     isEditorsChoice: checkboxes_state[1].value,
-    isInAppPurchases: checkboxes_state[2].value
+    isInAppPurchases: checkboxes_state[2].value,
   };
 
   const response = await createDescription("description", fullPayload);

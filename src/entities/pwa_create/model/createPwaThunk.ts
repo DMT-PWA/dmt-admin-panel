@@ -20,30 +20,55 @@ export const getPwaById = createAsyncThunk("create/getPwaById", async (id: strin
     return response
 })
 
-export const createPWA = createAsyncThunk<any, CreateInitPayload>("create/createPWA", async (payload, { getState }) => {
+export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>("create/createPWA", async (payload, { getState }) => {
     const { comments, metrics, pwa_description, pwa_design, settings } = getState() as RootState
 
     const { pwa_title, currentCollection } = pwa_design;
 
-    const { descriptionId } = pwa_description;
+    const { descriptionId, title, developer_name } = pwa_description;
 
-    const { comment } = comments;
+    const { selected_comment } = comments;
 
     const { facebookPixelList } = metrics;
-
 
 
     const fullPayload = {
         ...payload,
         isExist: true,
-        appTitle: pwa_title,
+        appTitle: title,
+        appSubTitle: developer_name,
+        displayName: pwa_title,
         collectionId: currentCollection?._id,
         about: descriptionId,
-        commentId: comment.commentId
-
+        commentId: selected_comment,
+        domain: "",
+        subDomain: "",
+        pixelId: facebookPixelList[0].pixel,
+        accessToken: facebookPixelList[0].token,
+        domainApp: "",
+        domainLanding: "",
+        keitaroDomain: "",
+        keitaroCampaign: "",
+        marketerTag: "",
+        oneSignalApiKey: "",
+        oneSignalAppId: "",
+        casino: "",
+        headerReviews: "",
+        hundredPlus: "",
+        aboutThisGame: "",
+        updatedDate: "",
     }
 
+    console.log({ NAME: fullPayload });
+
+
     const response = await updatePwa("pwa", fullPayload)
+
+    return response
+})
+
+export const getPwaByIdAndLanguage = createAsyncThunk("create/getPwaByIdAndLanguage", async (payload: Partial<CreateInitPayload>) => {
+    const response = await getPwa(`pwa/${payload.appId}/${payload.language}/${payload.country}`);
 
     return response
 })

@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Title } from "src/shared/ui/title";
 import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
 import { PwaForm } from "src/widgets/PwaForm";
@@ -9,15 +9,16 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
-import { getPwaByIdAndLanguage } from "src/features/appData/appDataAPI";
+import { getDescriptionById } from "src/features/appData/appDataAPI";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import { setCollectionImage } from "src/entities/collection";
 import {
   setDeveloperName,
+  setTitle,
+  updateAboutDescription,
   setNumberOfDownloads,
   setRaiting,
-  createDescriptionById,
   updateDescription,
 } from "src/entities/pwa_description";
 import {
@@ -26,14 +27,16 @@ import {
   setCurrentCollection,
   setLanguage,
   setLanguagesList,
+  updateLanguagesList,
 } from "src/entities/pwa_design";
 import {
   updatePwaByLang,
   getPwaById,
   usePwaCreate,
+  finishCreatePWA,
+  getPwaByIdAndLanguage,
 } from "src/entities/pwa_create";
-import { setComments } from "src/entities/comments";
-import { Language } from "src/shared/types";
+import { setComments, setSelectedCommentId } from "src/entities/comments";
 
 type PwaCreateProps = {
   appId: string;
@@ -50,20 +53,24 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showNextButton,
     showSaveButton,
     showPreview,
+    finishCreateButton,
   } = usePwaCreate(isEdit);
 
   const [loading] = useState<boolean>(false);
 
-  const { currentLanguage, currentCountry, currentCollection, pwa_title } =
-    useAppSelector((state) => state.pwa_design);
+  const {
+    currentLanguage,
+    currentCountry,
+    currentCollection,
+    pwa_title,
+    languagesList,
+  } = useAppSelector((state) => state.pwa_design);
 
-  const { comment } = useAppSelector((state) => state.comments);
-
-  const { commentId } = comment;
+  const { selected_comment } = useAppSelector((state) => state.comments);
 
   const fetchAppById = useCallback(async () => {
-    const resp = await dispatch(getPwaById(appId));
-    const { appSubTitle, appTitle } = resp.payload;
+    const { payload } = await dispatch(getPwaById(appId));
+    const { appSubTitle, appTitle } = payload;
 
     dispatch(setPwaTitle(appTitle));
     dispatch(setDeveloperName(appSubTitle));
@@ -73,25 +80,33 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     async (country: string, lang: string) => {
       if (!appId || !country || !lang) return;
 
+      const { payload } = await dispatch(
+        getPwaByIdAndLanguage({ appId, language: lang, country })
+      );
+
+      const { collectionId, commentId, about, appTitle, appSubTitle } = payload;
+
       const {
-        hundredPlus,
-        fourPointThree,
-        collectionId,
-        appSubTitle,
-        appTitle,
-      } = await getPwaByIdAndLanguage(appId, lang, country);
+        downloads,
+        rating,
+        about: descriptionAbout,
+      } = await getDescriptionById(about);
 
-      const { name, screenShots, icon, reviewObject } = collectionId;
+      const { name, screenShots, icon } = collectionId;
 
-      dispatch(setComments([{ ...reviewObject }]));
+      const { reviewObject, _id } = commentId;
 
-      dispatch(setPwaTitle(appTitle));
+      dispatch(setComments([...reviewObject]));
+      dispatch(setSelectedCommentId(_id));
+      dispatch(setTitle(appTitle));
       dispatch(setDeveloperName(appSubTitle));
 
       // dispatch(fetchDescriptionInfoById(descriptionId));
-
-      dispatch(setNumberOfDownloads(hundredPlus));
-      dispatch(setRaiting(fourPointThree));
+      dispatch(
+        updateAboutDescription({ key: "description", value: descriptionAbout })
+      );
+      dispatch(setNumberOfDownloads(downloads));
+      dispatch(setRaiting(rating));
       dispatch(setCollectionImage(icon as string));
       dispatch(
         setCurrentCollection({
@@ -108,17 +123,17 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     if (isEdit) {
       const lsData = localStorage.getItem(appId);
       if (lsData) {
-        const { country, language } = JSON.parse(lsData);
+        const { country, language, languagesList } = JSON.parse(lsData);
         dispatch(setCountry(country));
         dispatch(setLanguage(language));
+        dispatch(updateLanguagesList(languagesList));
       }
     } else {
       fetchAppById();
       dispatch(setCountry({ label: "Egypt", value: 0 }));
-      dispatch(setLanguage({ label: "English", value: 1 }));
+      dispatch(setLanguage({ label: "Arabic", value: 0 }));
+      dispatch(setLanguagesList());
     }
-
-    dispatch(setLanguagesList());
   }, [isEdit, appId, fetchAppById, dispatch]);
 
   useEffect(() => {
@@ -135,16 +150,35 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const pathname = useLocation().pathname;
 
   const handleCreate = () => {
-    localStorage.setItem(
-      appId,
-      JSON.stringify({ country: currentCountry, language: currentLanguage })
-    );
+    if (currentCountry && currentLanguage) {
+      localStorage.setItem(
+        appId,
+        JSON.stringify({
+          country: currentCountry,
+          language: currentLanguage,
+          languagesList,
+        })
+      );
+
+      dispatch(
+        finishCreatePWA({
+          adminId: adminId,
+          appId: appId,
+          country: currentCountry?.label,
+          language: currentLanguage?.label,
+        })
+      );
+    }
   };
 
-  const handleSavePwaGeneral = () => {
+  const handleSavePwaGeneral = async () => {
     localStorage.setItem(
       appId,
-      JSON.stringify({ country: currentCountry, language: currentLanguage })
+      JSON.stringify({
+        country: currentCountry,
+        language: currentLanguage,
+        languagesList,
+      })
     );
 
     const payload = {
@@ -159,7 +193,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           ...payload,
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
-          collectionId: currentCollection?._id,
           appTitle: pwa_title || "",
         })
       );
@@ -168,14 +201,25 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     }
 
     if (pathname.endsWith("description")) {
-      if (isEdit) dispatch(createDescriptionById(payload));
-
-      dispatch(
+      const {
+        payload: { _id },
+      } = await dispatch(
         updateDescription({
           appId,
           ...payload,
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
+        })
+      );
+
+      dispatch(
+        updatePwaByLang({
+          appId,
+          ...payload,
+          isExist: true,
+          country: currentCountry?.label.toLowerCase(),
+          collectionId: currentCollection?._id,
+          about: _id,
         })
       );
 
@@ -189,7 +233,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           ...payload,
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
-          commentId,
+          commentId: selected_comment,
         })
       );
 
@@ -214,10 +258,33 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           <Route
             path="description"
             element={
-              <PwaDescriptionForm
-                adminId={adminId}
-                language={currentLanguage?.label || "English"}
-              />
+              <TabGroup
+                className={"flex-1"}
+                onChange={(index) =>
+                  dispatch(setLanguage(languagesList[index]))
+                }
+              >
+                <TabList className={"pl-6.5"}>
+                  <Tab>{languagesList?.[0].label}</Tab>
+                  {languagesList?.[1] && (
+                    <Tab className={"ml-6.25"}>{languagesList?.[1]?.label}</Tab>
+                  )}
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <PwaDescriptionForm
+                      adminId={adminId}
+                      language={currentLanguage?.label || "English"}
+                    />
+                  </TabPanel>
+                  <TabPanel>
+                    <PwaDescriptionForm
+                      adminId={adminId}
+                      language={currentLanguage?.label || "English"}
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </TabGroup>
             }
           />
           <Route path="comments" element={<PwaComments isEdit={isEdit} />} />
@@ -234,12 +301,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         <ButtonDefault
           btn_text="Сохранить"
           btn_classes="btn__orange btn__orange-view-1 max-w-62.25 mt-5.5"
-          onClickHandler={() => handleSavePwaGeneral()}
+          onClickHandler={handleSavePwaGeneral}
         />
       )}
 
       {!showSaveButton && (
-        <div className="max-w-66.75 flex justify-between mt-5.5">
+        <div className="max-w-87.25 flex mt-5.5">
           {showBackButton && (
             <button
               onClick={handleNavigatePrev}
@@ -265,7 +332,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                   )
                 )
               }
-              className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 py-3 pr-2.25 pl-10.5"
+              className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 ml-3.25 py-3 pr-2.25 pl-10.5"
             >
               Далее
               <div className="flex items-center">
@@ -276,6 +343,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                 />
               </div>
             </button>
+          )}
+          {finishCreateButton && (
+            <ButtonDefault
+              onClickHandler={handleCreate}
+              btn_text="Завершить создание"
+              btn_classes="btn__orange btn__orange-view-1 ml-3.25"
+            />
           )}
         </div>
       )}

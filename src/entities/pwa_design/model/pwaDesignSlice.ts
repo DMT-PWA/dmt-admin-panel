@@ -49,7 +49,6 @@ export const pwaDesignSlice = createSlice({
         case "egypt":
           state.languagesList = [
             { label: "Arabic", value: 0 },
-            { label: "English", value: 1 },
           ];
 
           break;
@@ -57,56 +56,47 @@ export const pwaDesignSlice = createSlice({
         case "iraq":
           state.languagesList = [
             { label: "Arabic", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "saudi arabia":
           state.languagesList = [
             { label: "Arabic", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "germany":
           state.languagesList = [
             { label: "Dutch", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "netherlands":
           state.languagesList = [
             { label: "Dutch", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "hong kong":
           state.languagesList = [
             { label: "Chinese", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "china":
           state.languagesList = [
             { label: "Chinese", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "indonesia":
           state.languagesList = [
             { label: "Arabic", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "malaysia":
           state.languagesList = [
             { label: "Malay", value: 0 },
-            { label: "English", value: 1 },
           ];
 
           break;
         case "singapore":
           state.languagesList = [
             { label: "Malay", value: 0 },
-            { label: "English", value: 1 },
           ];
 
           break;
@@ -116,42 +106,45 @@ export const pwaDesignSlice = createSlice({
         case "pakistan":
           state.languagesList = [
             { label: "Urdu", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "russia":
           state.languagesList = [
             { label: "Russian", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "senegal":
           state.languagesList = [
             { label: "French", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "south Korea":
           state.languagesList = [
             { label: "Korean", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "turkey":
           state.languagesList = [
             { label: "Turkish", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         case "lithuania":
           state.languagesList = [
             { label: "Lithuanian", value: 0 },
-            { label: "English", value: 1 },
           ];
           break;
         default:
           break;
       }
+    },
+    updateLanguagesList: (state, action) => {
+      state.languagesList = action.payload
+    },
+    addLanguage: (state, action: PayloadAction<Language>) => {
+      state.languagesList?.push(action.payload)
+    },
+    removeLanguage: (state) => {
+      state.languagesList?.pop()
     },
     setCountry: (state, action: PayloadAction<Country>) => {
       state.currentCountry = action.payload;
@@ -179,6 +172,9 @@ export const {
   setLanguagesList,
   setCountry,
   setCurrentCollection,
+  addLanguage,
+  removeLanguage,
+  updateLanguagesList
 } = pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

@@ -15,6 +15,7 @@ const initialState: ICommentsState = {
     author_answer: null
   },
   comment_group_name: null,
+  selected_comment: null,
   comments_list: [],
   all_comments: [],
 };
@@ -64,7 +65,17 @@ export const comments = createSlice({
       state.comment.avatar = action.payload;
     },
 
-    setComments: (state, action) => { state.comments_list = action.payload },
+    setComments: (state, action) => {
+      const modifiedComments = action.payload.map((item) => ({
+        review_date: item.date,
+        author_name: item.name,
+        avatar: item.photo,
+        raiting: item.rating,
+        comments_text: item.review,
+      }));
+
+      state.comments_list = [...modifiedComments]
+    },
 
     setAllComments: (state, action) => {
       state.all_comments = [...action.payload]
@@ -76,6 +87,10 @@ export const comments = createSlice({
 
     setCommentGroupName: (state, action: PayloadAction<string>) => {
       state.comment_group_name = action.payload;
+    },
+
+    setSelectedCommentId: (state, action: PayloadAction<string>) => {
+      state.selected_comment = action.payload
     },
 
     removeComment: (state, action) => {
@@ -118,6 +133,7 @@ export const {
   setComments,
   setAllComments,
   resetComment,
+  setSelectedCommentId,
   setCommentGroupName
 } = comments.actions;
 

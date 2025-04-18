@@ -5,7 +5,7 @@ export type Language = {
     label: string,
 }
 
-export type LanguagesList = [Language, Language] | [Language]
+export type LanguagesList = [Language, Language] | [Language] | null
 
 export type Country = { value: number, label: string } | null;
 export interface ICollection {

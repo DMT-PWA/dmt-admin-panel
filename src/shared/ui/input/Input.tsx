@@ -32,9 +32,10 @@ export const InputDefault: FC<Partial<InputProps>> = ({
 }) => {
   return (
     <div
-      className={clsx("flex gap-1.5", container_classes, {
+      className={clsx("flex", container_classes, {
         "flex-col": type !== "checkbox",
         "justify-between": type === "checkbox",
+        "gap-1.5": label,
       })}
     >
       <label

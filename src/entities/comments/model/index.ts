@@ -16,6 +16,7 @@ export {
   setComments,
   setAllComments,
   resetComment,
+  setSelectedCommentId,
   setCommentGroupName
 } from "./commentsSlice";
 

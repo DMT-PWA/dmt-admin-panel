@@ -12,7 +12,7 @@ export const PwaSettings: FC = () => {
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">
       <Title title="Настройки" withContainer={false} classes="title__view-2" />
       <div className="flex gap-3">
-        <div className="flex flex-col flex-1/3">
+        <div className="flex flex-col flex-1/3 justify-end">
           <label className="title__view-1 mb-2">Теги</label>
           <CustomSelect placeholder="" classes="mb-2" />
           <label className="title__view-1 mb-2">

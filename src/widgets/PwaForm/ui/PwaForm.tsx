@@ -1,5 +1,4 @@
-import { ChangeEvent, FC, memo } from "react";
-
+import { ChangeEvent, FC, memo, useEffect } from "react";
 import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -10,10 +9,13 @@ import {
   setLanguage,
   setLanguagesList,
   setCountry,
+  modifiedCountryList,
+  addLanguage,
+  removeLanguage,
 } from "src/entities/pwa_design";
 import { useNavigate } from "react-router-dom";
-import { modifiedCountryList } from "src/entities/pwa_design";
 import { Country, Language } from "src/shared/types";
+import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 
 type PwaFormProps = {
   appId: string;
@@ -27,13 +29,19 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
 
-  const handleLanguageChange = (selectedOption: Language) => {
+  /* const handleLanguageChange = (selectedOption: Language) => {
     dispatch(setLanguage(selectedOption));
-  };
+  }; */
 
   const handleCountryChange = (option: Country) => {
     dispatch(setCountry(option));
+
+    dispatch(setLanguagesList());
   };
+
+  useEffect(() => {
+    if (languagesList) dispatch(setLanguage(languagesList[0]));
+  }, [languagesList, dispatch]);
 
   const handleNavigate = () => {
     return navigate("/pwa");
@@ -91,29 +99,51 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
 
-          {/* <div className="flex gap-8.75 items-end">
-            <InputDefault
-              value={languagesList[0]?.label}
-              container_classes="flex-[0.5]"
-              label="Название PWA"
-              input_classes="!border-0"
-            />
-            <button className="bg-white py-[13.5px] px-[16.5px] rounded-[8px] max-w-10.5 max-h-10.5">
-              <img
-                src="/pwa_icons/crosshair.png"
-                width={14}
-                height={14}
-                alt=""
+          <div className="flex gap-8.75 items-center">
+            {languagesList && (
+              <InputDefault
+                value={languagesList[0]?.label}
+                container_classes="flex-[0.5]"
+                disabled
+                input_classes="!border-0"
               />
-            </button>
-          </div> */}
-          <CustomSelect
+            )}
+            {languagesList && languagesList.length === 1 && (
+              <button
+                onClick={() =>
+                  dispatch(addLanguage({ label: "English", value: 1 }))
+                }
+                className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
+              >
+                <img
+                  src="/pwa_icons/crosshair.png"
+                  width={14}
+                  height={14}
+                  alt=""
+                />
+              </button>
+            )}
+            {languagesList?.some((item) => item.label === "English") && (
+              <>
+                <InputDefault
+                  value={languagesList[1]?.label}
+                  container_classes="flex-[0.5]"
+                  disabled
+                  input_classes="!border-0"
+                />
+                <button onClick={() => dispatch(removeLanguage())}>
+                  <img src={trash_icon} width={14} height={14} alt="" />
+                </button>
+              </>
+            )}
+          </div>
+          {/* <CustomSelect
             options={languagesList}
             value={currentLanguage}
             onChange={handleLanguageChange}
             isDisabled={true}
             placeholder="Английский"
-          />
+          /> */}
           <label className="title__view-1">Теги PWA</label>
           <CustomSelect placeholder="Выберите теги" />
         </div>

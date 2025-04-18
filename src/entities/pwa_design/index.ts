@@ -10,6 +10,9 @@ export {
   setLanguagesList,
   setCountry,
   setCurrentCollection,
+  addLanguage,
+  removeLanguage,
+  updateLanguagesList
 } from "./model";
 
 export { selectPwaDesignLanguages } from "./model/selectors";

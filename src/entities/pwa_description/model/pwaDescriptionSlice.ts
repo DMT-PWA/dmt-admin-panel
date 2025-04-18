@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CombinedDescription } from "./types";
 import { checkbox, IAboutGameDescription, DescriptionResponse } from "src/shared/types";
-import { fetchDescriptionInfoById, createDescriptionById } from "./descriptionThunk"
+import { fetchDescriptionInfoById, createDescriptionById, updateDescription } from "./descriptionThunk"
 
 
 const defaultState: CombinedDescription = {
@@ -85,7 +85,11 @@ const pwaDescriptionSlice = createSlice({
       state.about_description.description = action.payload.about;
     });
 
-    builder.addCase(createDescriptionById.fulfilled, (state, action: PayloadAction<DescriptionResponse>) => {
+    builder.addCase(createDescriptionById.pending, (state, action: PayloadAction<DescriptionResponse>) => {
+      state.descriptionId = action.payload._id
+    })
+
+    builder.addCase(updateDescription.fulfilled, (state, action) => {
       state.descriptionId = action.payload._id
     })
   }

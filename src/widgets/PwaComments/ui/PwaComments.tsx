@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   setComments,
   getAllComments,
   removeCommentById,
+  setSelectedCommentId,
 } from "src/entities/comments";
 import type { ReviewObject } from "src/entities/comments";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
@@ -19,9 +20,9 @@ type PwaCommentsProps = {
 };
 
 export const PwaComments: FC<PwaCommentsProps> = () => {
-  const { all_comments } = useAppSelector((state) => state.comments);
-
-  const [selectedComment, setSelectedComment] = useState<number | null>(null);
+  const { all_comments, selected_comment } = useAppSelector(
+    (state) => state.comments
+  );
 
   const dispatch = useAppDispatch();
 
@@ -35,21 +36,10 @@ export const PwaComments: FC<PwaCommentsProps> = () => {
     navigate(toCreate);
   };
 
-  const selectCommentHandler = (
-    commentsObject: ReviewObject,
-    index: number
-  ) => {
-    const modifiedComments = commentsObject.map((item) => ({
-      review_date: item.date,
-      author_name: item.name,
-      avatar: item.photo,
-      raiting: item.rating,
-      comments_text: item.review,
-    }));
+  const selectCommentHandler = (commentsObject: ReviewObject, id: string) => {
+    dispatch(setSelectedCommentId(id));
 
-    setSelectedComment(index);
-
-    dispatch(setComments(modifiedComments));
+    dispatch(setComments(commentsObject));
   };
 
   useEffect(() => {
@@ -84,12 +74,12 @@ export const PwaComments: FC<PwaCommentsProps> = () => {
               return (
                 <div key={ind} className="py-4 px-6 flex">
                   <div className="flex items-center">
-                    {selectedComment === ind ? (
+                    {selected_comment === item._id ? (
                       <div className="mr-7.75 w-4 h-4 rounded-full border-1 border-[#21272A] bg-orange"></div>
                     ) : (
                       <img
                         onClick={() =>
-                          selectCommentHandler(item.reviewObject, ind)
+                          selectCommentHandler(item.reviewObject, item._id)
                         }
                         src={circle_icon}
                         width={16}

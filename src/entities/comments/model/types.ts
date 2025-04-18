@@ -29,5 +29,6 @@ export interface ICommentsState {
   comment: IUserComment & { commentId: string | null };
   comments_list: CommentsList;
   comment_group_name: string | null;
+  selected_comment: string | null,
   all_comments: AllComments
 }

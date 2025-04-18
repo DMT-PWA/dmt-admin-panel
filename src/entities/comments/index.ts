@@ -20,6 +20,7 @@ export {
   setAllComments,
   resetComment,
   setCommentGroupName,
+  setSelectedCommentId
 } from "./model";
 
 export type { AllComments, ReviewObject, CommentsList } from "./model"
