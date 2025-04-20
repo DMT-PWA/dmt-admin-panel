@@ -16,7 +16,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Country, Language } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
-
 type PwaFormProps = {
   appId: string;
   isEdit?: boolean;
@@ -24,14 +23,9 @@ type PwaFormProps = {
 
 const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const navigate = useNavigate();
-
   const { pwa_title, currentLanguage, languagesList, currentCountry } =
     useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
-
-  /* const handleLanguageChange = (selectedOption: Language) => {
-    dispatch(setLanguage(selectedOption));
-  }; */
 
   const handleCountryChange = (option: Country) => {
     dispatch(setCountry(option));

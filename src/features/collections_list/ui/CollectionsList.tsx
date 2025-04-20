@@ -6,15 +6,15 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { setCurrentCollection } from "src/entities/pwa_design";
-import { ICollection } from "src/shared/types";
+import { setCurrentCollection } from "../model/collectionsSlice";
+import { ICollection } from "src/entities/collection";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
 };
 
 export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
-  const { collections } = useAppSelector((state) => state.pwa_design);
+  const { collectionsList } = useAppSelector((state) => state.collections);
   const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState<null | number>(null);
@@ -30,7 +30,9 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
   );
 
   const collectionPickHandler = () => {
-    dispatch(setCurrentCollection(collectionItem));
+    if (!collectionItem) return;
+
+    dispatch(setCurrentCollection(collectionItem._id));
     onPopupHandler();
   };
 
@@ -51,7 +53,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
         input_classes="with_icon"
       />
 
-      {collections.map((item, index: number) => {
+      {collectionsList.map((item, index: number) => {
         return (
           <div key={index} className="flex flex-col">
             <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer">
@@ -86,14 +88,16 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
             {isOpen === index && (
               <div key={index} className="flex px-16 py-4.5 gap-6">
                 <div className="flex flex-col justify-between">
-                  <img
-                    src={item.collectionImage}
-                    style={{
-                      height: "73px",
-                      maxWidth: "73px",
-                      borderRadius: "10px",
-                    }}
-                  />
+                  {item.collectionImage && (
+                    <img
+                      src={item.collectionImage}
+                      style={{
+                        height: "73px",
+                        maxWidth: "73px",
+                        borderRadius: "10px",
+                      }}
+                    />
+                  )}
                 </div>
                 {item.images.map((el: string | null, index) => {
                   return el ? (

@@ -4,11 +4,10 @@ import {
   useSelector,
 } from "react-redux";
 
-import { store } from "src/app/store/store";
-
-export type RootState = ReturnType<typeof store.getState>;
-
-type AppDispatch = typeof store.dispatch;
+export type UpdateFieldPayload<T> = {
+  field: keyof T,
+  value: T[keyof T]
+}
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

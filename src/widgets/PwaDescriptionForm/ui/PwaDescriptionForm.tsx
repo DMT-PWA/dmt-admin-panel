@@ -5,21 +5,18 @@ import {
   Label,
   Textarea,
 } from "@headlessui/react";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import {
-  setTitle,
-  setDeveloperName,
-  setRaiting,
   setLastUpdate,
   setReleaseDate,
   setNumberOfDownloads,
-  setReviewCount,
   setGrade,
   toggleCheckbox,
   updateAboutDescription,
+  batchUpdate,
 } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
@@ -29,10 +26,13 @@ import { CollectionCreate } from "src/features/collection_create";
 import { ICollection } from "src/shared/types";
 import {
   createCollection,
-  getAllCollections,
+  getDescriptionById,
 } from "src/features/appData/appDataAPI";
-import { CollectionsList } from "src/features/collections_list";
-import { addCollection, setCurrentCollection } from "src/entities/pwa_design";
+import {
+  CollectionsList,
+  getAllCollections,
+  setCurrentCollection,
+} from "src/features/collections_list";
 
 type DescriptionFormProps = {
   adminId: string;
@@ -49,15 +49,22 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
-  const { grades, checkboxes_state, title, about_description, descriptionId } =
-    useAppSelector((state) => state.pwa_description);
+  const {
+    grades,
+    checkboxes_state,
+    title,
+    about_description,
+    raiting,
+    review_count,
+    developer_name,
+  } = useAppSelector((state) => state.pwa_description);
 
   const { release_date, last_update } = useAppSelector(
     (state) => state.pwa_description.about_description
   );
 
-  const { collections, currentCollection } = useAppSelector(
-    (state) => state.pwa_design
+  const { collectionsList, currentCollection } = useAppSelector(
+    (state) => state.collections
   );
 
   const collectionCreateHandler = async ({
@@ -73,33 +80,8 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     });
   };
   useEffect(() => {
-    getAllCollections().then((items) => {
-      if (items && items.length > 0) {
-        items.forEach(
-          ({
-            icon,
-            screenShots,
-            name,
-            _id,
-          }: {
-            _id: string;
-            icon: string;
-            screenShots: string;
-            name: string;
-          }) => {
-            return dispatch(
-              addCollection({
-                _id,
-                collectionImage: icon,
-                images: screenShots,
-                collectionName: name,
-              })
-            );
-          }
-        );
-      }
-    });
-  }, [dispatch]);
+    if (!collectionsList.length) dispatch(getAllCollections());
+  }, [dispatch, collectionsList]);
 
   /* useEffect(() => {
     if (!descriptionId) {
@@ -121,15 +103,18 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 value={title || ""}
                 container_classes="flex-[0.5]"
                 placeholder="App Name"
-                onUpdateValue={(e) => dispatch(setTitle(e.target.value))}
+                onUpdateValue={(e) =>
+                  dispatch(batchUpdate({ title: e.target.value }))
+                }
               />
               <InputDefault
                 label="Разработчик"
                 input_classes=""
                 container_classes="flex-[0.5]"
                 placeholder="Developer Name"
+                value={developer_name}
                 onUpdateValue={(e) =>
-                  dispatch(setDeveloperName(e.target.value))
+                  dispatch(batchUpdate({ developer_name: e.target.value }))
                 }
               />
             </div>
@@ -146,7 +131,10 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 type="number"
                 placeholder="4.5"
                 container_classes="flex-[0.5]"
-                onUpdateValue={(e) => dispatch(setRaiting(e.target.value))}
+                value={raiting ?? ""}
+                onUpdateValue={(e) =>
+                  dispatch(batchUpdate({ raiting: e.target.value }))
+                }
               />
               <InputDefault
                 label="Количество отзывов"
@@ -154,8 +142,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 type="number"
                 placeholder="3500"
                 container_classes="flex-[0.5]"
+                value={review_count ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(setReviewCount(e.currentTarget.value))
+                  dispatch(batchUpdate({ review_count: e.currentTarget.value }))
                 }
               />
             </div>
@@ -182,7 +171,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 btn_text="Загрузить дизайн"
                 btn_classes="btn__orange btn__orange-view-1"
               />
-              {collections && (
+              {collectionsList && (
                 <ButtonDefault
                   btn_text="Открыть коллекцию"
                   btn_classes="btn__white btn__white-view-4 text-view-3"
@@ -235,7 +224,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 onChange={(e) =>
                   dispatch(
                     updateAboutDescription({
-                      key: "description",
+                      field: "description",
                       value: e.target.value,
                     })
                   )
@@ -250,7 +239,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 onUpdateValue={(e) =>
                   dispatch(
                     updateAboutDescription({
-                      key: "version",
+                      field: "version",
                       value: Number(e.target.value),
                     })
                   )
@@ -301,7 +290,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 onUpdateValue={(e) =>
                   dispatch(
                     updateAboutDescription({
-                      key: "android_version",
+                      field: "android_version",
                       value: e.target.value,
                     })
                   )
@@ -349,7 +338,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   onChange={(e) =>
                     dispatch(
                       updateAboutDescription({
-                        key: "whats_new",
+                        field: "whats_new",
                         value: e.target.value,
                       })
                     )

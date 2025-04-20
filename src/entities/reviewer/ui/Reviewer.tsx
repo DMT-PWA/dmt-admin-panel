@@ -1,6 +1,9 @@
+import clsx from "clsx";
 import { format } from "date-fns";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { IUserComment } from "src/shared/types";
+
+type ReviewerProps = {};
 
 const Reviewer: FC = (props) => {
   const {
@@ -11,13 +14,24 @@ const Reviewer: FC = (props) => {
     no = "No",
     onClick,
     commentsList,
+    isArabic,
   } = props;
 
   const anyStars = (review_date: Date | string, review_raiting: number) => {
     const rating = Math.min(review_raiting, 5);
     return (
-      <div className="w-fit h-9 shrink-0 flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border">
-        <div className="self-stretch flex-1 flex flex-row items-start justify-start shrink-0">
+      <div
+        className={clsx(
+          "h-9 shrink-0 flex flex-row items-start pt-0 px-5 pb-5 box-border",
+          isArabic ? "justify-end" : "justify-start"
+        )}
+      >
+        <div
+          className={clsx(
+            "self-stretch flex-1 flex flex-row items-start justify-start shrink-0",
+            { "text-end": isArabic }
+          )}
+        >
           {[...Array(5)].map((_, index) => {
             const starSrc =
               index < rating
@@ -33,7 +47,12 @@ const Reviewer: FC = (props) => {
               />
             );
           })}
-          <div className="self-stretch flex-1 ml-1.75 relative tracking-[0.3px] leading-[16px]">
+          <div
+            className={clsx(
+              "self-stretch ml-1.75 relative tracking-[0.3px] leading-[16px]",
+              { "flex-1": !isArabic }
+            )}
+          >
             {format(review_date, "dd MMMM yyyy")}
           </div>
         </div>
@@ -45,13 +64,20 @@ const Reviewer: FC = (props) => {
     <>
       {commentsList &&
         commentsList?.map((review: IUserComment, index: number) => (
-          <div key={index}>
-            <div
-              className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-sm text-gray-100"
-              key={index}
-            >
-              <div className="flex-1 flex flex-row items-center justify-between py-0 pl-0 pr-5 box-border shrink-0 max-w-full gap-5">
-                <div className="w-fit flex flex-row items-center justify-start py-0 pl-0 pr-[68px] box-border gap-2.5">
+          <div key={index} className="w-full">
+            <div className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-sm text-gray-100">
+              <div
+                className={clsx(
+                  "flex-1 flex flex-row items-center justify-between py-0 pl-0 pr-5 box-border shrink-0 max-w-full gap-5",
+                  { "flex-row-reverse": isArabic }
+                )}
+              >
+                <div
+                  className={clsx(
+                    "w-fit flex flex-row items-center justify-start py-0 pl-0 box-border gap-2.5",
+                    { "pr-[68px]": !isArabic }
+                  )}
+                >
                   {review.avatar ? (
                     <img
                       className="h-8 w-8 rounded-341xl overflow-hidden shrink-0 object-cover"
@@ -84,7 +110,12 @@ const Reviewer: FC = (props) => {
               anyStars(review.review_date || "", Number(review.raiting) || 0)}
 
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
-              <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">
+              <div
+                className={clsx(
+                  "h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full",
+                  { "text-end": isArabic }
+                )}
+              >
                 {review.comments_text}
               </div>
             </section>
@@ -95,7 +126,12 @@ const Reviewer: FC = (props) => {
                     {review.helpful}
                   </div>
                 </div> */}
-                <div className="self-stretch flex flex-row items-start justify-start gap-[23px]">
+                <div
+                  className={clsx(
+                    "self-stretch flex flex-row items-start justify-start gap-[23px]",
+                    { "flex-row-reverse": isArabic }
+                  )}
+                >
                   <div className="flex-1 flex flex-col items-start justify-start pt-2 px-0 pb-0">
                     <div className="self-stretch h-4 relative tracking-[0.3px] leading-[16px] inline-block">
                       {findHelpful}
@@ -116,24 +152,17 @@ const Reviewer: FC = (props) => {
                 </div>
               </div>
             </section>
-            {review.author_answer && (
-              <section
-                key={index}
-                className="bg-[#F0F0F0] mb-5.25 mx-6.25 self-stretch pt-3 pb-5.75 px-4 flex flex-col gap-2.75 rounded-[11px]"
-              >
+            {review.developer_answer === true && (
+              <section className="bg-[#F0F0F0] mb-5.25 mx-6.25 self-stretch pt-3 pb-5.75 px-4 flex flex-col gap-2.75 rounded-[11px]">
                 <div className="flex justify-between">
+                  <span className="text-view-8">{review.developer_name}</span>
                   <span className="text-view-8">
-                    {review.author_answer.developer_name}
-                  </span>
-                  <span className="text-view-8">
-                    {review.author_answer.answer_date
-                      ? format(review.author_answer.answer_date, "dd/MM/yyyy")
+                    {review.answer_date
+                      ? format(review.answer_date, "dd/MM/yyyy")
                       : ""}
                   </span>
                 </div>
-                <span className="text-view-9">
-                  {review.author_answer.answer_text}
-                </span>
+                <span className="text-view-9">{review.answer_text}</span>
               </section>
             )}
           </div>

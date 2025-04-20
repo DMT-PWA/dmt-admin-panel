@@ -1,14 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CombinedDescription } from "./types";
-import { checkbox, IAboutGameDescription, DescriptionResponse } from "src/shared/types";
-import { fetchDescriptionInfoById, createDescriptionById, updateDescription } from "./descriptionThunk"
-
+import {
+  checkbox,
+  IAboutGameDescription,
+  DescriptionResponse,
+} from "src/shared/types";
+import {
+  fetchDescriptionInfoById,
+  createDescriptionById,
+  updateDescription,
+} from "./descriptionThunk";
+import { UpdateFieldPayload } from "src/shared/lib/store";
 
 const defaultState: CombinedDescription = {
   descriptionId: null,
   age: null,
   title: null,
-  developer_name: "Dmt Apps Inc.",
+  developer_name: "",
   checkboxes_state: [],
   raiting: null,
   review_count: "3.2",
@@ -30,14 +38,45 @@ const defaultState: CombinedDescription = {
   },
 };
 
+const handleCheckboxes = (
+  state: CombinedDescription,
+  action: PayloadAction<checkbox>
+) => {
+  const { id, value } = action.payload;
+
+  const existingIndex = state.checkboxes_state.findIndex(
+    (item) => item.id === id
+  );
+
+  if (existingIndex !== -1) {
+    state.checkboxes_state = state.checkboxes_state.filter(
+      (el) => el.id !== action.payload.id
+    );
+  } else {
+    state.checkboxes_state.push({ id, value });
+  }
+};
+
+const handleUpdate = (
+  state: CombinedDescription,
+  action: PayloadAction<Partial<CombinedDescription>>
+) => {
+  return { ...state, ...action.payload };
+};
+
 const pwaDescriptionSlice = createSlice({
   name: "pwaDescription",
   initialState: defaultState,
   reducers: {
-    updateAboutDescription: (state, action) => {
-      const { key, value } = action.payload;
+    batchUpdate: (state, action) => handleUpdate(state, action),
 
-      state.about_description[key as keyof IAboutGameDescription] = value;
+    updateAboutDescription: (
+      state,
+      action: PayloadAction<UpdateFieldPayload<IAboutGameDescription>>
+    ) => {
+      const { field, value } = action.payload;
+
+      state.about_description[field] = value as never;
     },
     setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
@@ -63,36 +102,67 @@ const pwaDescriptionSlice = createSlice({
     setGrade: (state, action) => {
       state.grades[action.payload.index].value = action.payload.value;
     },
-    toggleCheckbox: (state, action: PayloadAction<checkbox>) => {
-      const { id, value } = action.payload;
-
-      const existingIndex = state.checkboxes_state.findIndex(
-        (item) => item.id === id
-      );
-
-      if (existingIndex !== -1) {
-        state.checkboxes_state = state.checkboxes_state.filter(
-          (el) => el.id !== action.payload.id
-        );
-      } else {
-        state.checkboxes_state.push({ id, value });
-      }
-    },
+    toggleCheckbox: (state, action) => handleCheckboxes(state, action),
   },
   extraReducers: (builder) => {
     builder.addCase(fetchDescriptionInfoById.fulfilled, (state, action) => {
-      state.title = action.payload.name;
-      state.about_description.description = action.payload.about;
+      if (!action.payload) return;
+
+      const {
+        about,
+        rating,
+        downloads,
+        reviewCount,
+        version,
+        whats_new,
+        android_version,
+        lastUpdate,
+        releaseDate,
+        isContainsAds,
+        isEditorsChoice,
+        isInAppPurchases,
+        name,
+      } = action.payload;
+      state.title = name;
+      state.raiting = rating;
+      state.number_of_downloads = downloads;
+      state.review_count = reviewCount;
+      state.about_description = {
+        description: about,
+        last_update: lastUpdate,
+        release_date: releaseDate,
+        android_version,
+        version,
+        whats_new,
+      };
+
+      state.checkboxes_state = [
+        ...state.checkboxes_state.filter((item) => item.id !== 0),
+        ...(isContainsAds ? [{ id: 0, value: isContainsAds }] : []),
+      ];
+
+      state.checkboxes_state = [
+        ...state.checkboxes_state.filter((item) => item.id !== 1),
+        ...(isInAppPurchases ? [{ id: 1, value: isInAppPurchases }] : []),
+      ];
+
+      state.checkboxes_state = [
+        ...state.checkboxes_state.filter((item) => item.id !== 2),
+        ...(isEditorsChoice ? [{ id: 2, value: isEditorsChoice }] : []),
+      ];
     });
 
-    builder.addCase(createDescriptionById.pending, (state, action: PayloadAction<DescriptionResponse>) => {
-      state.descriptionId = action.payload._id
-    })
+    builder.addCase(
+      createDescriptionById.pending,
+      (state, action: PayloadAction<DescriptionResponse>) => {
+        state.descriptionId = action.payload._id;
+      }
+    );
 
     builder.addCase(updateDescription.fulfilled, (state, action) => {
-      state.descriptionId = action.payload._id
-    })
-  }
+      state.descriptionId = action.payload._id;
+    });
+  },
 });
 
 export const {
@@ -106,6 +176,7 @@ export const {
   setGrade,
   toggleCheckbox,
   setReleaseDate,
+  batchUpdate,
 } = pwaDescriptionSlice.actions;
 
 export default pwaDescriptionSlice.reducer;

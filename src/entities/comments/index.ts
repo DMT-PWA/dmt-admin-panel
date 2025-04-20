@@ -1,16 +1,6 @@
 export {
   commentsReducer,
-  setDeveloperAnswer,
   addComment,
-  setAnswerDate,
-  setAnswerText,
-  setAuthorName,
-  setAvatar,
-  setCommentsText,
-  setDeveloperName,
-  setLikes,
-  setRaiting,
-  setReviewDate,
   removeComment,
   resetState,
   getAllComments,
@@ -20,7 +10,9 @@ export {
   setAllComments,
   resetComment,
   setCommentGroupName,
-  setSelectedCommentId
+  setSelectedCommentId,
+  updateCommentInList,
+  updateCommentField
 } from "./model";
 
-export type { AllComments, ReviewObject, CommentsList } from "./model"
+export type { AllComments, ReviewObject, CommentsList, ICommentsState } from "./model"

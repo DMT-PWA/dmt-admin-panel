@@ -5,11 +5,10 @@ export interface IDesign {
   pwa_title: string | null;
   languages: object[];
   pwa_tags: object[];
-  collections: ICollection[] | { collectionId: string & ICollection[] };
+  collections: ICollection[];
   isChanged: boolean;
   appData: object;
   languagesList: LanguagesList;
   currentCountry: Country;
   currentLanguage: Language | null;
-  currentCollection: (ICollection & { _id: string }) | null;
 }

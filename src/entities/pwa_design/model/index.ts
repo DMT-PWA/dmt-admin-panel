@@ -7,10 +7,9 @@ export {
   setLanguage,
   setLanguagesList,
   setCountry,
-  setCurrentCollection,
   addLanguage,
   removeLanguage,
-  updateLanguagesList
+  updateLanguagesList,
 } from "./pwaDesignSlice";
 
 export { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";

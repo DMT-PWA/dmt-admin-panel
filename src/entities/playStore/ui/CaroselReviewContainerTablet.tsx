@@ -13,7 +13,7 @@ type CaroselReviewContainerTabletProps = {
 const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
   props
 ) => {
-  const { currentCollection } = useAppSelector((state) => state.pwa_design);
+  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const emptyCollections = () => {
     if (!currentCollection) {

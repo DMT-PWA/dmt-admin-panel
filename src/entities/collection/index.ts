@@ -7,3 +7,5 @@ export {
   setCollectionName,
   resetState,
 } from "./model";
+
+export type { CollectionResponse, ICollection } from "./model/types"

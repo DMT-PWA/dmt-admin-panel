@@ -12,8 +12,8 @@ export interface UpdatePwaPayload {
   language: string | undefined | null;
   displayId: string;
   country: string | undefined;
-  appTitle: string | undefined | null;
-  appSubTitle: string | undefined | null;
+  appTitle: string;
+  appSubTitle: string;
   hundredPlus: string | undefined | null;
   about: string | undefined | null;
   collectionId?: string | undefined | null;
@@ -32,8 +32,8 @@ export interface UpdatePwaResponse {
 }
 
 export type CreateInitPayload = {
-  appId: string,
-  adminId: string,
-  language: string,
-  country: string,
-}
+  appId: string;
+  adminId: string;
+  language: string;
+  country: string;
+};

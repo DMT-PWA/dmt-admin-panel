@@ -47,7 +47,7 @@ export const PwaComments: FC<PwaCommentsProps> = () => {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-1 flex-col mt-[78px]">
+    <div className="flex flex-1 flex-col">
       <div className="container__view-1 flex flex-col pl-[38px] pb-9">
         <Title
           title="Комментарии"

@@ -16,7 +16,7 @@ export type ReviewObject = Array<{
   _id: string;
 }>;
 
-export type AllComments = Array<{
+export type AllComments = {
   adminId: string;
   createdAt: string;
   name: string;
@@ -24,11 +24,11 @@ export type AllComments = Array<{
   updatedAt: string;
   __v: string;
   _id: string;
-}>;
+};
 export interface ICommentsState {
   comment: IUserComment & { commentId: string | null };
   comments_list: CommentsList;
   comment_group_name: string | null;
   selected_comment: string | null,
-  all_comments: AllComments
+  all_comments: Array<AllComments>
 }

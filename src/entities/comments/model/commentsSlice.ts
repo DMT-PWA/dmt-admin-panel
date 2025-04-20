@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICommentsState } from "./types";
 import { getAllComments, removeCommentById, createCommentHandler } from "./commentsThunk";
+import { IUserComment } from "src/shared/types";
+import { UpdateFieldPayload } from "src/shared/lib/store";
 
 const initialState: ICommentsState = {
   comment: {
@@ -12,7 +14,9 @@ const initialState: ICommentsState = {
     raiting: null,
     review_date: null,
     avatar: null,
-    author_answer: null
+    developer_name: null,
+    answer_text: null,
+    answer_date: null,
   },
   comment_group_name: null,
   selected_comment: null,
@@ -24,45 +28,22 @@ export const comments = createSlice({
   name: "comments",
   initialState,
   reducers: {
-    setDeveloperAnswer: (state, action) => {
-      state.comment.developer_answer = action.payload;
+    updateCommentInList: (state, action: PayloadAction<{ index: number, changes: Partial<IUserComment> }>) => {
+      if (!state.comments_list) return;
 
-      state.comment.author_answer = action.payload === true ? {} : null;
-    },
-    setAnswerDate: (state, action: PayloadAction<Date | null>) => {
-      if (state.comment.author_answer) {
-        state.comment.author_answer.answer_date = action.payload
-      }
-    },
-    setAnswerText: (state, action) => {
-      if (state.comment.author_answer) {
+      const { changes, index } = action.payload;
 
-        state.comment.author_answer.answer_text = action.payload;
+      if (index !== -1) {
+        state.comments_list[index] = {
+          ...state.comments_list[index],
+          ...changes
+        }
       }
     },
-    setAuthorName: (state, action) => {
-      state.comment.author_name = action.payload;
-    },
-    setCommentsText: (state, action) => {
-      state.comment.comments_text = action.payload;
-    },
-    setDeveloperName: (state, action) => {
-      if (state.comment.author_answer) {
-        state.comment.author_answer.developer_name = action.payload;
-        return
-      }
-    },
-    setLikes: (state, action) => {
-      state.comment.likes_count = action.payload;
-    },
-    setRaiting: (state, action: PayloadAction<number>) => {
-      state.comment.raiting = action.payload;
-    },
-    setReviewDate: (state, action: PayloadAction<Date | null>) => {
-      state.comment.review_date = action.payload;
-    },
-    setAvatar: (state, action) => {
-      state.comment.avatar = action.payload;
+    updateCommentField: (state, action: PayloadAction<UpdateFieldPayload<IUserComment>>) => {
+      const { field, value } = action.payload;
+
+      state.comment[field] = value as never;
     },
 
     setComments: (state, action) => {
@@ -106,7 +87,7 @@ export const comments = createSlice({
       state.all_comments = [...action.payload]
     })
 
-    builder.addCase(removeCommentById.fulfilled, (state, action) => {
+    builder.addCase(removeCommentById.fulfilled, (state, action: PayloadAction<ICommentsState['comments_list']>) => {
       state.comments_list = [...action.payload]
     })
 
@@ -117,24 +98,16 @@ export const comments = createSlice({
 });
 
 export const {
-  setDeveloperAnswer,
   addComment,
-  setAnswerDate,
-  setAnswerText,
-  setAuthorName,
-  setAvatar,
-  setCommentsText,
-  setDeveloperName,
-  setLikes,
-  setRaiting,
-  setReviewDate,
   removeComment,
   resetState,
   setComments,
   setAllComments,
   resetComment,
   setSelectedCommentId,
-  setCommentGroupName
+  setCommentGroupName,
+  updateCommentInList,
+  updateCommentField
 } = comments.actions;
 
 export default comments.reducer;

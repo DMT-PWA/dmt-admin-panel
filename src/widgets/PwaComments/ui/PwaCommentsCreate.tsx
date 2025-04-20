@@ -7,27 +7,19 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { AvatarsCollectionModal } from "src/features/avatars_collection_modal";
 import {
   addComment,
-  setDeveloperAnswer,
   createCommentHandler,
   resetComment,
   setCommentGroupName,
+  updateCommentInList,
+  updateCommentField,
 } from "src/entities/comments";
 import { CommentCreate } from "src/features/comment_create";
 import { adminId } from "src/shared/lib/data";
 import { InputDefault } from "src/shared/ui/input";
+import { IUserComment } from "src/shared/types";
 
 export const PwaCommentsCreate: FC = () => {
   const { comment, comments_list } = useAppSelector((state) => state.comments);
-  const {
-    author_answer,
-    author_name,
-    developer_answer,
-    avatar,
-    comments_text,
-    likes_count,
-    raiting,
-    review_date,
-  } = comment;
 
   const { currentLanguage } = useAppSelector((state) => state.pwa_design);
 
@@ -47,6 +39,26 @@ export const PwaCommentsCreate: FC = () => {
     dispatch(
       createCommentHandler({ adminId, language: currentLanguage?.label })
     );
+  };
+
+  const onUpdateCommentInList = (
+    key: string,
+    ind: number,
+    val: IUserComment[keyof IUserComment]
+  ) => {
+    dispatch(
+      updateCommentInList({
+        index: ind,
+        changes: { [key]: val },
+      })
+    );
+  };
+
+  const handleFieldUpdate = (
+    field: keyof IUserComment,
+    value: IUserComment[keyof IUserComment]
+  ) => {
+    dispatch(updateCommentField({ field, value }));
   };
 
   const onAddNewComment = () => {
@@ -80,54 +92,24 @@ export const PwaCommentsCreate: FC = () => {
       />
       <div className="flex flex-col gap-6">
         <div>
-          <div className="flex">
-            <h2 className="text__default flex-[0.5]">
-              Коментарий пользователя
-            </h2>
-            <div className="flex flex-[0.5] justify-between">
-              <h2 className="text__default">Ответ разработчика</h2>
-              <Switch
-                checked={developer_answer}
-                onChange={(value) => dispatch(setDeveloperAnswer(value))}
-                className="group inline-flex h-[16px] w-8 items-center rounded-full bg-[#697077] transition data-[checked]:bg-orange"
-              >
-                <span className="size-3 translate-x-0.5 rounded-full bg-white transition group-data-[checked]:translate-x-4.5" />
-              </Switch>
-            </div>
-          </div>
           {comments_list &&
-            comments_list.map((item) => {
+            comments_list.map((item, ind) => {
               return (
                 <CommentCreate
+                  key={ind}
                   setModalOpen={setModalOpen}
-                  author_answer={item.author_answer}
-                  author_name={item.author_name}
-                  avatar={item.avatar}
-                  comments_text={item.comments_text}
-                  developer_answer={item.developer_answer}
-                  likes_count={item.likes_count}
-                  raiting={item.raiting}
-                  review_date={item.review_date}
+                  onFiledUpdate={(field, value) =>
+                    onUpdateCommentInList(field, ind, value)
+                  }
+                  {...item}
                 />
               );
             })}
           <CommentCreate
             setModalOpen={setModalOpen}
-            author_answer={author_answer}
-            author_name={author_name}
-            avatar={avatar}
-            comments_text={comments_text}
-            developer_answer={developer_answer}
-            likes_count={likes_count}
-            raiting={raiting}
-            review_date={review_date}
+            onFiledUpdate={(field, value) => handleFieldUpdate(field, value)}
+            {...comment}
           />
-          {/* 
-          <ButtonDefault
-            btn_text="Добавить новый коментарий"
-            btn_classes="btn__white btn__white-view-5 text-view-4 mt-5.5 ml-5.5"
-            onClickHandler={onAddNewComment}
-          /> */}
           <button
             onClick={onAddNewComment}
             className="flex items-center gap-6.75 text-view-4 text-gray-6 bg-white py-[13.5px] px-[16.5px] rounded-[8px] mt-5.5"

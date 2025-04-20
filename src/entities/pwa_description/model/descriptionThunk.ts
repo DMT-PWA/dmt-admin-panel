@@ -3,18 +3,17 @@ import {
   getDescriptionById,
   createDescription,
 } from "src/shared/api/description";
-import { CombinedDescription } from "./types";
-import { RootState } from "src/shared/lib/store";
+import { CombinedDescription, DescriptionByIdResponse } from "./types";
 import { UpdatePwaPayload } from "src/shared/types/createTypes";
 
 export const fetchDescriptionInfoById = createAsyncThunk(
   "description/fetchDescriptionInfoById",
-  async (data: unknown) => {
-    const response = await getDescriptionById(`description/${data._id}`);
+  async (id: string) => {
+    const response = await getDescriptionById(`description/${id}`);
 
     if (!response) return;
 
-    return response;
+    return response as DescriptionByIdResponse;
   }
 );
 
@@ -41,11 +40,11 @@ export const createDescriptionById = createAsyncThunk<
 });
 
 export const updateDescription = createAsyncThunk<
-  unknown,
+  UpdatePwaPayload,
   Partial<UpdatePwaPayload>,
   { state: RootState }
->("description/updateDescription", async (payload, { getState, dispatch }) => {
-  const state = getState().pwa_description as CombinedDescription;
+>("description/updateDescription", async (payload, { getState }) => {
+  const state = (getState() as RootState).pwa_description;
 
   const { adminId, language, appId, isExist, country } = payload;
 
@@ -62,14 +61,18 @@ export const updateDescription = createAsyncThunk<
     about_description;
 
   const fullPayload = {
-    adminId, language, appId, isExist, country,
+    adminId,
+    language,
+    appId,
+    isExist,
+    country,
     name: title,
     lastUpdate: last_update,
     releaseDate: release_date,
     downloads: number_of_downloads,
     androidVersion: android_version,
     about: description,
-    raiting,
+    rating: raiting,
     reviewCount: review_count,
     isContainsAds: checkboxes_state[0].value,
     isEditorsChoice: checkboxes_state[1].value,
@@ -78,5 +81,5 @@ export const updateDescription = createAsyncThunk<
 
   const response = await createDescription("description", fullPayload);
 
-  return response;
+  return response as UpdatePwaPayload;
 });

@@ -18,9 +18,11 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   const [isAppSupport] = useState(false);
   const [, setIsInstall] = useState(false);
-  const { currentCountry, currentLanguage, currentCollection } = useAppSelector(
+  const { currentCountry, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
+
+  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const { isArabic, langData } = usePhonePreview(
     currentLanguage,
@@ -401,6 +403,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                 findHelpful={findHelpful}
                 yes={yes}
                 no={no}
+                isArabic={isArabic}
               />
             )}
             {/* <ReviewContent1 /> */}

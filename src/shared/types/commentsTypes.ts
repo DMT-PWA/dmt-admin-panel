@@ -5,14 +5,8 @@ export interface IUserComment {
     raiting: number | null;
     likes_count: number | null;
     comments_text: string | null;
-    author_answer: IDeveloperAnswer | null
-    developer_answer: boolean;
-}
-
-export interface IDeveloperAnswer {
-
     developer_name?: string | null;
     answer_text?: string | null;
     answer_date?: Date | null;
+    developer_answer: boolean;
 }
-

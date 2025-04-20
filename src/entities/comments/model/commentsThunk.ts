@@ -20,7 +20,7 @@ export const removeCommentById = createAsyncThunk("comments/removeCommentById", 
 
 export const createCommentHandler = createAsyncThunk("comments/createCommentHandler", async (data: { appId: string, language: string }, { getState }) => {
 
-    const state = getState().comments as ICommentsState;
+    const state = (getState() as RootState).comments;
 
     const { comment_group_name, comments_list } = state;
 

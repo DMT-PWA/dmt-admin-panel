@@ -7,6 +7,7 @@ import { collectionSliceReducer } from "src/entities/collection";
 import { commentsReducer } from "src/entities/comments";
 import { metricsReducer } from "src/entities/metrics"
 import { settingsReducer } from "src/entities/settings"
+import { collectionsReducer } from "src/features/collections_list"
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     pwa_design: pwaDesignReducer,
     pwa_create: pwaCreateReducer,
     collection: collectionSliceReducer,
+    collections: collectionsReducer,
     comments: commentsReducer,
     metrics: metricsReducer,
     settings: settingsReducer
