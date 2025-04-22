@@ -13,7 +13,7 @@ export const CheckboxList: FC<ICheckboxList> = ({ handleChange, values }) => {
       <div className="flex justify-between">
         <Label>Есть реклама</Label>
         <Checkbox
-          checked={values.some((item) => item.id === 0)}
+          checked={values.find((item) => item.id === 0)?.value}
           onChange={(e) => handleChange({ id: 0, value: e })}
           className="group block size-4 rounded border data-[checked]:border-0 bg-white data-[checked]:bg-orange"
         ></Checkbox>
@@ -21,7 +21,7 @@ export const CheckboxList: FC<ICheckboxList> = ({ handleChange, values }) => {
       <div className="flex justify-between">
         <Label>Покупки в приложении</Label>
         <Checkbox
-          checked={values.some((item) => item.id === 1)}
+          checked={values.find((item) => item.id === 1)?.value}
           onChange={(e) => handleChange({ id: 1, value: e })}
           className="group block size-4 rounded border data-[checked]:border-0 bg-white data-[checked]:bg-orange"
         ></Checkbox>
@@ -29,7 +29,7 @@ export const CheckboxList: FC<ICheckboxList> = ({ handleChange, values }) => {
       <div className="flex justify-between">
         <Label>Выбор редакции</Label>
         <Checkbox
-          checked={values.some((item) => item.id === 2)}
+          checked={values.find((item) => item.id === 2)?.value}
           onChange={(e) => handleChange({ id: 2, value: e })}
           className="group block size-4 rounded border data-[checked]:border-0  bg-white data-[checked]:bg-orange"
         ></Checkbox>

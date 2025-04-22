@@ -37,6 +37,7 @@ import {
   setCurrentCollection,
 } from "src/features/collections_list";
 import { setComments, setSelectedCommentId } from "src/entities/comments";
+import { updateSettings } from "src/entities/settings";
 
 type PwaCreateProps = {
   appId: string;
@@ -77,7 +78,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     const { appTitle, appSubTitle } = payload;
 
     dispatch(setPwaTitle(appTitle));
-    dispatch(setDeveloperName(appSubTitle));
   }, [appId, dispatch]);
 
   const fetchDataByCountry = useCallback(
@@ -91,6 +91,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       );
 
       dispatch(setPwaTitle(payload.appTitle));
+
+      dispatch(setDeveloperName(payload.appSubTitle));
 
       dispatch(fetchDescriptionInfoById(payload.about));
 
@@ -220,6 +222,19 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           isExist: true,
           country: currentCountry?.label.toLowerCase(),
           commentId: selected_comment,
+        })
+      );
+
+      return;
+    }
+
+    if (pathname.endsWith("settings")) {
+      dispatch(
+        updateSettings({
+          appId,
+          ...payload,
+          isExist: true,
+          country: currentCountry?.label.toLowerCase(),
         })
       );
 

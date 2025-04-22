@@ -29,7 +29,7 @@ export type DescriptionByIdResponse = {
   reviewCount: string;
   version: string;
   whats_new: string;
-  android_version: string;
+  androidVersion: string;
   lastUpdate: Date;
   releaseDate: Date;
   isContainsAds: boolean;

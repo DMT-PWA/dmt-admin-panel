@@ -57,11 +57,11 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     raiting,
     review_count,
     developer_name,
+    number_of_downloads,
   } = useAppSelector((state) => state.pwa_description);
 
-  const { release_date, last_update } = useAppSelector(
-    (state) => state.pwa_description.about_description
-  );
+  const { release_date, last_update, version, android_version, whats_new } =
+    useAppSelector((state) => state.pwa_description.about_description);
 
   const { collectionsList, currentCollection } = useAppSelector(
     (state) => state.collections
@@ -236,6 +236,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-1/4"
                 label="Версия"
                 type="number"
+                value={version}
                 onUpdateValue={(e) =>
                   dispatch(
                     updateAboutDescription({
@@ -277,6 +278,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 label="Количество скачиваний"
                 container_classes="flex-1/2"
                 placeholder="10000000"
+                value={number_of_downloads}
                 onUpdateValue={(e) =>
                   dispatch(setNumberOfDownloads(e.target.value))
                 }
@@ -287,6 +289,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-1/3 mr-5.75"
                 label="Требуемая версия андройд"
                 type="text"
+                value={android_version}
                 onUpdateValue={(e) =>
                   dispatch(
                     updateAboutDescription({
@@ -335,6 +338,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   className="min-h-[120px]"
                   placeholder="Исправлены баги и ошибки"
                   name="whats_new"
+                  value={whats_new}
                   onChange={(e) =>
                     dispatch(
                       updateAboutDescription({

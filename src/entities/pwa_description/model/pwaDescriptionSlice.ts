@@ -17,7 +17,11 @@ const defaultState: CombinedDescription = {
   age: null,
   title: null,
   developer_name: "",
-  checkboxes_state: [],
+  checkboxes_state: [
+    { id: 0, value: false },
+    { id: 1, value: false },
+    { id: 2, value: false },
+  ],
   raiting: null,
   review_count: "3.2",
   number_of_downloads: 100000000,
@@ -44,17 +48,9 @@ const handleCheckboxes = (
 ) => {
   const { id, value } = action.payload;
 
-  const existingIndex = state.checkboxes_state.findIndex(
-    (item) => item.id === id
+  state.checkboxes_state = state.checkboxes_state.map((checkbox) =>
+    checkbox.id === id ? { ...checkbox, value: value } : checkbox
   );
-
-  if (existingIndex !== -1) {
-    state.checkboxes_state = state.checkboxes_state.filter(
-      (el) => el.id !== action.payload.id
-    );
-  } else {
-    state.checkboxes_state.push({ id, value });
-  }
 };
 
 const handleUpdate = (
@@ -114,8 +110,8 @@ const pwaDescriptionSlice = createSlice({
         downloads,
         reviewCount,
         version,
-        whats_new,
-        android_version,
+        whatsNew,
+        androidVersion,
         lastUpdate,
         releaseDate,
         isContainsAds,
@@ -131,25 +127,14 @@ const pwaDescriptionSlice = createSlice({
         description: about,
         last_update: lastUpdate,
         release_date: releaseDate,
-        android_version,
+        android_version: androidVersion,
         version,
-        whats_new,
+        whats_new: whatsNew,
       };
 
-      state.checkboxes_state = [
-        ...state.checkboxes_state.filter((item) => item.id !== 0),
-        ...(isContainsAds ? [{ id: 0, value: isContainsAds }] : []),
-      ];
-
-      state.checkboxes_state = [
-        ...state.checkboxes_state.filter((item) => item.id !== 1),
-        ...(isInAppPurchases ? [{ id: 1, value: isInAppPurchases }] : []),
-      ];
-
-      state.checkboxes_state = [
-        ...state.checkboxes_state.filter((item) => item.id !== 2),
-        ...(isEditorsChoice ? [{ id: 2, value: isEditorsChoice }] : []),
-      ];
+      state.checkboxes_state[0].value = isContainsAds;
+      state.checkboxes_state[1].value = isInAppPurchases;
+      state.checkboxes_state[2].value = isEditorsChoice;
     });
 
     builder.addCase(

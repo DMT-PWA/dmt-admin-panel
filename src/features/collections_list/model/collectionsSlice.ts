@@ -17,7 +17,7 @@ export const collectionsSlice = createSlice({
   reducers: {
     setCurrentCollection: (
       state,
-      action: PayloadAction<ICollection["_id"]>
+      action: PayloadAction<ICollection["_id"] | null>
     ) => {
       const currentCollection = state.collectionsList.find(
         (item) => item._id === action.payload
@@ -25,7 +25,11 @@ export const collectionsSlice = createSlice({
 
       if (currentCollection) {
         state.currentCollection = currentCollection;
+
+        return;
       }
+
+      state.currentCollection = null;
     },
     getCollection: (state, action: PayloadAction<CollectionResponse>) => {
       state.currentCollection = {

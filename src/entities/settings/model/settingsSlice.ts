@@ -1,31 +1,47 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { Settings } from "./types"
-import { SelectValueProp } from "src/shared/types"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Settings } from "./types";
+import { SelectValueProp } from "src/shared/types";
+import { UpdateFieldPayload } from "src/shared/lib/store";
 
 const initialState: Settings = {
-    domainApp: null,
-    domainLanding: null,
-    marketerTag: null
-}
+  domainApp: null,
+  domainLanding: null,
+  marketerTag: null,
+  whitePage: null,
+  naming: null,
+};
 
 const settingsSlice = createSlice({
-    name: "settings",
-    initialState,
-    reducers: {
-        setDomainApp: (state, action: PayloadAction<SelectValueProp>) => {
-            state.domainApp = action.payload
-        },
+  name: "settings",
+  initialState,
+  reducers: {
+    updateSettingField: (
+      state,
+      action: PayloadAction<UpdateFieldPayload<Settings>>
+    ) => {
+      const { field, value } = action.payload;
 
-        setDomainLanding: (state, action: PayloadAction<SelectValueProp>) => {
-            state.domainLanding = action.payload
-        },
+      state[field] = value as never;
+    },
+    setDomainApp: (state, action: PayloadAction<SelectValueProp>) => {
+      state.domainApp = action.payload;
+    },
 
-        setMartketerTag: (state, action: PayloadAction<SelectValueProp>) => {
-            state.marketerTag = action.payload
-        }
-    }
-})
+    setDomainLanding: (state, action: PayloadAction<SelectValueProp>) => {
+      state.domainLanding = action.payload;
+    },
 
-export const { setDomainApp, setDomainLanding, setMartketerTag } = settingsSlice.actions
+    setMartketerTag: (state, action: PayloadAction<SelectValueProp>) => {
+      state.marketerTag = action.payload;
+    },
+  },
+});
 
-export default settingsSlice.reducer
+export const {
+  setDomainApp,
+  setDomainLanding,
+  setMartketerTag,
+  updateSettingField,
+} = settingsSlice.actions;
+
+export default settingsSlice.reducer;

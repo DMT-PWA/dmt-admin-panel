@@ -120,14 +120,14 @@ export const PwaMetrics: FC = () => {
             );
           })}
       </div>
-      <button
+      {/* <button
         className="bg-white py-[13.5px] px-[16.5px] rounded-[8px] max-w-10.5"
         onClick={() =>
           dispatch(addFacebookPixelField({ id: 1, pixel: null, token: null }))
         }
       >
         <img src="/pwa_icons/crosshair.png" width={14} height={14} alt="" />
-      </button>
+      </button> */}
     </div>
   );
 };

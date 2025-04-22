@@ -57,8 +57,14 @@ export const updateDescription = createAsyncThunk<
     checkboxes_state,
   } = state;
 
-  const { release_date, last_update, android_version, description } =
-    about_description;
+  const {
+    release_date,
+    last_update,
+    android_version,
+    description,
+    version,
+    whats_new,
+  } = about_description;
 
   const fullPayload = {
     adminId,
@@ -77,6 +83,8 @@ export const updateDescription = createAsyncThunk<
     isContainsAds: checkboxes_state[0].value,
     isEditorsChoice: checkboxes_state[1].value,
     isInAppPurchases: checkboxes_state[2].value,
+    version,
+    whatsNew: whats_new,
   };
 
   const response = await createDescription("description", fullPayload);
