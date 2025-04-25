@@ -10,19 +10,40 @@ import type { ReviewObject } from "src/entities/comments";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
+import {
+  updatePwa,
+  getPwaByIdAndLanguage,
+} from "src/features/appData/appDataAPI";
+import { getApp } from "src/features/appData/appDataSlice";
 
 import pencil_icon from "src/shared/assets/icons/pencil.png";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 import circle_icon from "src/shared/assets/icons/circle_icon.png";
 
 type PwaCommentsProps = {
+  appId: string;
+  adminId: string;
+  language: string;
+  country: string;
   isEdit?: boolean;
 };
 
-export const PwaComments: FC<PwaCommentsProps> = () => {
+// Screen:Comments
+export const PwaComments: FC<PwaCommentsProps> = ({
+  appId,
+  adminId,
+  language,
+  country,
+  isEdit,
+}) => {
   const { all_comments, selected_comment } = useAppSelector(
     (state) => state.comments
   );
+
+  console.log({ selected_comment });
+  const { appData } = useAppSelector((state) => state.appData);
+
+  console.log({ appData });
 
   const dispatch = useAppDispatch();
 
@@ -45,6 +66,78 @@ export const PwaComments: FC<PwaCommentsProps> = () => {
   useEffect(() => {
     dispatch(getAllComments());
   }, [dispatch]);
+
+  //fetch app on component mount
+  useEffect(() => {
+    fetchPWA();
+  }, []);
+
+  const fetchPWA = async () => {
+    if (!appId) {
+      console.log("appId required");
+      return;
+    }
+    if (!language) {
+      console.log("language required");
+      return;
+    }
+    if (!country) {
+      console.log("country required");
+      return;
+    }
+    const response = await getPwaByIdAndLanguage(appId, language, country);
+
+    if (response?._id) {
+      dispatch(getApp(response));
+    }
+  };
+
+  useEffect(() => {
+    updatePWA();
+  }, [selected_comment]);
+
+  const updatePWA = async () => {
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    if (!adminId) {
+      // alert("adminId is required");
+      return;
+    }
+
+    if (!country) {
+      // alert("country is required");
+      return;
+    }
+
+    if (!language) {
+      alert("language is required");
+      return;
+    }
+
+    let newCommentId = selected_comment || appData?.commentId?._id;
+
+    if (!newCommentId) {
+      console.log("commentId is required");
+      return;
+    }
+
+    const userData = {
+      appId,
+      adminId,
+      commentId: newCommentId,
+      country,
+      language,
+    };
+
+    const response = await updatePwa(userData);
+
+    if (response?._id) {
+      await fetchPWA();
+    }
+  };
 
   return (
     <div className="flex flex-1 flex-col">

@@ -21,13 +21,103 @@ const Tablet: FC<ITabletProps> = (props) => {
   const { currentCountry, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
+  const { appData } = useAppSelector((state) => state.appData);
 
+  const {
+    isExist,
+    open,
+    noPWASupport,
+    stayOn,
+    add,
+    clickIcon,
+    pressIcon,
+    wait,
+    proceed,
+    containsAds,
+    inAppPurchases,
+    headerReviews,
+    hundredPlus,
+    downloads,
+    ageLimit,
+    ageRating,
+    install,
+    wishlist,
+    available,
+    aboutThisGame,
+    updatedOn,
+    updatedDate,
+    casino,
+    dataSafety,
+    safety,
+    noInformation,
+    seeDetails,
+    ratingsAndReviews,
+    verified,
+    phone,
+    tV,
+    chromebook,
+    tablet,
+    reviews,
+    fourPointThree,
+    fifteenM,
+    helpful,
+    allReviews,
+    whatsNew,
+    findHelpful,
+    yes,
+    no,
+    contact,
+    newFeatures,
+    downloadsCount,
+    isContainsAds,
+    isInAppPurchases,
+    isEditorsChoice,
+    age,
+    createDate,
+    lastUpdate,
+    releaseDate,
+    rating,
+    about,
+    androidVersion,
+    collectionId,
+    commentId,
+    reviewCount,
+    version,
+    _id,
+    domain,
+    subDomain,
+    pixelId,
+    accessToken,
+    domainApp,
+    domainLanding,
+    keitaroDomain,
+    keitaroCampaign,
+    keitaroCampaignId,
+    yandexMetrikaId,
+    oneSignalApiKey,
+    oneSignalAppId,
+    displayId,
+    displayName,
+    marketerTag,
+    appTitle,
+    appSubTitle,
+    renderId,
+    // icon,
+    // screenShots,
+    // reviewObject,
+  } = appData;
+  const icon = collectionId?.icon || "";
+  const screenShots = collectionId?.screenShots || [];
+  const reviewObject = commentId?.reviewObject || [];
   const { currentCollection } = useAppSelector((state) => state.collections);
 
+  console.log({ screenShots });
   const { isArabic, langData } = usePhonePreview(
     currentLanguage,
     currentCountry
   );
+
+  console.log({ currentLanguage });
 
   const {
     title,
@@ -43,7 +133,7 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   const { description } = about_description;
 
-  const icon = currentCollection?.collectionImage;
+  // const icon = currentCollection?.collectionImage;
 
   const formatDownloads = (downloads: number | string | null): string => {
     return Number(downloads) > 100000 ? "100K+" : `${downloads}`;
@@ -53,19 +143,6 @@ const Tablet: FC<ITabletProps> = (props) => {
   //===================================================================================================
   //==========================={Translations Block}====================================================
   //===================================================================================================
-  const {
-    headerReviews,
-    downloads,
-    ageRating,
-    install,
-    aboutThisGame,
-    ratingsAndReviews,
-    reviewObject,
-    findHelpful,
-    yes,
-    no,
-    screenShots,
-  } = langData;
 
   // const isArabic = currentLanguage?.label === "Arabic";
   //===================================================================================================
@@ -118,14 +195,14 @@ const Tablet: FC<ITabletProps> = (props) => {
                           <div className="flex flex-col justify-center items-center">
                             <div className="self-stretch flex flex-row items-center justify-center flex-wrap content-start gap-1">
                               <span className="text-[#000000CC] tracking-[3%] m-0 flex-1 relative leading-[100%] font-normal font-[inherit]">
-                                {title}
+                                {appTitle}
                                 <br />
                               </span>
                             </div>
                           </div>
                           <div className="flex flex-row items-start justify-start flex-wrap content-start text-xs text-blue_default">
                             <div className="relative font-bold tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
-                              {developer_name}
+                              {appSubTitle}
                             </div>
                           </div>
                           <div
@@ -188,7 +265,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                         <div className="flex flex-col gap-1.75 items-center justify-center">
                           <div className="flex flex-row items-center justify-center gap-px">
                             <div className="relative font-bold font-product_sans tracking-[0.25px] leading-4 inline-block min-w-[22px]">
-                              {raiting || 4.8}
+                              {rating || 4.8}
                             </div>
                             <div className="flex flex-col items-start justify-start px-0 pb-0">
                               <img
@@ -214,7 +291,8 @@ const Tablet: FC<ITabletProps> = (props) => {
                         <div className="flex flex-col gap-1.75 items-center justify-center">
                           <div className="flex flex-row items-center justify-center py-0 px-2">
                             <div className="relative font-bold  tracking-[0.25px] leading-4 inline-block min-w-[45px]">
-                              {modifiedNumberOfDownloads}
+                              {/* {modifiedNumberOfDownloads} */}
+                              {downloadsCount || "100k+"}
                             </div>
                           </div>
                           <div className="flex flex-row items-start justify-start text-xs text-dimgray">
@@ -320,7 +398,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                 <div className="self-stretch h-fit overflow-hidden shrink-0 flex flex-col items-start justify-start gap-4">
                   <p
                     className="max-w-full text-smi text-dimgray tracking-[0.2px] leading-[20px] break-words whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: description }} // Use dangerouslySetInnerHTML
+                    dangerouslySetInnerHTML={{ __html: about || "" }} // Use dangerouslySetInnerHTML
                   />
                 </div>
                 <FeaturesContainer />
@@ -390,7 +468,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                 divWidth2="8px"
                 ratingMinWidth="unset"
                 ratingWidth="8px"
-                raitingValue={raiting || 4.8}
+                raitingValue={rating || 4.8}
                 grades={grades}
                 isArabic={isArabic}
               />
@@ -398,7 +476,8 @@ const Tablet: FC<ITabletProps> = (props) => {
             {/* =========+{Section: Reviews result }======================== */}
             {reviewObject && (
               <Reviewer
-                commentsList={comments_list}
+                // commentsList={comments_list}
+                commentsList={reviewObject}
                 reviewData={reviewObject}
                 findHelpful={findHelpful}
                 yes={yes}

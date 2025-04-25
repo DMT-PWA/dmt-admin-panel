@@ -1,4 +1,7 @@
 import { FC, useMemo } from "react";
+import { useAppSelector } from "src/shared/lib/store";
+
+import { ICollection } from "src/shared/types";
 
 type CaroselReviewContainerTabletProps = {
   propWidth: number | string;
@@ -10,11 +13,10 @@ type CaroselReviewContainerTabletProps = {
 const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
   props
 ) => {
-
-  const { propWidth, propHeight, propFlex, screenShots } = props;
+  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const emptyCollections = () => {
-    if (!screenShots) {
+    if (!currentCollection) {
       return Array.from({ length: 4 }).map((_, i) => (
         <div
           key={`empty-${i}`}
@@ -23,7 +25,7 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       ));
     }
 
-    return screenShots.map((photo: string, i: number) => {
+    return currentCollection.images.map((photo: string, i: number) => {
       if (photo) {
         return (
           <img
@@ -44,6 +46,7 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       );
     });
   };
+  const { propWidth, propHeight, propFlex, screenShots } = props;
   const caroselReviewContainerStyle = useMemo(() => {
     return {
       width: propWidth,

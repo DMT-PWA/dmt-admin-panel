@@ -28,9 +28,11 @@ import {
   getPwaById,
   usePwaCreate,
   finishCreatePWA,
-  getPwaByIdAndLanguage,
+  // getPwaByIdAndLanguage,
   UpdatePwaPayload,
 } from "src/entities/pwa_create";
+import { getPwaByIdAndLanguage } from "src/features/appData/appDataAPI";
+import { getApp } from "src/features/appData/appDataSlice";
 import clsx from "clsx";
 import {
   getCollection,
@@ -75,6 +77,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     };
 
     const { appTitle, appSubTitle } = payload;
+
+    console.log({lang:currentLanguage})
 
     dispatch(setPwaTitle(appTitle));
     dispatch(setDeveloperName(appSubTitle));
@@ -126,13 +130,14 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   useEffect(() => {
     if (isEdit && currentCountry?.label && currentLanguage?.label) {
-      fetchDataByCountry(currentCountry.label, currentLanguage.label);
+      // fetchDataByCountry(currentLanguage.label, currentCountry.label);
+      fetchPWA(currentLanguage.label, currentCountry.label);
     }
   }, [
     isEdit,
     currentCountry?.label,
     currentLanguage?.label,
-    fetchDataByCountry,
+    // fetchDataByCountry,
   ]);
 
   const pathname = useLocation().pathname;
@@ -157,8 +162,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       finishCreatePWA({
         adminId: adminId,
         appId: appId,
-        country: currentCountry?.label.toLowerCase(),
-        language: currentLanguage?.label,
+        country: currentCountry?.label.toLowerCase() || "",
+        language: currentLanguage?.label || "",
       })
     );
   };
@@ -232,7 +237,39 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
     dispatch(setLanguage(languagesList[index]));
 
+    let country = currentCountry?.label.toLowerCase() || "";
+    fetchPWA(country, languagesList[index]?.label);
+
     setCurrentLangInLS();
+  };
+
+  //fetch app on component mount
+  // useEffect(() => {
+  //   fetchPWA();
+  // }, []);
+
+  const fetchPWA = async (country: string, language: string) => {
+    if (!appId) {
+      console.log("appId required");
+      return;
+    }
+
+    // const language: string = currentCountry?.label;
+    if (!language) {
+      console.log("language required");
+      return;
+    }
+
+    // const country: string = currentCountry?.label || "";
+    if (!country) {
+      console.log("country required");
+      return;
+    }
+    const response = await getPwaByIdAndLanguage(appId, language, country);
+
+    if (response?._id) {
+      dispatch(getApp(response));
+    }
   };
 
   return (
@@ -270,8 +307,10 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                     return (
                       <TabPanel key={item.value}>
                         <PwaDescriptionForm
+                          appId={appId}
                           adminId={adminId}
                           language={currentLanguage?.label || "English"}
+                          country={currentCountry?.label || ""}
                         />
                       </TabPanel>
                     );
@@ -303,7 +342,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                   {languagesList?.map((item) => {
                     return (
                       <TabPanel key={item.value}>
-                        <PwaComments isEdit={isEdit} />
+                        <PwaComments
+                          appId={appId}
+                          adminId={adminId}
+                          language={currentLanguage?.label || "English"}
+                          country={currentCountry?.label || ""}
+                          isEdit={isEdit}
+                        />
                       </TabPanel>
                     );
                   })}
@@ -312,8 +357,28 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             }
           />
           <Route path="comments_create" element={<PwaCommentsCreate />} />
-          <Route path="settings" element={<PwaSettings />} />
-          <Route path="metrics" element={<PwaMetrics />} />
+          <Route
+            path="settings"
+            element={
+              <PwaSettings
+                appId={appId}
+                adminId={adminId}
+                language={currentLanguage?.label || "English"}
+                country={currentCountry?.label || ""}
+              />
+            }
+          />
+          <Route
+            path="metrics"
+            element={
+              <PwaMetrics
+                appId={appId}
+                adminId={adminId}
+                language={currentLanguage?.label || "English"}
+                country={currentCountry?.label || ""}
+              />
+            }
+          />
           <Route path="*" element={<PwaForm appId={appId} />} />
         </Routes>
 

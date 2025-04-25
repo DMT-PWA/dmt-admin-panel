@@ -232,14 +232,23 @@ export const createDescription = async (data) => {
 };
 
 export const getDescriptionById = async (descriptionId: string) => {
-  const { data } = await axios.get(`${BACKEND_URL}/description/${descriptionId}`)
+  const { data } = await axios.get(
+    `${BACKEND_URL}/description/${descriptionId}`
+  );
 
-  return data
-}
-
+  return data;
+};
 
 export const createComment = async (data) => {
   const response = await axios.post(`${BACKEND_URL}/comment`, data);
 
-  return response.data
-}
+  return response.data;
+};
+
+export const getUpdatedCampaigns = async () => {
+  const response = await axios.get(
+    `${BACKEND_URL}/campaign/get-updated-campaigns`
+  );
+
+  return response.data;
+};

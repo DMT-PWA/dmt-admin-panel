@@ -6,6 +6,7 @@ import { InputDefault } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import { PwaTable } from "src/widgets/PwaTable";
 import { adminId } from "src/shared/lib/data";
+import { clearAppData } from "src/features/appData/appDataSlice";
 import { createPwa } from "src/features/appData/appDataAPI";
 import { setAppId } from "src/entities/pwa_create";
 import { useAppDispatch } from "src/shared/lib/store";
@@ -21,6 +22,7 @@ const MainPage = () => {
 
     const response = await createPwa(userData);
     if (response?._id) {
+      dispatch(clearAppData()); // clear redux store
       dispatch(setAppId(response?._id));
       navigate(`/pwa_create/${response?._id}/design`);
     }

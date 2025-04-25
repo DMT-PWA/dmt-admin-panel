@@ -1,4 +1,12 @@
-import { ChangeEvent, FC, memo, useEffect } from "react";
+import { ChangeEvent, FC, memo, useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  Field,
+  Label,
+  Textarea,
+  Checkbox,
+} from "@headlessui/react";
 import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -13,23 +21,46 @@ import {
   addLanguage,
   removeLanguage,
 } from "src/entities/pwa_design";
+
+import {
+  getDescriptionById,
+  updatePwa,
+  getPwaByIdAndLanguage,
+} from "src/features/appData/appDataAPI";
+import { getApp } from "src/features/appData/appDataSlice";
+
 import { useNavigate } from "react-router-dom";
 import { Country, Language } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
+
 type PwaFormProps = {
   appId: string;
   isEdit?: boolean;
 };
-
+// Screen:Design
 const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const navigate = useNavigate();
-  const { pwa_title, currentLanguage, languagesList, currentCountry } =
-    useAppSelector((state) => state.pwa_design);
   const dispatch = useAppDispatch();
+  const { currentLanguage, languagesList, currentCountry } = useAppSelector(
+    (state) => state.pwa_design
+  );
+
+  const { updatedAppData } = useAppSelector((state) => state.appData);
+  const { appData } = useAppSelector((state) => state.appData);
+
+  const adminId = "67210571554f552165ee9b65";
+  const language: string = currentLanguage?.label || "";
+  const country: string = currentCountry?.label || "";
+
+  const [displayName, setDisplayName] = useState<string>(
+    appData?.displayName || ""
+  );
+  const [marketerTag, setMarketerTag] = useState<string>(
+    appData?.marketerTag || ""
+  );
 
   const handleCountryChange = (option: Country) => {
     dispatch(setCountry(option));
-
     dispatch(setLanguagesList());
   };
 
@@ -41,8 +72,52 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     return navigate("/pwa");
   };
 
-  const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
-    dispatch(setPwaTitle(e.target.value));
+  const updateApp = async () => {
+    if (!adminId) {
+      alert("adminId is required");
+      return;
+    }
+
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    const userData = {
+      appId,
+      adminId,
+      displayName,
+      marketerTag,
+    };
+
+    setTimeout(async () => {
+      await updatePWA(userData);
+    }, 300);
+  };
+
+  useEffect(() => {
+    updateApp();
+  }, [appId, adminId, displayName, marketerTag]);
+
+  const updatePWA = async (userData) => {
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    if (!adminId) {
+      alert("adminId is required");
+      return;
+    }
+
+    const response = await updatePwa(userData);
+  };
+
+  const onSetDisplayName = (e: ChangeEvent<HTMLInputElement>) =>
+    setDisplayName(e.target.value);
+
+  const onSetMarketerTag = (e: ChangeEvent<HTMLInputElement>) =>
+    setMarketerTag(e.target.value);
 
   return (
     <div className="flex flex-col flex-1">
@@ -70,11 +145,11 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
         <Title title="Дизайн" withContainer={false} classes="title__view-2" />
         <div className="flex flex-col gap-6">
           <InputDefault
-            value={pwa_title ?? ""}
+            value={displayName}
             label="Название PWA"
             input_classes="!border-0"
             placeholder="..."
-            onUpdateValue={onSetPwaTitle}
+            onUpdateValue={onSetDisplayName}
             isRequired={true}
           />
           <label className="title__view-1">
@@ -104,9 +179,9 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             )}
             {languagesList && languagesList.length === 1 && (
               <button
-                onClick={() =>
-                  dispatch(addLanguage({ label: "English", value: 1 }))
-                }
+                onClick={() => {
+                  dispatch(addLanguage({ label: "English", value: 1 }));
+                }}
                 className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
               >
                 <img
@@ -125,12 +200,17 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
                   disabled
                   input_classes="!border-0"
                 />
-                <button onClick={() => dispatch(removeLanguage())}>
+                <button
+                  onClick={() => {
+                    dispatch(removeLanguage());
+                  }}
+                >
                   <img src={trash_icon} width={14} height={14} alt="" />
                 </button>
               </>
             )}
           </div>
+
           {/* <CustomSelect
             options={languagesList}
             value={currentLanguage}
@@ -138,8 +218,16 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             isDisabled={true}
             placeholder="Английский"
           /> */}
-          <label className="title__view-1">Теги PWA</label>
-          <CustomSelect placeholder="Выберите теги" />
+          {/* <label className="title__view-1">Теги PWA</label>
+          <CustomSelect placeholder="Выберите теги" /> */}
+          <InputDefault
+            value={marketerTag || updatedAppData?.marketerTag}
+            label="Теги PWA"
+            input_classes="!border-0"
+            placeholder="Выберите теги"
+            onUpdateValue={onSetMarketerTag}
+            isRequired={true}
+          />
         </div>
       </div>
     </div>

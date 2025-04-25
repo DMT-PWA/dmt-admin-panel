@@ -31,12 +31,99 @@ const BlackPage: FC = (props) => {
   //========{others}==========
   const [, setIsOtherBrowser] = useState(false);
 
+  const { appData } = useAppSelector((state) => state.appData);
+
+  const {
+    isExist,
+    open,
+    noPWASupport,
+    stayOn,
+    add,
+    clickIcon,
+    pressIcon,
+    wait,
+    proceed,
+    containsAds,
+    inAppPurchases,
+    headerReviews,
+    hundredPlus,
+    downloads,
+    ageLimit,
+    ageRating,
+    install,
+    wishlist,
+    available,
+    aboutThisGame,
+    updatedOn,
+    updatedDate,
+    casino,
+    dataSafety,
+    safety,
+    noInformation,
+    seeDetails,
+    ratingsAndReviews,
+    verified,
+    phone,
+    tV,
+    chromebook,
+    tablet,
+    reviews,
+    fourPointThree,
+    fifteenM,
+    helpful,
+    allReviews,
+    whatsNew,
+    findHelpful,
+    yes,
+    no,
+    contact,
+    newFeatures,
+    downloadsCount,
+    isContainsAds,
+    isInAppPurchases,
+    isEditorsChoice,
+    age,
+    createDate,
+    lastUpdate,
+    releaseDate,
+    rating,
+    about,
+    androidVersion,
+    collectionId,
+    commentId,
+    reviewCount,
+    version,
+    _id,
+    domain,
+    subDomain,
+    pixelId,
+    accessToken,
+    domainApp,
+    domainLanding,
+    keitaroDomain,
+    keitaroCampaign,
+    keitaroCampaignId,
+    yandexMetrikaId,
+    oneSignalApiKey,
+    oneSignalAppId,
+    displayId,
+    displayName,
+    marketerTag,
+    appTitle,
+    appSubTitle,
+    renderId,
+    // icon,
+    // screenShots,
+    // reviewObject,
+  } = appData;
+  const icon = collectionId?.icon || "";
+
+
   const {
     android_version,
     description,
     last_update,
     release_date,
-    version,
     whats_new,
   } = useAppSelector((state) => state.pwa_description.about_description);
 
@@ -202,13 +289,13 @@ const BlackPage: FC = (props) => {
             />
           </div>
           <AboutPage
-            android_version={android_version}
-            description={description}
-            last_update={last_update}
-            release_date={release_date}
+            android_version={androidVersion}
+            description={about}
+            last_update={lastUpdate}
+            release_date={releaseDate}
             version={version}
-            whats_new={whats_new}
-            number_of_downloads={number_of_downloads}
+            whats_new={whatsNew}
+            number_of_downloads={downloadsCount}
             currentLanguage={currentLanguage}
             currentCountry={currentCountry}
           ></AboutPage>

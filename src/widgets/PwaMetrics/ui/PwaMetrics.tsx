@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
@@ -12,13 +12,133 @@ import {
 } from "src/entities/metrics";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { InputDefault } from "src/shared/ui/input";
+import { getApp } from "src/features/appData/appDataSlice";
+import {
+  updatePwa,
+  getPwaByIdAndLanguage,
+} from "src/features/appData/appDataAPI";
 import trash_orange from "src/shared/assets/icons/trash_icon_orange.png";
 import clsx from "clsx";
 
-export const PwaMetrics: FC = () => {
+type PwaMetricsProps = {
+  appId: string;
+  adminId: string;
+  language: string;
+  country: string;
+};
+
+// Screen:Metrics
+export const PwaMetrics: FC<PwaMetricsProps> = ({
+  appId,
+  adminId,
+  language,
+  country,
+}) => {
   const { facebookPixelList } = useAppSelector((state) => state.metrics);
 
+  console.log({ facebookPixelList });
+
   const dispatch = useAppDispatch();
+
+  const { appData } = useAppSelector((state) => state.appData);
+  console.log({ appData });
+
+  const [pixelId, setPixelId] = useState<string>(appData?.pixelId || "");
+  const [accessToken, setAccessToken] = useState<string>(
+    appData?.accessToken || ""
+  );
+
+  //fetch app on component mount
+  useEffect(() => {
+    fetchPWA();
+  }, []);
+
+  const fetchPWA = async () => {
+    if (!appId) {
+      console.log("appId required");
+      return;
+    }
+    if (!language) {
+      console.log("language required");
+      return;
+    }
+    if (!country) {
+      console.log("country required");
+      return;
+    }
+    const response = await getPwaByIdAndLanguage(appId, language, country);
+
+    if (response?._id) {
+      dispatch(getApp(response));
+    }
+  };
+
+  useEffect(() => {
+    updateApp();
+  }, [pixelId, accessToken]);
+
+  const updateApp = async () => {
+    if (!adminId) {
+      alert("adminId is required");
+      return;
+    }
+
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    if (!pixelId) {
+      console.log("pixelId object not found");
+      return;
+    }
+    if (!accessToken) {
+      console.log("accessToken object not found");
+      return;
+    }
+
+    const userData = {
+      appId,
+      adminId,
+      pixelId,
+      accessToken,
+    };
+    setTimeout(async () => {
+      await updatePWA(userData);
+    }, 3000);
+  };
+
+  const updatePWA = async (updatedAppData) => {
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    if (!language) {
+      alert("language is required");
+      return;
+    }
+
+    if (!country) {
+      alert("country is required");
+      return;
+    }
+
+    const userData = updatedAppData;
+
+    const response = await updatePwa(userData);
+
+    if (response?._id) {
+      await fetchPWA();
+      //save new states
+    }
+  };
+
+  const onSetPixelId = (e: ChangeEvent<HTMLInputElement>) =>
+    setPixelId(e.target.value);
+
+  const onSetAccessToken = (e: ChangeEvent<HTMLInputElement>) =>
+    setAccessToken(e.target.value);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">
@@ -46,88 +166,26 @@ export const PwaMetrics: FC = () => {
           <CustomSelect options={install} placeholder="" classes="mb-2" />
         </div>
       </div>
-      <div className="flex flex-col gap-3.25">
-        <label className="title__view-1">
-          Facebook Pixel
-          <span className="text-red-600 align-super size-[0.8rem]">*</span>
-        </label>
-        {facebookPixelList &&
-          facebookPixelList.map((item, index: number) => {
-            return (
-              <div key={index} className={clsx("flex items-end gap-3")}>
-                <InputDefault
-                  container_classes={clsx(
-                    "flex flex-col relative",
-                    index === 0 ? "flex-[0.333]" : "flex-[0.337]"
-                  )}
-                  value={item.pixel ? item.pixel : ""}
-                  input_classes="!border-none"
-                  onUpdateValue={(e) =>
-                    dispatch(
-                      setPixelValue({ id: index, value: e.target.value })
-                    )
-                  }
-                  placeholder="Pixel ID or Track ID"
-                  children={
-                    item.pixel && (
-                      <button
-                        onClick={() =>
-                          dispatch(setPixelValue({ id: index, value: "" }))
-                        }
-                        className="absolute w-2.75 h-2.75 bottom-3.75 right-4"
-                      >
-                        <img src="/pwa_icons/clear-icon.png" />
-                      </button>
-                    )
-                  }
-                ></InputDefault>
-
-                <InputDefault
-                  container_classes={clsx(
-                    "flex flex-col relative",
-                    index === 0 ? "flex-[0.333]" : "flex-[0.337]"
-                  )}
-                  input_classes="!border-none"
-                  value={item.token || ""}
-                  onUpdateValue={(e) =>
-                    dispatch(
-                      setTokenValue({ id: index, value: e.target.value })
-                    )
-                  }
-                  placeholder="Access token or API Key"
-                  children={
-                    item.token && (
-                      <button
-                        onClick={() =>
-                          dispatch(setTokenValue({ id: index, value: "" }))
-                        }
-                        className="absolute w-2.75 h-2.75 bottom-3.75 right-4"
-                      >
-                        <img src="/pwa_icons/clear-icon.png" />
-                      </button>
-                    )
-                  }
-                ></InputDefault>
-                {index !== 0 && (
-                  <button
-                    className="self-center"
-                    onClick={() => dispatch(removeFacebookPixelField(index))}
-                  >
-                    <img src={trash_orange} width={14} height={16} alt="" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
+      <div className="flex gap-3">
+        <div className="flex flex-col flex-1/3">
+          <InputDefault
+            value={pixelId}
+            label="Facebook Pixel"
+            input_classes="!border-0"
+            placeholder="Pixel ID or Track ID"
+            onUpdateValue={onSetPixelId}
+          />
+        </div>
+        <div className="flex flex-col flex-1/3">
+          <InputDefault
+            value={accessToken}
+            label="Access token"
+            input_classes="!border-0"
+            placeholder="Access token or API Key"
+            onUpdateValue={onSetAccessToken}
+          />
+        </div>
       </div>
-      <button
-        className="bg-white py-[13.5px] px-[16.5px] rounded-[8px] max-w-10.5"
-        onClick={() =>
-          dispatch(addFacebookPixelField({ id: 1, pixel: null, token: null }))
-        }
-      >
-        <img src="/pwa_icons/crosshair.png" width={14} height={14} alt="" />
-      </button>
     </div>
   );
 };

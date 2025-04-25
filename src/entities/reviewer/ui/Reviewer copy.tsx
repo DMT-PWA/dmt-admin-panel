@@ -1,21 +1,9 @@
 import clsx from "clsx";
 import { format } from "date-fns";
 import { FC } from "react";
-import { useAppSelector } from "src/shared/lib/store";
 import { IUserComment } from "src/shared/types";
 
-type ReviewerProps = {
-  name?: string;
-  date?: string;
-  review?: string;
-  helpful?: string;
-  helpfulCount?: string;
-  photo?: string;
-  rating?: string;
-  isResponse?: boolean;
-  response?: string;
-  responseDate?: string;
-};
+type ReviewerProps = {};
 
 const Reviewer: FC = (props) => {
   const {
@@ -28,10 +16,6 @@ const Reviewer: FC = (props) => {
     commentsList,
     isArabic,
   } = props;
-
-  const { appData } = useAppSelector((state) => state.appData);
-
-  const { appSubTitle } = appData;
 
   const anyStars = (review_date: Date | string, review_raiting: number) => {
     const rating = Math.min(review_raiting, 5);
@@ -79,7 +63,7 @@ const Reviewer: FC = (props) => {
   return (
     <>
       {commentsList &&
-        commentsList?.map((review: ReviewerProps, index: number) => (
+        commentsList?.map((review: IUserComment, index: number) => (
           <div key={index} className="w-full">
             <div className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-sm text-gray-100">
               <div
@@ -94,18 +78,18 @@ const Reviewer: FC = (props) => {
                     { "pr-[68px]": !isArabic }
                   )}
                 >
-                  {review.photo ? (
+                  {review.avatar ? (
                     <img
                       className="h-8 w-8 rounded-341xl overflow-hidden shrink-0 object-cover"
                       alt=""
-                      src={review.photo}
+                      src={review.avatar}
                     />
                   ) : (
                     <div className="w-8 h-8 relative rounded-full bg-[#D6D6D6]"></div>
                   )}
                   <div className="h-5 flex-1 flex flex-row items-center justify-center">
                     <div className="self-stretch flex-1 relative tracking-[0.2px] leading-[20px]">
-                      {review.name}
+                      {review.author_name}
                     </div>
                   </div>
                 </div>
@@ -122,8 +106,8 @@ const Reviewer: FC = (props) => {
               </div>
             </div>
 
-            {review.date &&
-              anyStars(review.date || "", Number(review.rating) || 0)}
+            {review.review_date &&
+              anyStars(review.review_date || "", Number(review.raiting) || 0)}
 
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
               <div
@@ -132,7 +116,7 @@ const Reviewer: FC = (props) => {
                   { "text-end": isArabic }
                 )}
               >
-                {review.review}
+                {review.comments_text}
               </div>
             </section>
             <section className="flex flex-row items-start justify-start pt-0 px-5 pb-10 box-border max-w-full text-left text-xs text-dimgray font-roboto">
@@ -168,17 +152,17 @@ const Reviewer: FC = (props) => {
                 </div>
               </div>
             </section>
-            {review.response === true && (
+            {review.developer_answer === true && (
               <section className="bg-[#F0F0F0] mb-5.25 mx-6.25 self-stretch pt-3 pb-5.75 px-4 flex flex-col gap-2.75 rounded-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-view-8">{appSubTitle}</span>
+                  <span className="text-view-8">{review.developer_name}</span>
                   <span className="text-view-8">
-                    {review.responseDate
-                      ? format(review.responseDate, "dd/MM/yyyy")
+                    {review.answer_date
+                      ? format(review.answer_date, "dd/MM/yyyy")
                       : ""}
                   </span>
                 </div>
-                <span className="text-view-9">{review.response}</span>
+                <span className="text-view-9">{review.answer_text}</span>
               </section>
             )}
           </div>

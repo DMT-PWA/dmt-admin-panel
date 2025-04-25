@@ -1,23 +1,15 @@
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
   Field,
   Label,
   Textarea,
+  Checkbox,
 } from "@headlessui/react";
-import { FC, useCallback, useEffect, useState } from "react";
-import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
-import {
-  setLastUpdate,
-  setReleaseDate,
-  setNumberOfDownloads,
-  setGrade,
-  toggleCheckbox,
-  updateAboutDescription,
-  batchUpdate,
-} from "src/entities/pwa_description";
+import { setGrade } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
@@ -26,8 +18,10 @@ import { CollectionCreate } from "src/features/collection_create";
 import { ICollection } from "src/shared/types";
 import {
   createCollection,
-  getDescriptionById,
+  updatePwa,
+  getPwaByIdAndLanguage,
 } from "src/features/appData/appDataAPI";
+import { getApp } from "src/features/appData/appDataSlice";
 import {
   CollectionsList,
   getAllCollections,
@@ -35,36 +29,82 @@ import {
 } from "src/features/collections_list";
 
 type DescriptionFormProps = {
+  appId: string;
   adminId: string;
   language: string;
+  country: string;
 };
 
+// Screen:Description
 export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
+  appId,
   adminId,
   language,
+  country,
 }) => {
   const dispatch = useAppDispatch();
+  const { grades } = useAppSelector((state) => state.pwa_description);
+  const { collectionsList, currentCollection } = useAppSelector(
+    (state) => state.collections
+  );
+
+  const { appData } = useAppSelector((state) => state.appData);
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
-  const {
-    grades,
-    checkboxes_state,
-    title,
-    about_description,
-    raiting,
-    review_count,
-    developer_name,
-  } = useAppSelector((state) => state.pwa_description);
-
-  const { release_date, last_update } = useAppSelector(
-    (state) => state.pwa_description.about_description
+  //======{New}=========================
+  const [appTitle, setAppTitle] = useState<string>(appData?.appTitle || "");
+  const [appSubTitle, setAppSubTitle] = useState<string>(
+    appData?.appSubTitle || ""
+  );
+  const [headerReviews, setHeaderReviews] = useState<string>(
+    appData?.headerReviews || ""
+  );
+  const [hundredPlus, setHundredPlus] = useState<string>(
+    appData?.hundredPlus || ""
+  );
+  const [casino, setCasino] = useState<string>(appData?.casino || "");
+  const [collectionId, setCollectionId] = useState<string>(
+    appData?.collectionId?._id || ""
+  );
+  const [about, setAbout] = useState<string>(appData?.about || "");
+  const [isContainsAds, setIsContainsAds] = useState<boolean>(
+    appData?.isContainsAds || false
+  );
+  const [isInAppPurchases, setIsInAppPurchases] = useState<boolean>(
+    appData?.isInAppPurchases || false
+  );
+  const [isEditorsChoice, setIsEditorsChoice] = useState<boolean>(
+    appData?.isEditorsChoice || false
+  );
+  const [age, setAge] = useState<number>(appData?.age || 18);
+  const [rating, setRating] = useState<string>(appData?.rating || ""); //use float
+  const [reviewCount, setReviewCount] = useState<string>(
+    appData?.reviewCount || ""
+  );
+  const [downloadsCount, setDownloadsCount] = useState<string>(
+    appData?.downloadsCount || ""
   );
 
-  const { collectionsList, currentCollection } = useAppSelector(
-    (state) => state.collections
+  const [version, setVersion] = useState<string>(appData?.version || "");
+  const [androidVersion, setAndroidVersion] = useState<string>(
+    appData?.androidVersion || ""
+  );
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(
+    appData?.lastUpdate || new Date()
+  );
+  const [releaseDate, setReleaseDate] = useState<Date | null>(
+    appData?.releaseDate || new Date()
+  );
+  const [ageLimit, setAgeLimit] = useState<string>(appData?.ageLimit || "");
+  const [ageRating, setAgeRating] = useState<string>(appData?.ageRating || "");
+  const [commentId, setCommentId] = useState<string>(
+    appData?.commentId?._id || ""
+  );
+  const [newFeatures, setNewFeatures] = useState<string>(
+    appData?.newFeatures || ""
   );
 
   const collectionCreateHandler = async ({
@@ -83,11 +123,185 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     if (!collectionsList.length) dispatch(getAllCollections());
   }, [dispatch, collectionsList]);
 
-  /* useEffect(() => {
-    if (!descriptionId) {
-      dispatch(createDescriptionById({ adminId, language }));
+  const updateApp = async () => {
+    const userData = {
+      appId,
+      adminId,
+      country,
+      language,
+      isExist: true,
+      appTitle,
+      appSubTitle,
+      headerReviews,
+      hundredPlus,
+      updatedDate: lastUpdate,
+      casino, // should be a string array
+      collectionId,
+      about,
+      isContainsAds,
+      isInAppPurchases: isInAppPurchases,
+      isEditorsChoice,
+      age,
+      rating,
+      reviewCount,
+      version,
+      androidVersion,
+      lastUpdate,
+      releaseDate,
+      ageLimit,
+      ageRating,
+      commentId,
+      newFeatures,
+      downloadsCount,
+    };
+
+    setTimeout(async () => {
+      await updatePWA(userData);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    updateApp();
+  }, [
+    appTitle,
+    appSubTitle,
+    headerReviews,
+    hundredPlus,
+    casino,
+    about,
+    isContainsAds,
+    isInAppPurchases,
+    isEditorsChoice,
+    age,
+    rating,
+    reviewCount,
+    downloadsCount,
+    version,
+    androidVersion,
+    lastUpdate,
+    releaseDate,
+    ageLimit,
+    ageRating,
+    commentId,
+    newFeatures,
+    currentCollection,
+  ]);
+
+  const onSetAppTitle = (e: ChangeEvent<HTMLInputElement>) =>
+    setAppTitle(e.target.value);
+  const onSetAppSubTitle = (e: ChangeEvent<HTMLInputElement>) =>
+    setAppSubTitle(e.target.value);
+  const onSetHeaderReviews = (e: ChangeEvent<HTMLInputElement>) =>
+    setHeaderReviews(e.target.value);
+  const onSetHundredPlus = (e: ChangeEvent<HTMLInputElement>) =>
+    setHundredPlus(e.target.value);
+  const onSetCasino = (e: ChangeEvent<HTMLInputElement>) =>
+    setCasino(e.target.value);
+  const onSetCollectionId = (e: ChangeEvent<HTMLInputElement>) =>
+    setCollectionId(e.target.value);
+
+  const onSetAbout = (value: string) => {
+    setAbout(value);
+  };
+
+  // const onSetAge = (e: ChangeEvent<HTMLInputElement>) => setAge(e.target.value);
+  const onSetAge = (value: number) => {
+    setAge(value);
+  };
+
+  const onSetRating = (value: string) => {
+    setRating(value);
+  };
+
+  const onSetReviewCount = (value: string) => {
+    setReviewCount(value);
+  };
+  const onSetVersion = (value: string) => {
+    setVersion(value);
+  };
+
+  const onSetAndroidVersion = (value: string) => {
+    setAndroidVersion(value);
+  };
+
+  const onSetAgeLimit = (value: string) => setAgeLimit(value);
+
+  const onSetAgeRating = (value: string) => setAgeRating(value);
+
+  const onSetCommentId = (value: string) => setCommentId(value);
+
+  const onSetNewFeatures = (value: string) => {
+    setNewFeatures(value);
+  };
+
+  const onSetDownloadsCount = (value: string) => {
+    setDownloadsCount(value);
+  };
+
+  const onSetIsContainsAds = (value: boolean) => {
+    setIsContainsAds(value);
+  };
+  const onsetIsInAppPurchases = (value: boolean) => {
+    setIsInAppPurchases(value);
+  };
+  const onSetIsEditorsChoice = (value: boolean) => {
+    setIsEditorsChoice(value);
+  };
+
+  const onSetReleaseDate = (value: Date) => {
+    setReleaseDate(value);
+  };
+
+  //fetch app on component mount
+  useEffect(() => {
+    fetchPWA();
+  }, []);
+
+  const fetchPWA = async () => {
+    if (!appId) {
+      console.log("appId required");
+      return;
     }
-  }, []); */
+    if (!language) {
+      console.log("language required");
+      return;
+    }
+    if (!country) {
+      console.log("country required");
+      return;
+    }
+    const response = await getPwaByIdAndLanguage(appId, language, country);
+
+    if (response?._id) {
+      dispatch(getApp(response));
+    }
+  };
+
+  const updatePWA = async (updatedAppData) => {
+    if (!appId) {
+      alert("appId is required");
+      return;
+    }
+
+    if (!language) {
+      alert("language is required");
+      return;
+    }
+
+    if (!country) {
+      alert("country is required");
+      return;
+    }
+
+    const userData = updatedAppData;
+
+    const response = await updatePwa(userData);
+
+    if (response?._id) {
+      await fetchPWA();
+      //save new states
+    }
+  };
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -100,52 +314,66 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
               <InputDefault
                 label="Название"
                 input_classes=""
-                value={title || ""}
+                value={appTitle}
                 container_classes="flex-[0.5]"
                 placeholder="App Name"
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ title: e.target.value }))
-                }
+                onUpdateValue={onSetAppTitle}
               />
               <InputDefault
                 label="Разработчик"
                 input_classes=""
                 container_classes="flex-[0.5]"
                 placeholder="Developer Name"
-                value={developer_name}
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ developer_name: e.target.value }))
-                }
+                value={appSubTitle}
+                onUpdateValue={onSetAppSubTitle}
               />
             </div>
             <div className="flex flex-col gap-[9px] pt-[21px] max-w-[243px]">
-              <CheckboxList
-                handleChange={(val) => dispatch(toggleCheckbox(val))}
-                values={checkboxes_state}
-              />
+              <Field className="flex flex-col gap-[9px] pt-[21px] max-w-[243px]">
+                <div className="flex justify-between">
+                  <Label>Есть реклама</Label>
+                  <Checkbox
+                    checked={isContainsAds}
+                    onChange={(e) => onSetIsContainsAds(e)}
+                    className="group block size-4 rounded border data-[checked]:border-0 bg-white data-[checked]:bg-orange"
+                  ></Checkbox>
+                </div>
+                <div className="flex justify-between">
+                  <Label>Покупки в приложении</Label>
+                  <Checkbox
+                    checked={isInAppPurchases}
+                    onChange={(e) => onsetIsInAppPurchases(e)}
+                    className="group block size-4 rounded border data-[checked]:border-0 bg-white data-[checked]:bg-orange"
+                  ></Checkbox>
+                </div>
+                <div className="flex justify-between">
+                  <Label>Выбор редакции</Label>
+                  <Checkbox
+                    checked={isEditorsChoice}
+                    onChange={(e) => onSetIsEditorsChoice(e)}
+                    className="group block size-4 rounded border data-[checked]:border-0  bg-white data-[checked]:bg-orange"
+                  ></Checkbox>
+                </div>
+              </Field>
             </div>
             <div className="flex gap-9.75 pt-[22px]">
               <InputDefault
                 label="Рейтинг"
                 input_classes=""
-                type="number"
+                type="text"
                 placeholder="4.5"
                 container_classes="flex-[0.5]"
-                value={raiting ?? ""}
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ raiting: e.target.value }))
-                }
+                value={rating}
+                onUpdateValue={(e) => onSetRating(e.target.value)}
               />
               <InputDefault
                 label="Количество отзывов"
                 input_classes=""
-                type="number"
+                type="text"
                 placeholder="3500"
                 container_classes="flex-[0.5]"
-                value={review_count ?? ""}
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ review_count: e.currentTarget.value }))
-                }
+                value={reviewCount}
+                onUpdateValue={(e) => onSetReviewCount(e.currentTarget.value)}
               />
             </div>
             <div className="mt-5 flex gap-4.75">
@@ -219,41 +447,32 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
               <Textarea
                 placeholder="Описание вашего приложения"
                 name="description"
-                value={about_description.description}
+                value={about}
                 style={{ minHeight: "125px" }}
-                onChange={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "description",
-                      value: e.target.value,
-                    })
-                  )
-                }
+                onChange={(e) => {
+                  onSetAbout(e.target.value);
+                }}
               ></Textarea>
             </Field>
             <div className="flex gap-[23px] pt-[22px]">
               <InputDefault
                 container_classes="flex-1/4"
                 label="Версия"
-                type="number"
-                onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "version",
-                      value: Number(e.target.value),
-                    })
-                  )
-                }
+                value={version}
+                type="text"
+                onUpdateValue={(e) => {
+                  onSetVersion(e.target.value);
+                }}
               />
               <Field className="flex flex-1/4 flex-col gap-1.5">
                 <Label className={"title__view-1"}>Дата выхода</Label>
                 <DatePicker
-                  selected={release_date}
+                  selected={releaseDate}
                   isClearable
                   showIcon
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
-                  onChange={(date) => dispatch(setReleaseDate(date))}
+                  onChange={(date: Date | null) => setReleaseDate(date)} // Explicit type
                   icon={
                     <svg
                       width="15"
@@ -277,34 +496,28 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 label="Количество скачиваний"
                 container_classes="flex-1/2"
                 placeholder="10000000"
-                onUpdateValue={(e) =>
-                  dispatch(setNumberOfDownloads(e.target.value))
-                }
+                value={downloadsCount}
+                type="text"
+                onUpdateValue={(e) => onSetDownloadsCount(e.target.value)}
               />
             </div>
             <div className="flex pt-[22px]">
               <InputDefault
                 container_classes="flex-1/3 mr-5.75"
                 label="Требуемая версия андройд"
+                value={androidVersion}
                 type="text"
-                onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "android_version",
-                      value: e.target.value,
-                    })
-                  )
-                }
+                onUpdateValue={(e) => onSetAndroidVersion(e.target.value)}
               />
               <Field className="flex-1/3 flex flex-col gap-1.5 mr-5">
                 <Label className={"title__view-1"}>Последнее обновление</Label>
                 <DatePicker
-                  selected={last_update}
+                  selected={lastUpdate}
                   isClearable
-                  showIcon={!last_update}
+                  showIcon={!lastUpdate}
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
-                  onChange={(date) => dispatch(setLastUpdate(date))}
+                  onChange={(date: Date | null) => setLastUpdate(date)} // Explicit type
                   icon={
                     <svg
                       width="15"
@@ -326,6 +539,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
               <InputDefault
                 container_classes="flex-2/3"
                 label="Возрастные ограничения"
+                value={age}
+                type="number"
+                onUpdateValue={(e) => onSetAge(Number(e.target.value))}
               />
             </div>
             <div className="flex gap-[23px] pt-[22px]">
@@ -334,15 +550,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 <Textarea
                   className="min-h-[120px]"
                   placeholder="Исправлены баги и ошибки"
+                  value={newFeatures}
                   name="whats_new"
-                  onChange={(e) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "whats_new",
-                        value: e.target.value,
-                      })
-                    )
-                  }
+                  onChange={(e) => onSetNewFeatures(e.target.value)}
                 ></Textarea>
               </Field>
             </div>

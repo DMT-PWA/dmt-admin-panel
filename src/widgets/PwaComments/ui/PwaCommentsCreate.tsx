@@ -18,6 +18,7 @@ import { adminId } from "src/shared/lib/data";
 import { InputDefault } from "src/shared/ui/input";
 import { IUserComment } from "src/shared/types";
 
+// Screen:Create Comments
 export const PwaCommentsCreate: FC = () => {
   const { comment, comments_list } = useAppSelector((state) => state.comments);
 

@@ -1,12 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import axios from "axios";
 import DeviceDetector from "device-detector-js";
 import { useParams } from "react-router-dom";
 import phoneBg from "src/shared/assets/images/phone_bg.png";
 import BlackPage from "./BlackPage";
-const backend = import.meta.env.VITE_BACKEND_URL;
-const frontend = import.meta.env.VITE_FRONTEND_URL;
-const appId = import.meta.env.VITE_APP_ID;
 const domainName = import.meta.env.VITE_DOMAIN_NAME;
 
 export const PhonePreview: FC = (props) => {

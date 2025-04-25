@@ -77,6 +77,26 @@ export const updateDescription = createAsyncThunk<
     isContainsAds: checkboxes_state[0].value,
     isEditorsChoice: checkboxes_state[1].value,
     isInAppPurchases: checkboxes_state[2].value,
+
+
+
+    // adminId,
+    // name: title,
+    // about: description,
+    //   language,
+    //   isContainsAds: checkboxes_state[0].value,
+    //   isInAppPurchases: checkboxes_state[2].value,
+    //   isEditorsChoice:checkboxes_state[1].value,
+    //   age: ? age : 18,
+    //   rating: raiting,
+    //   reviewCount: review_count,
+    //   downloads:number_of_downloads,
+    //   version,
+    //   androidVersion:android_version,
+    //   createDate,
+    //   lastUpdate: last_update,
+    //   releaseDate:release_date,
+    //   whatsNew,
   };
 
   const response = await createDescription("description", fullPayload);
