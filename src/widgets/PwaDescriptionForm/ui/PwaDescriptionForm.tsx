@@ -72,12 +72,23 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     collectionName,
     images,
   }: ICollection) => {
-    await createCollection({
+    const { _id, icon, name, screenShots } = await createCollection({
       adminId,
       name: collectionName,
       icon: collectionImage,
       screenShots: images,
     });
+
+    dispatch(
+      setCurrentCollection({
+        _id,
+        collectionImage: icon,
+        collectionName: name,
+        images: screenShots,
+      })
+    );
+
+    dispatch(getAllCollections());
   };
   useEffect(() => {
     if (!collectionsList.length) dispatch(getAllCollections());

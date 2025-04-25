@@ -1,5 +1,5 @@
 import { Dialog, DialogBackdrop, Switch } from "@headlessui/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
@@ -12,6 +12,7 @@ import {
   setCommentGroupName,
   updateCommentInList,
   updateCommentField,
+  resetCommentsList,
 } from "src/entities/comments";
 import { CommentCreate } from "src/features/comment_create";
 import { adminId } from "src/shared/lib/data";
@@ -67,6 +68,10 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    dispatch(resetCommentsList());
+  }, [dispatch]);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">

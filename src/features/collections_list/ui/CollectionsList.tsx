@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import close_icon from "src/shared/assets/icons/close_icon.png";
@@ -14,7 +14,9 @@ type CollectionCreate = {
 };
 
 export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
-  const { collectionsList } = useAppSelector((state) => state.collections);
+  const { collectionsList, currentCollection } = useAppSelector(
+    (state) => state.collections
+  );
   const dispatch = useAppDispatch();
 
   const [isOpen, setOpen] = useState<null | number>(null);
@@ -35,6 +37,10 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
     dispatch(setCurrentCollection(collectionItem._id));
     onPopupHandler();
   };
+
+  useEffect(() => {
+    if (currentCollection) setCollectionItem(currentCollection);
+  }, [currentCollection, dispatch]);
 
   return (
     <div className="relative bg-white pt-[89px] pb-11">
@@ -58,7 +64,7 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
           <div key={index} className="flex flex-col">
             <div className="flex justify-between py-[18.5px] px-6 border-b-[1px] border-gray-7 cursor-pointer">
               <div className="flex items-center">
-                {collectionItem === item ? (
+                {collectionItem?._id === item._id ? (
                   <div className="mr-7.75 w-4 h-4 rounded-full border-1 border-[#21272A] bg-orange"></div>
                 ) : (
                   <img

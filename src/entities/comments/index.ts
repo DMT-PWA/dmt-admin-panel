@@ -12,7 +12,13 @@ export {
   setCommentGroupName,
   setSelectedCommentId,
   updateCommentInList,
-  updateCommentField
+  updateCommentField,
+  resetCommentsList,
 } from "./model";
 
-export type { AllComments, ReviewObject, CommentsList, ICommentsState } from "./model"
+export type {
+  AllComments,
+  ReviewObject,
+  CommentsList,
+  ICommentsState,
+} from "./model";

@@ -9,9 +9,19 @@ export {
   setSelectedCommentId,
   setCommentGroupName,
   updateCommentInList,
-  updateCommentField
+  updateCommentField,
+  resetCommentsList,
 } from "./commentsSlice";
 
-export type { CommentsList, ReviewObject, AllComments, ICommentsState } from "./types";
+export type {
+  CommentsList,
+  ReviewObject,
+  AllComments,
+  ICommentsState,
+} from "./types";
 
-export { getAllComments, removeCommentById, createCommentHandler } from "./commentsThunk"
+export {
+  getAllComments,
+  removeCommentById,
+  createCommentHandler,
+} from "./commentsThunk";

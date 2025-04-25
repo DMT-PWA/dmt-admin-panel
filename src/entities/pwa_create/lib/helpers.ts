@@ -2,46 +2,57 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ROUTE_ORDER } from "./const";
 
 export const usePwaCreate = (isEdit: boolean = false) => {
-    const location = useLocation();
-    const navigate = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const pathSegments = location.pathname.split('/');
-    const currentRoute = pathSegments[pathSegments.length - 1];
+  const pathSegments = location.pathname.split("/");
+  const currentRoute = pathSegments[pathSegments.length - 1];
 
-    const basePath = pathSegments.slice(0, -1).join('/');
+  const basePath = pathSegments.slice(0, -1).join("/");
 
-    const handleNavigateNext = (callback: () => void) => {
-        if (currentRoute === 'description') callback();
+  const handleNavigateNext = (callback: () => void) => {
+    if (currentRoute === "description") callback();
 
-        const currentIndex = ROUTE_ORDER.indexOf(currentRoute);
-        if (currentIndex < ROUTE_ORDER.length - 1) {
-            const nextRoute = ROUTE_ORDER[currentIndex + 1];
-            navigate(`${basePath}/${nextRoute}`);
-        }
-    };
-
-    const handleNavigatePrev = () => {
-        const currentIndex = ROUTE_ORDER.indexOf(currentRoute);
-        if (currentIndex > 0) {
-            const prevRoute = ROUTE_ORDER[currentIndex - 1];
-            navigate(`${basePath}/${prevRoute}`);
-        }
-    };
-
-    const showBackButton = ROUTE_ORDER.indexOf(currentRoute) > 0;
-
-    const showNextButton = ROUTE_ORDER.indexOf(currentRoute) < ROUTE_ORDER.length - 1
-        && ROUTE_ORDER.indexOf(currentRoute) !== -1;
-
-    const showSaveButton = isEdit && ROUTE_ORDER.includes(currentRoute);
-
-
-    const showPreview = currentRoute === 'description' || currentRoute === 'comments' || currentRoute === 'comments_create';
-
-    const finishCreateButton = !isEdit && currentRoute === 'metrics';
-
-    return {
-        handleNavigateNext, handleNavigatePrev, showBackButton, showNextButton, showSaveButton, showPreview, finishCreateButton
+    const currentIndex = ROUTE_ORDER.indexOf(currentRoute);
+    if (currentIndex < ROUTE_ORDER.length - 1) {
+      const nextRoute = ROUTE_ORDER[currentIndex + 1];
+      navigate(`${basePath}/${nextRoute}`);
     }
+  };
 
-}
+  const handleNavigatePrev = () => {
+    const currentIndex = ROUTE_ORDER.indexOf(currentRoute);
+    if (currentIndex > 0) {
+      const prevRoute = ROUTE_ORDER[currentIndex - 1];
+      navigate(`${basePath}/${prevRoute}`);
+    }
+  };
+
+  const showBackButton = ROUTE_ORDER.indexOf(currentRoute) > 0;
+
+  const showNextButton =
+    ROUTE_ORDER.indexOf(currentRoute) < ROUTE_ORDER.length - 1 &&
+    ROUTE_ORDER.indexOf(currentRoute) !== -1;
+
+  const showSaveButton = isEdit && ROUTE_ORDER.includes(currentRoute);
+
+  const showPreview =
+    currentRoute === "description" ||
+    currentRoute === "comments" ||
+    currentRoute === "comments_create";
+
+  const finishCreateButton = !isEdit && currentRoute === "metrics";
+
+  const goToTable = () => navigate("/pwa");
+
+  return {
+    handleNavigateNext,
+    handleNavigatePrev,
+    showBackButton,
+    showNextButton,
+    showSaveButton,
+    showPreview,
+    finishCreateButton,
+    goToTable,
+  };
+};

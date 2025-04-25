@@ -50,6 +50,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const {
     handleNavigateNext,
     handleNavigatePrev,
+    goToTable,
     showBackButton,
     showNextButton,
     showSaveButton,
@@ -163,6 +164,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         language: currentLanguage?.label,
       })
     );
+
+    goToTable();
   };
 
   const handleSavePwaGeneral = async () => {
@@ -170,16 +173,16 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
     const payload = {
       adminId,
+      appId,
+      isExist: true,
       language: currentLanguage?.label || "",
+      country: currentCountry?.label.toLowerCase(),
     };
 
     if (pathname.endsWith("design")) {
       dispatch(
         updatePwaByLang({
-          appId,
           ...payload,
-          isExist: true,
-          country: currentCountry?.label.toLowerCase(),
           appTitle: pwa_title || "",
         })
       );
@@ -192,19 +195,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         payload: { _id },
       } = await dispatch(
         updateDescription({
-          appId,
           ...payload,
-          isExist: true,
-          country: currentCountry?.label.toLowerCase(),
         })
       );
 
       dispatch(
         updatePwaByLang({
-          appId,
           ...payload,
-          isExist: true,
-          country: currentCountry?.label.toLowerCase(),
           collectionId: currentCollection?._id,
           about: _id,
           appSubTitle: developer_name,
@@ -217,10 +214,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     if (pathname.endsWith("comments")) {
       dispatch(
         updatePwaByLang({
-          appId,
           ...payload,
-          isExist: true,
-          country: currentCountry?.label.toLowerCase(),
           commentId: selected_comment,
         })
       );
@@ -231,10 +225,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     if (pathname.endsWith("settings")) {
       dispatch(
         updateSettings({
-          appId,
           ...payload,
-          isExist: true,
-          country: currentCountry?.label.toLowerCase(),
         })
       );
 

@@ -225,22 +225,25 @@ export const PwaTable: FC = () => {
         )}
       </div>
       <div className="mt-6.5 flex justify-center items-center">
-        <button
-          className={clsx(
-            "flex items-center text-view-11 p-2",
-            !table.getCanPreviousPage() ? "text-[#717171]" : "text-[#FF5532]"
-          )}
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ChevronLeftIcon
+        {table.getCanPreviousPage() && (
+          <button
             className={clsx(
-              "size-6",
+              "flex items-center text-view-11 p-2",
               !table.getCanPreviousPage() ? "text-[#717171]" : "text-[#FF5532]"
             )}
-          />
-          Предыдущая
-        </button>
+            onClick={() => table.previousPage()}
+          >
+            <ChevronLeftIcon
+              className={clsx(
+                "size-6",
+                !table.getCanPreviousPage()
+                  ? "text-[#717171]"
+                  : "text-[#FF5532]"
+              )}
+            />
+            Предыдущая
+          </button>
+        )}
         {(() => {
           const pageCount = table.getPageCount();
           const currentPage = table.getState().pagination.pageIndex;
