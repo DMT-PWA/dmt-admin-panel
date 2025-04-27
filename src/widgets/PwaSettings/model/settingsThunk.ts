@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { UpdatePwaPayload } from "src/shared/types/createTypes";
 import { updatePwa } from "src/shared/api/create";
 import { UpdatePwaResponse } from "src/entities/pwa_create";
+import { apiInstance } from "src/shared/api/base";
 
 export const updateSettings = createAsyncThunk<
   UpdatePwaPayload,
@@ -9,7 +10,15 @@ export const updateSettings = createAsyncThunk<
 >("settings/updateSettings", async (payload, { getState }) => {
   const state = (getState() as RootState).settings;
 
-  const { domainApp, domainLanding, naming, whitePage, subdomain } = state;
+  const { domainApp, currentCampaign, whitePage, subdomain } = state;
+
+  const {
+    keitaroDomain,
+    keitaroCampaign,
+    keitaroCampaignId,
+    keitaroCampaignName,
+    keitaroState,
+  } = currentCampaign;
 
   const fullPayload = {
     ...payload,
@@ -17,10 +26,23 @@ export const updateSettings = createAsyncThunk<
     subDomain: subdomain,
     domainApp: `${domainApp?.value}/${subdomain}`,
     domainLanding: `${domainApp?.value}/app-${subdomain}`,
-    keitaroCampaign: naming?.value,
+    keitaroCampaign,
+    keitaroDomain,
+    keitaroCampaignId,
+    keitaroCampaignName,
+    keitaroState,
   };
 
   const response = await updatePwa("pwa", fullPayload);
 
   return response as UpdatePwaPayload;
 });
+
+export const getAllCampaigns = createAsyncThunk(
+  "settings/getAllCampaigns",
+  async () => {
+    const resp = await apiInstance.get("campaign/get-updated-campaigns");
+
+    return resp;
+  }
+);

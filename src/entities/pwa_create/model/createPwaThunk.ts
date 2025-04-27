@@ -56,7 +56,7 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
 
     const { currentCollection } = collections;
 
-    const { domainApp, subdomain, naming } = settings;
+    const { domainApp, subdomain, currentCampaign } = settings;
 
     const {
       android_version,
@@ -81,9 +81,9 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       accessToken: facebookPixelList[0].token,
       domainApp: `${domainApp?.value}/${subdomain}`,
       domainLanding: `${domainApp?.value}/app-${subdomain}`,
-      keitaroDomain: "",
-      keitaroCampaign: "",
-      keitaroCampaignId: 0,
+      keitaroDomain: currentCampaign?.keitaroDomain,
+      keitaroCampaign: currentCampaign?.keitaroCampaign,
+      keitaroCampaignId: currentCampaign?.keitaroCampaignId,
       marketerTag: "",
       oneSignalApiKey: "",
       oneSignalAppId: "",

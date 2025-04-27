@@ -14,7 +14,6 @@ import { adminId } from "src/shared/lib/data";
 import {
   setDeveloperName,
   updateDescription,
-  fetchDescriptionInfoById,
 } from "src/entities/pwa_description";
 import {
   setPwaTitle,
@@ -32,12 +31,9 @@ import {
   UpdatePwaPayload,
 } from "src/entities/pwa_create";
 import clsx from "clsx";
-import {
-  getCollection,
-  setCurrentCollection,
-} from "src/features/collections_list";
+import { getCollection } from "src/features/collections_list";
 import { setComments, setSelectedCommentId } from "src/entities/comments";
-import { updateSettings } from "src/entities/settings";
+import { updateSettings, updateSettingField } from "src/widgets/PwaSettings";
 
 type PwaCreateProps = {
   appId: string;

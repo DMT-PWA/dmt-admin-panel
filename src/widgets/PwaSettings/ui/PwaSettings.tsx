@@ -1,16 +1,40 @@
-import { FC } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
-import { domains, whitePages, namings } from "../lib/constants";
-import { updateSettingField } from "src/entities/settings";
+import { domains, whitePages } from "../lib/constants";
+import { updateSettingField, getAllCampaigns } from "src/widgets/PwaSettings";
 import { InputDefault } from "src/shared/ui/input";
 
 export const PwaSettings: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { domainApp, domainLanding, marketerTag, whitePage, naming } =
-    useAppSelector((state) => state.settings);
+  const {
+    domainApp,
+    domainLanding,
+    marketerTag,
+    whitePage,
+    currentCampaign,
+    campaigns,
+  } = useAppSelector((state) => state.settings);
+
+  /* const handleCampaign = useCallback(async () => {
+    const data = await dispatch(getAllCampaigns());
+
+    if (isEdit) {
+      const existedCampaign = data.payload.find(
+        (item) => item.keitaroCampaignId === action.payload.keitaroCampaignId
+      );
+
+      dispatch(
+        updateSettingField({ field: "currentCampaign", value: existedCampaign })
+      );
+    }
+  }, [dispatch, isEdit]); */
+
+  useEffect(() => {
+    dispatch(getAllCampaigns());
+  }, [dispatch]);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">
@@ -24,10 +48,12 @@ export const PwaSettings: FC = () => {
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
           <CustomSelect
-            value={naming ?? undefined}
-            options={namings}
+            value={currentCampaign ?? undefined}
+            options={campaigns}
             onChange={(val) =>
-              dispatch(updateSettingField({ field: "naming", value: val }))
+              dispatch(
+                updateSettingField({ field: "currentCampaign", value: val })
+              )
             }
             placeholder="Введите нейминг"
           />

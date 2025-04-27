@@ -5,9 +5,9 @@ import { pwaDesignReducer } from "src/entities/pwa_design";
 import { sidebarModule } from "src/widgets/sidebar";
 import { collectionSliceReducer } from "src/entities/collection";
 import { commentsReducer } from "src/entities/comments";
-import { metricsReducer } from "src/entities/metrics"
-import { settingsReducer } from "src/entities/settings"
-import { collectionsReducer } from "src/features/collections_list"
+import { metricsReducer } from "src/entities/metrics";
+import { settingsReducer } from "src/widgets/PwaSettings";
+import { collectionsReducer } from "src/features/collections_list";
 
 export const store = configureStore({
   reducer: {
@@ -19,9 +19,10 @@ export const store = configureStore({
     collections: collectionsReducer,
     comments: commentsReducer,
     metrics: metricsReducer,
-    settings: settingsReducer
+    settings: settingsReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: false
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
