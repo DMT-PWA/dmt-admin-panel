@@ -91,11 +91,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         getPwaByIdAndLanguage({ appId, language: lang, country })
       );
 
-      dispatch(setPwaTitle(payload.appTitle));
+      dispatch(setPwaTitle(payload.displayName));
 
       dispatch(setDeveloperName(payload.appSubTitle));
-
-      dispatch(fetchDescriptionInfoById(payload.about));
 
       dispatch(getCollection(payload.collectionId));
 
@@ -152,20 +150,18 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   };
 
   const handleCreate = () => {
-    if (!currentLanguage && !currentCountry) return;
-
-    setCurrentLangInLS();
-
-    dispatch(
-      finishCreatePWA({
-        adminId: adminId,
-        appId: appId,
-        country: currentCountry?.label.toLowerCase(),
-        language: currentLanguage?.label,
-      })
-    );
-
-    goToTable();
+    if (currentLanguage && currentCountry) {
+      setCurrentLangInLS();
+      dispatch(
+        finishCreatePWA({
+          adminId: adminId,
+          appId: appId,
+          country: currentCountry?.label.toLowerCase(),
+          language: currentLanguage?.label,
+        })
+      );
+      goToTable();
+    }
   };
 
   const handleSavePwaGeneral = async () => {
@@ -191,9 +187,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     }
 
     if (pathname.endsWith("description")) {
-      const {
-        payload: { _id },
-      } = await dispatch(
+      dispatch(
         updateDescription({
           ...payload,
         })
@@ -203,7 +197,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         updatePwaByLang({
           ...payload,
           collectionId: currentCollection?._id,
-          about: _id,
           appSubTitle: developer_name,
         })
       );

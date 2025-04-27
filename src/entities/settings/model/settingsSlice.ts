@@ -9,6 +9,7 @@ const initialState: Settings = {
   marketerTag: null,
   whitePage: null,
   naming: null,
+  subdomain: null,
 };
 
 const settingsSlice = createSlice({
@@ -17,11 +18,17 @@ const settingsSlice = createSlice({
   reducers: {
     updateSettingField: (
       state,
-      action: PayloadAction<UpdateFieldPayload<Settings>>
+      action: PayloadAction<UpdateFieldPayload<Settings> | string>
     ) => {
-      const { field, value } = action.payload;
+      if (typeof action.payload !== "string") {
+        const { field, value } = action.payload;
 
-      state[field] = value as never;
+        state[field] = value as never;
+
+        return;
+      }
+
+      state["subdomain"] = action.payload;
     },
     setDomainApp: (state, action: PayloadAction<SelectValueProp>) => {
       state.domainApp = action.payload;

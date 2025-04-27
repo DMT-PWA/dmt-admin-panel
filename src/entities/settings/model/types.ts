@@ -6,4 +6,5 @@ export type Settings = {
   domainLanding: SelectValueProp | null;
   whitePage: SelectValueProp | null;
   naming: SelectValueProp | null;
+  subdomain: string | null;
 };

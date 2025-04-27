@@ -28,7 +28,7 @@ export type DescriptionByIdResponse = {
   downloads: string;
   reviewCount: string;
   version: string;
-  whats_new: string;
+  whatsNew: string;
   androidVersion: string;
   lastUpdate: Date;
   releaseDate: Date;

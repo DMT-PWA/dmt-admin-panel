@@ -29,18 +29,43 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
 export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
   "create/createPWA",
   async (payload, { getState }) => {
-    const { comments, metrics, pwa_description, pwa_design, collections } =
-      getState() as RootState;
+    const {
+      comments,
+      metrics,
+      pwa_description,
+      pwa_design,
+      collections,
+      settings,
+    } = getState() as RootState;
 
     const { pwa_title } = pwa_design;
 
-    const { descriptionId, title, developer_name } = pwa_description;
+    const {
+      title,
+      developer_name,
+      checkboxes_state,
+      about_description,
+      raiting,
+      number_of_downloads,
+      review_count,
+    } = pwa_description;
 
     const { selected_comment } = comments;
 
     const { facebookPixelList } = metrics;
 
     const { currentCollection } = collections;
+
+    const { domainApp, subdomain, naming } = settings;
+
+    const {
+      android_version,
+      description,
+      last_update,
+      release_date,
+      version,
+      whats_new,
+    } = about_description;
 
     const fullPayload = {
       ...payload,
@@ -49,24 +74,32 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       appSubTitle: developer_name,
       displayName: pwa_title,
       collectionId: currentCollection?._id,
-      about: descriptionId,
       commentId: selected_comment,
-      domain: "",
-      subDomain: "",
+      domain: domainApp?.value,
+      subDomain: subdomain,
       pixelId: facebookPixelList[0].pixel,
       accessToken: facebookPixelList[0].token,
-      domainApp: "",
-      domainLanding: "",
+      domainApp: `${domainApp?.value}/${subdomain}`,
+      domainLanding: `${domainApp?.value}/app-${subdomain}`,
       keitaroDomain: "",
       keitaroCampaign: "",
+      keitaroCampaignId: 0,
       marketerTag: "",
       oneSignalApiKey: "",
       oneSignalAppId: "",
-      casino: "",
-      headerReviews: "",
-      hundredPlus: "",
-      aboutThisGame: "",
-      updatedDate: "",
+      name: title,
+      lastUpdate: last_update,
+      releaseDate: release_date,
+      downloads: number_of_downloads,
+      androidVersion: android_version,
+      about: description,
+      rating: raiting,
+      reviewCount: review_count,
+      isContainsAds: checkboxes_state[0].value,
+      isEditorsChoice: checkboxes_state[1].value,
+      isInAppPurchases: checkboxes_state[2].value,
+      version,
+      whatsNew: whats_new,
     };
 
     const response = await updatePwa("pwa", fullPayload);

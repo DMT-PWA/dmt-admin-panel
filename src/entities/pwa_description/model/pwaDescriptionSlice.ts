@@ -12,6 +12,8 @@ import {
 } from "./descriptionThunk";
 import { UpdateFieldPayload } from "src/shared/lib/store";
 
+import { getPwaByIdAndLanguage } from "src/entities/pwa_create";
+
 const defaultState: CombinedDescription = {
   descriptionId: null,
   age: null,
@@ -101,7 +103,7 @@ const pwaDescriptionSlice = createSlice({
     toggleCheckbox: (state, action) => handleCheckboxes(state, action),
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchDescriptionInfoById.fulfilled, (state, action) => {
+    builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
       if (!action.payload) return;
 
       const {
@@ -117,9 +119,9 @@ const pwaDescriptionSlice = createSlice({
         isContainsAds,
         isEditorsChoice,
         isInAppPurchases,
-        name,
+        appTitle,
       } = action.payload;
-      state.title = name;
+      state.title = appTitle;
       state.raiting = rating;
       state.number_of_downloads = downloads;
       state.review_count = reviewCount;

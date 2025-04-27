@@ -5,6 +5,7 @@ import {
 } from "src/shared/api/description";
 import { CombinedDescription, DescriptionByIdResponse } from "./types";
 import { UpdatePwaPayload } from "src/shared/types/createTypes";
+import { updatePwa } from "src/shared/api/create";
 
 export const fetchDescriptionInfoById = createAsyncThunk(
   "description/fetchDescriptionInfoById",
@@ -72,7 +73,7 @@ export const updateDescription = createAsyncThunk<
     appId,
     isExist,
     country,
-    name: title,
+    appTitle: title,
     lastUpdate: last_update,
     releaseDate: release_date,
     downloads: number_of_downloads,
@@ -83,11 +84,11 @@ export const updateDescription = createAsyncThunk<
     isContainsAds: checkboxes_state[0].value,
     isEditorsChoice: checkboxes_state[1].value,
     isInAppPurchases: checkboxes_state[2].value,
-    version,
+    version: version,
     whatsNew: whats_new,
   };
 
-  const response = await createDescription("description", fullPayload);
+  const response = await updatePwa("pwa", fullPayload);
 
   return response as UpdatePwaPayload;
 });

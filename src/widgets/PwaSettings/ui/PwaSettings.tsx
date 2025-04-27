@@ -4,6 +4,7 @@ import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import { domains, whitePages, namings } from "../lib/constants";
 import { updateSettingField } from "src/entities/settings";
+import { InputDefault } from "src/shared/ui/input";
 
 export const PwaSettings: FC = () => {
   const dispatch = useAppDispatch();
@@ -59,8 +60,22 @@ export const PwaSettings: FC = () => {
           />
         </div>
         <div className="flex flex-col flex-1/3">
-          <label className="title__view-1 mb-2">Subdomen</label>
-          <CustomSelect placeholder="Выберите домен" classes="mb-2" />
+          {/* <label className="title__view-1 mb-2">Subdomen</label>
+          <CustomSelect placeholder="Выберите домен" classes="mb-2" /> */}
+          <InputDefault
+            label="Subdomen"
+            label_classes="title__view-1 mb-2"
+            placeholder="Введите поддомен"
+            input_classes="!border-0"
+            onUpdateValue={(val) =>
+              dispatch(
+                updateSettingField({
+                  field: "subdomain",
+                  value: val.target.value,
+                })
+              )
+            }
+          />
         </div>
       </div>
     </div>

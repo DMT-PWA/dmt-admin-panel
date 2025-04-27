@@ -9,14 +9,15 @@ export const updateSettings = createAsyncThunk<
 >("settings/updateSettings", async (payload, { getState }) => {
   const state = (getState() as RootState).settings;
 
-  const { domainApp, domainLanding, naming, whitePage } = state;
+  const { domainApp, domainLanding, naming, whitePage, subdomain } = state;
 
   const fullPayload = {
     ...payload,
     domain: domainApp?.value,
-    subDomain: domainLanding?.value,
+    subDomain: subdomain,
+    domainApp: `${domainApp?.value}/${subdomain}`,
+    domainLanding: `${domainApp?.value}/app-${subdomain}`,
     keitaroCampaign: naming?.value,
-    domainApp: whitePage?.value,
   };
 
   const response = await updatePwa("pwa", fullPayload);

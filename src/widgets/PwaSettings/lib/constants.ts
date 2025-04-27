@@ -1,17 +1,22 @@
 import { Settings } from "src/entities/settings";
 
 const domains: Array<Settings["domainApp"]> = [
-  { label: "kazakhgamesonline.com", value: "kazakhgamesonline.com" },
+  { label: "https://www.plinsters.pro", value: "https://www.plinsters.pro" },
+  { label: "https://www.example2", value: "https://www.example2" },
+  { label: "https://www.example3", value: "https://www.example3" },
+  { label: "https://www.example4", value: "https://www.example4" },
 ];
 
 const subdomains: Array<Settings["domainLanding"]> = [];
 
 const whitePages: Array<Settings["whitePage"]> = [
   {
-    label:
-      "https://play.google.com/store/apps/details?id=com.neslit.budgettrackerapp&hl=ur&gl=PK",
-    value:
-      "https://play.google.com/store/apps/details?id=com.neslit.budgettrackerapp&hl=ur&gl=PK",
+    label: "404 page",
+    value: "404 page",
+  },
+  {
+    label: "white",
+    value: "white",
   },
 ];
 
