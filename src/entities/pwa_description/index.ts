@@ -1,1 +1,1 @@
-export { pwaDescriptionReducer } from "./model"
+export * from "./model"

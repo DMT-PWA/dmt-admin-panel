@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@font-face {
+  font-family: "Product Sans";
+  src: url("src/shared/assets/fonts/ProductSans/productsans.ttf");
+}
 
 @import "tailwindcss";
 @import "./styles/index.css";
@@ -13,10 +18,10 @@ h1 {
   font-family: "Inter", serif;
 }
 
-img {
-  height: max-content;
-}
-
 button {
   cursor: pointer;
+}
+
+div[role="menu"] {
+  box-shadow: -7px 10px 15.9px 0px #a5a5a53b;
 }

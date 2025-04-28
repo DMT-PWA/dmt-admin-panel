@@ -1,4 +1,6 @@
-.input__default {
+.input__default,
+textarea,
+.react-datepicker__input-container {
   border-width: 1px;
   border-style: solid;
   border-radius: 6px;
@@ -12,4 +14,47 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 17.85px;
+}
+
+input:focus:not(.react-datepicker-ignore-onclickoutside),
+input:focus-visible:not(.react-datepicker-ignore-onclickoutside),
+textarea {
+  outline: none;
+  border: 1px solid var(--color-orange);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background-color: var(--color-orange);
+}
+
+input[type="range"]:hover {
+  cursor: default;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+textarea {
+  border: 1px solid #6d6d6d;
+}
+
+.react-datepicker__input-container input:focus {
+  border: none;
+}
+
+input.with_icon::before {
+  display: block;
+  content: "";
+  background-image: url("~src/shared/assets/icons/copy_icon.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 16px;
+  height: 16px;
 }

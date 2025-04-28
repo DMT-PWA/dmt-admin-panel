@@ -4,3 +4,5 @@
 @import "./input/index";
 @import "./text/index.css";
 @import "./table/index.css";
+@import "./select/index.css";
+@import "./calendar/index.css";

@@ -2,8 +2,85 @@
   font-family: "Inter", serif;
   font-size: 17px;
   font-weight: 500;
-  line-height: 25.5px;
+  line-height: 150%;
   color: var(--color-black-1);
+}
+
+.text-view-1 {
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.text-view-2 {
+  font-size: 16px;
+  line-height: 150%;
+}
+
+.text-view-3 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 100%;
+}
+
+.text-view-4 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 150%;
+}
+
+.text-view-5 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 100%;
+}
+
+.text-view-6 {
+  font-size: 15px !important;
+  font-family: "Onest", serif;
+  font-weight: 500;
+  line-height: 100%;
+  @apply !text-gray-6;
+}
+
+.text-view-7 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.text-view-8 {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  line-height: 20px;
+  color: var(--color-gray-100);
+}
+
+.text-view-9 {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  line-height: 20px;
+  color: var(--color-gray-6);
+}
+
+.text-view-10 {
+  font-family: "Roboto", serif;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.text-view-11 {
+  font-family: "Inter", serif;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0.5px;
+}
+
+.text-view-12 {
+  font-family: "Inter", serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 150%;
 }
 
 .text__default.text__bold {

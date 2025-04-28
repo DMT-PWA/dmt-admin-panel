@@ -1,36 +1,52 @@
 import { FC, useState } from "react";
 import { PWA_LIST } from "../model/const";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-
+import shevron from "src/shared/assets/icons/shevron.png";
+import dots from "src/shared/assets/icons/dots.png";
+import logo from "src/shared/assets/images/logo.png";
 type listItem = {
   id: number;
   title: string;
   route: string;
+  slug: string;
 };
 
-export const Sidebar: FC = () => {
+type PwaCreateProps = {
+  appId: string | undefined;
+};
+
+export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
   const [isOpen, setOpen] = useState(true);
   const navigate = useNavigate();
 
-  const route = useAppSelector((state) => state.sidebar.current_page);
-
   const pathname = useLocation().pathname;
+
+  const CREATE_PAGE = pathname.startsWith("/pwa_create");
+
+  const handleSidebarRoute = (routeName: string) => {
+    return navigate(
+      `${CREATE_PAGE ? "pwa_create" : "pwa_edit"}/${appId}/${routeName}`
+    );
+  };
+
+  const canHiglightItem = (item: string) => {
+    return pathname.endsWith(item);
+  };
 
   return (
     <div className="container__sidebar">
       <div className="container__logo">
-        <img src="src/shared/assets/images/logo.png" alt="logo" />
+        <img src={logo} alt="logo" />
       </div>
       <nav>
         <div className="">
           <div className="flex items-center pl-6 h-[50px]">
             <img
-              src="src/shared/assets/icons/dots.png"
+              src={dots}
               className="mr-[17px]"
+              style={{ maxHeight: "22px" }}
               width={22}
-              height={22}
               alt="dots"
             />
             <span
@@ -39,29 +55,30 @@ export const Sidebar: FC = () => {
             >
               PWA
             </span>
-
-            <button onClick={() => setOpen(isOpen ? false : true)}>
-              <img
-                src="src/shared/assets/icons/shevron.png"
-                alt="dots"
-                width={24}
-                height={24}
-                className={`transition-transform duration-300 ease-in-out ${
-                  !isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+            {pathname !== "/pwa" && (
+              <button onClick={() => setOpen(isOpen ? false : true)}>
+                <img
+                  src={shevron}
+                  alt="dots"
+                  width={24}
+                  height={24}
+                  className={`transition-transform duration-300 ease-in-out ${
+                    !isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            )}
           </div>
         </div>
-        {isOpen ? (
+        {pathname !== "/pwa" && isOpen ? (
           <ul className="pl-[64px]">
             {PWA_LIST.map((item: listItem) => (
               <li
                 key={item.id}
-                onClick={() => navigate(item.route)}
+                onClick={() => handleSidebarRoute(item.route)}
                 className={clsx(
                   "text__default cursor-pointer flex items-center h-[50px]",
-                  { "!text-orange": `/${item.route}` === pathname }
+                  { "!text-orange": canHiglightItem(item.slug) }
                 )}
               >
                 {item.title}

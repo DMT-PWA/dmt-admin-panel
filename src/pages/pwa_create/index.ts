@@ -1,1 +1,1 @@
-export { PwaDesign, PwaDescription } from "./ui"
+export { PwaCreate } from "./ui";

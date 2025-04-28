@@ -9,5 +9,8 @@ export default defineConfig({
     alias: {
       src: "/src"
     }
+  },
+  server: {
+    port: 5174
   }
 })
