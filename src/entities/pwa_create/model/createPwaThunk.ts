@@ -38,7 +38,7 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       settings,
     } = getState() as RootState;
 
-    const { pwa_title } = pwa_design;
+    const { pwa_title, pwa_tags } = pwa_design;
 
     const {
       title,
@@ -79,12 +79,12 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       subDomain: subdomain,
       pixelId: facebookPixelList[0].pixel,
       accessToken: facebookPixelList[0].token,
-      domainApp: `${domainApp?.value}/${subdomain}`,
-      domainLanding: `${domainApp?.value}/app-${subdomain}`,
+      domainApp: `https://www.${subdomain}.${domainApp?.value}`,
+      domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
       keitaroDomain: currentCampaign?.keitaroDomain,
       keitaroCampaign: currentCampaign?.keitaroCampaign,
       keitaroCampaignId: currentCampaign?.keitaroCampaignId,
-      marketerTag: "",
+      marketerTag: pwa_tags,
       oneSignalApiKey: "",
       oneSignalAppId: "",
       name: title,

@@ -7,7 +7,7 @@ import { Language, ICollection, Country } from "src/shared/types/designTypes";
 const defaultState: IDesign = {
   languages: languages,
   pwa_title: "",
-  pwa_tags: [],
+  pwa_tags: "",
   collections: [],
   isChanged: false,
   appData: {},
@@ -22,6 +22,10 @@ export const pwaDesignSlice = createSlice({
   reducers: {
     setPwaTitle(state, action: PayloadAction<string>) {
       state.pwa_title = action.payload;
+    },
+
+    setMarketerTag: (state, action: PayloadAction<string>) => {
+      state.pwa_tags = action.payload;
     },
 
     addCollection: (state, action) => {
@@ -131,7 +135,7 @@ export const {
   setLanguage,
   setLanguagesList,
   setCountry,
-
+  setMarketerTag,
   addLanguage,
   removeLanguage,
   updateLanguagesList,
