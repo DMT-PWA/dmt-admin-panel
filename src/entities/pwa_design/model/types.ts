@@ -4,7 +4,7 @@ import { ICollection } from "src/shared/types";
 export interface IDesign {
   pwa_title: string | null;
   languages: object[];
-  pwa_tags: object[];
+  pwa_tags: string;
   collections: ICollection[];
   isChanged: boolean;
   appData: object;

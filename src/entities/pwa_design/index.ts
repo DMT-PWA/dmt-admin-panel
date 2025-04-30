@@ -12,6 +12,7 @@ export {
   addLanguage,
   removeLanguage,
   updateLanguagesList,
+  setMarketerTag,
 } from "./model";
 
 export { selectPwaDesignLanguages } from "./model/selectors";

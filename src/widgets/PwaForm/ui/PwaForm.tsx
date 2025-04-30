@@ -12,6 +12,7 @@ import {
   modifiedCountryList,
   addLanguage,
   removeLanguage,
+  setMarketerTag,
 } from "src/entities/pwa_design";
 import { useNavigate } from "react-router-dom";
 import { Country, Language } from "src/shared/types";
@@ -23,8 +24,9 @@ type PwaFormProps = {
 
 const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const navigate = useNavigate();
-  const { pwa_title, currentLanguage, languagesList, currentCountry } =
-    useAppSelector((state) => state.pwa_design);
+  const { pwa_title, pwa_tags, languagesList, currentCountry } = useAppSelector(
+    (state) => state.pwa_design
+  );
   const dispatch = useAppDispatch();
 
   const handleCountryChange = (option: Country) => {
@@ -138,8 +140,14 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             isDisabled={true}
             placeholder="Английский"
           /> */}
-          <label className="title__view-1">Теги PWA</label>
-          <CustomSelect placeholder="Выберите теги" />
+          <InputDefault
+            value={pwa_tags}
+            label="Теги PWA"
+            input_classes="!border-0"
+            placeholder="Выберите теги"
+            onUpdateValue={(val) => dispatch(setMarketerTag(val.target.value))}
+            isRequired={true}
+          />
         </div>
       </div>
     </div>

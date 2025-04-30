@@ -39,7 +39,7 @@ const defaultState: CombinedDescription = {
     android_version: "Android 6.0 and up",
     last_update: null,
     release_date: null,
-    version: 1.5,
+    version: "",
     whats_new: null,
   },
 };

@@ -1,10 +1,10 @@
 import { Settings } from "../model/types";
 
 const domains: Array<Settings["domainApp"]> = [
-  { label: "https://www.plinsters.pro", value: "https://www.plinsters.pro" },
-  { label: "https://www.example2", value: "https://www.example2" },
-  { label: "https://www.example3", value: "https://www.example3" },
-  { label: "https://www.example4", value: "https://www.example4" },
+  { label: "plinsters.pro", value: "plinsters.pro" },
+  { label: "example2", value: "example2" },
+  { label: "example3", value: "example3" },
+  { label: "example4", value: "example4" },
 ];
 
 const subdomains: Array<Settings["domainLanding"]> = [];

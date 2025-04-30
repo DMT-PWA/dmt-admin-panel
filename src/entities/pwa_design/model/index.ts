@@ -10,6 +10,7 @@ export {
   addLanguage,
   removeLanguage,
   updateLanguagesList,
+  setMarketerTag,
 } from "./pwaDesignSlice";
 
 export { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
