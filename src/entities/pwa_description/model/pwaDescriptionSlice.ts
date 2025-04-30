@@ -109,7 +109,7 @@ const pwaDescriptionSlice = createSlice({
       const {
         about,
         rating,
-        downloads,
+        downloadsCount,
         reviewCount,
         version,
         whatsNew,
@@ -123,7 +123,7 @@ const pwaDescriptionSlice = createSlice({
       } = action.payload;
       state.title = appTitle;
       state.raiting = rating;
-      state.number_of_downloads = downloads;
+      state.number_of_downloads = downloadsCount;
       state.review_count = reviewCount;
       state.about_description = {
         description: about,

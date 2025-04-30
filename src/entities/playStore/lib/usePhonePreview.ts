@@ -1,22 +1,32 @@
 import { useEffect, useState } from "react";
 import { dataByTrasnslation, Translations } from "src/shared/lib/translations";
-import { Language, Country } from "src/shared/types"
+import { Language, Country } from "src/shared/types";
 
-export const usePhonePreview = (currentLanguage: Language, currentCountry: Country) => {
-    const [langData, setLangData] = useState<Translations | null>({});
+export const usePhonePreview = (
+  currentLanguage: Language,
+  currentCountry: Country
+) => {
+  const [langData, setLangData] = useState<Translations | null>({});
 
-    const [isArabic, setIsArabic] = useState<boolean>(false);
+  const [isArabic, setIsArabic] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (!currentLanguage && !currentCountry) return;
+  function formatNumber(num: string) {
+    return new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      compactDisplay: "short",
+    }).format(Number(num));
+  }
 
-        const country = currentCountry?.label.toLowerCase();
-        const lang = currentLanguage?.label.toLowerCase();
+  useEffect(() => {
+    if (!currentLanguage && !currentCountry) return;
 
-        setLangData(dataByTrasnslation[country][lang]);
+    const country = currentCountry?.label.toLowerCase();
+    const lang = currentLanguage?.label.toLowerCase();
 
-        setIsArabic(() => (lang === "arabic" ? true : false));
-    }, [currentCountry, currentLanguage]);
+    setLangData(dataByTrasnslation[country][lang]);
 
-    return { langData, isArabic }
-}
+    setIsArabic(() => (lang === "arabic" ? true : false));
+  }, [currentCountry, currentLanguage]);
+
+  return { langData, isArabic, formatNumber };
+};
