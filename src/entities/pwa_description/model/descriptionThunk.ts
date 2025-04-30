@@ -76,7 +76,7 @@ export const updateDescription = createAsyncThunk<
     appTitle: title,
     lastUpdate: last_update,
     releaseDate: release_date,
-    downloads: number_of_downloads,
+    downloadsCount: number_of_downloads,
     androidVersion: android_version,
     about: description,
     rating: raiting,

@@ -1,17 +1,15 @@
 import { FC, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { useMediaQuery } from "src/shared/lib/hooks";
-import { appData } from "src/shared/lib/data";
 import clsx from "clsx";
 
 interface ReviewsContentProps {
   raitingValue: string | number | null;
   grades: { id: number; value: number | string; raiting: number }[];
   isArabic: boolean;
+  reviews: string;
+  reviews_count: string;
 }
 
 const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
-  const isMobile = useMediaQuery("(max-width: 600px)");
   const {
     className = "",
     propMinWidth,
@@ -25,20 +23,6 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
     scoreValueMinWidth,
     scoreValueAlignSelf,
     scoreValueFlex,
-    reviewsInfoAlignSelf,
-    reviewsInfoHeight,
-    reviewsCountAlignSelf,
-    reviewsCountWidth,
-    mDisplay,
-    mMinWidth,
-    mAlignSelf,
-    mFlex,
-    reviewsTextAlignSelf,
-    reviewsTextFlex,
-    reviewsDisplay,
-    reviewsMinWidth,
-    reviewsAlignSelf,
-    reviewsFlex,
     emptyBarsMinWidth,
     emptyBarsWidth,
     divMinWidth,
@@ -52,21 +36,20 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
     raitingValue,
     grades,
     isArabic = false,
+    reviews,
+    reviews_count,
   } = props;
-  //===================================================================================================
-  //==========================={Redux Block}====================================================
-  //===================================================================================================
-  const { fourPointThree, fifteenM, reviews } = appData;
+
   //===================================================================================================
   //================================={React states}====================================================
   //===================================================================================================
 
-  const reviewsContent1Style = useMemo(() => {
-    return {
-      minWidth: propMinWidth,
-      height: reviewsContentHeight,
-    };
-  }, [propMinWidth, reviewsContentHeight]);
+  function formatNumber(num: string) {
+    return new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      compactDisplay: "short",
+    }).format(Number(num));
+  }
 
   const ratingVisualsStyle = useMemo(() => {
     return {
@@ -101,45 +84,6 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
     scoreValueAlignSelf,
     scoreValueFlex,
   ]);
-
-  const reviewsInfoStyle = useMemo(() => {
-    return {
-      alignSelf: reviewsInfoAlignSelf,
-      height: reviewsInfoHeight,
-    };
-  }, [reviewsInfoAlignSelf, reviewsInfoHeight]);
-
-  const reviewsCountStyle = useMemo(() => {
-    return {
-      alignSelf: reviewsCountAlignSelf,
-      width: reviewsCountWidth,
-    };
-  }, [reviewsCountAlignSelf, reviewsCountWidth]);
-
-  const mStyle = useMemo(() => {
-    return {
-      display: mDisplay,
-      minWidth: mMinWidth,
-      alignSelf: mAlignSelf,
-      flex: mFlex,
-    };
-  }, [mDisplay, mMinWidth, mAlignSelf, mFlex]);
-
-  const reviewsTextStyle = useMemo(() => {
-    return {
-      alignSelf: reviewsTextAlignSelf,
-      flex: reviewsTextFlex,
-    };
-  }, [reviewsTextAlignSelf, reviewsTextFlex]);
-
-  const reviewsStyle = useMemo(() => {
-    return {
-      display: reviewsDisplay,
-      minWidth: reviewsMinWidth,
-      alignSelf: reviewsAlignSelf,
-      flex: reviewsFlex,
-    };
-  }, [reviewsDisplay, reviewsMinWidth, reviewsAlignSelf, reviewsFlex]);
 
   const emptyBarsStyle = useMemo(() => {
     return {
@@ -221,7 +165,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
         <div className="flex flex-row items-start justify-start py-0 pl-0 pr-1 gap-0.5 text-2xs text-dimgray w-full">
           <div className="flex flex-row items-start justify-start w-full">
             <div className="relative tracking-[0.3px] leading-[16px] inline-block w-full">
-              {fifteenM} {reviews}
+              {formatNumber(reviews_count ?? "")} {reviews}
             </div>
           </div>
         </div>

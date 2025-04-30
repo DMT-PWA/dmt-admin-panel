@@ -24,7 +24,7 @@ const Tablet: FC<ITabletProps> = (props) => {
 
   const { currentCollection } = useAppSelector((state) => state.collections);
 
-  const { isArabic, langData } = usePhonePreview(
+  const { isArabic, langData, formatNumber } = usePhonePreview(
     currentLanguage,
     currentCountry
   );
@@ -37,6 +37,7 @@ const Tablet: FC<ITabletProps> = (props) => {
     grades,
     checkboxes_state,
     about_description,
+    review_count,
   } = useAppSelector((state) => state.pwa_description);
 
   const { comments_list } = useAppSelector((state) => state.comments);
@@ -54,7 +55,7 @@ const Tablet: FC<ITabletProps> = (props) => {
   //==========================={Translations Block}====================================================
   //===================================================================================================
   const {
-    headerReviews,
+    reviews,
     downloads,
     ageRating,
     install,
@@ -202,7 +203,7 @@ const Tablet: FC<ITabletProps> = (props) => {
                             <div
                             // className="relative tracking-[0.3px] leading-[16px] inline-block min-w-[74px] whitespace-nowrap"
                             >
-                              {headerReviews}
+                              {formatNumber(review_count ?? "")} {reviews}
                             </div>
                           </div>
                         </div>
@@ -393,6 +394,8 @@ const Tablet: FC<ITabletProps> = (props) => {
                 raitingValue={raiting || 4.8}
                 grades={grades}
                 isArabic={isArabic}
+                reviews_count={review_count ?? ""}
+                reviews={reviews ?? ""}
               />
             </section>
             {/* =========+{Section: Reviews result }======================== */}
