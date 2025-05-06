@@ -1,3 +1,5 @@
+import { LanguagesList } from "src/shared/types/designTypes";
+
 export type PwaCreate = {
   appId: string | null;
   descriptionId: string | null;
@@ -12,6 +14,9 @@ export interface UpdatePwaPayload {
   language: string | undefined | null;
   displayId: string;
   country: string | undefined;
+  currentCountry: string;
+  currentLanguage: string;
+  languageList: LanguagesList;
   appTitle: string;
   appSubTitle: string;
   hundredPlus: string | undefined | null;
@@ -32,8 +37,12 @@ export interface UpdatePwaResponse {
 }
 
 export type CreateInitPayload = {
-  appId: string;
   adminId: string;
   language: string;
   country: string;
+  defaultCountry?: string;
+  defaultLanguage?: string;
+  currentCountry?: string;
+  currentLanguage?: string;
+  languageList: LanguagesList;
 };

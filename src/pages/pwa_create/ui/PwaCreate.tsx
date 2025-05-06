@@ -67,12 +67,23 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const { selected_comment } = useAppSelector((state) => state.comments);
 
+  const { facebookPixelList } = useAppSelector((state) => state.metrics);
+
   const fetchAppById = useCallback(async () => {
     const { payload } = (await dispatch(getPwaById(appId))) as {
       payload: UpdatePwaPayload;
     };
 
-    const { appTitle, appSubTitle } = payload;
+    const {
+      appTitle,
+      currentCountry: country,
+      currentLanguage: language,
+      languageList: list,
+    } = payload;
+
+    dispatch(setCountry({ label: country, value: 0 }));
+    dispatch(setLanguage({ label: language, value: 0 }));
+    dispatch(updateLanguagesList(list));
 
     dispatch(setPwaTitle(appTitle));
   }, [appId, dispatch]);
@@ -106,6 +117,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   useEffect(() => {
     if (isEdit) {
+      fetchAppById();
+
       const lsData = localStorage.getItem(appId);
       if (lsData) {
         const { country, language, languagesList } = JSON.parse(lsData);
@@ -114,12 +127,11 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         dispatch(updateLanguagesList(languagesList));
       }
     } else {
-      fetchAppById();
       dispatch(setCountry({ label: "Egypt", value: 0 }));
       dispatch(setLanguage({ label: "Arabic", value: 0 }));
       dispatch(setLanguagesList());
     }
-  }, [isEdit, appId, fetchAppById, dispatch]);
+  }, [isEdit, appId, dispatch, fetchAppById]);
 
   useEffect(() => {
     if (isEdit && currentCountry?.label && currentLanguage?.label) {
@@ -134,9 +146,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const pathname = useLocation().pathname;
 
-  const setCurrentLangInLS = () => {
+  const setCurrentLangInLS = (id = appId) => {
     localStorage.setItem(
-      appId,
+      id,
       JSON.stringify({
         country: currentCountry,
         language: currentLanguage,
@@ -145,23 +157,29 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     );
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (currentLanguage && currentCountry) {
-      setCurrentLangInLS();
-      dispatch(
+      await dispatch(
         finishCreatePWA({
           adminId: adminId,
-          appId: appId,
           country: currentCountry?.label.toLowerCase(),
           language: currentLanguage?.label,
+          defaultCountry: currentCountry?.label.toLowerCase(),
+          defaultLanguage: currentLanguage?.label,
+          currentCountry: currentCountry?.label,
+          currentLanguage: currentLanguage?.label,
+          languageList: languagesList,
         })
       );
+
+      // setCurrentLangInLS(payload._id);
+
       goToTable();
     }
   };
 
   const handleSavePwaGeneral = async () => {
-    setCurrentLangInLS();
+    // setCurrentLangInLS();
 
     const payload = {
       adminId,
@@ -169,6 +187,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       isExist: true,
       language: currentLanguage?.label || "",
       country: currentCountry?.label.toLowerCase(),
+      currentCountry: currentCountry?.label,
+      currentLanguage: currentLanguage?.label,
+      languageList: languagesList,
     };
 
     if (pathname.endsWith("design")) {
@@ -220,6 +241,18 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
       return;
     }
+
+    if (pathname.endsWith("metrics")) {
+      dispatch(
+        updatePwaByLang({
+          ...payload,
+          pixelId: facebookPixelList[0].pixel,
+          accessToken: facebookPixelList[0].token,
+        })
+      );
+
+      return;
+    }
   };
 
   const handleTabChange = (index: number) => {
@@ -227,7 +260,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
     dispatch(setLanguage(languagesList[index]));
 
-    setCurrentLangInLS();
+    // setCurrentLangInLS();
   };
 
   return (
@@ -242,7 +275,11 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         <Routes>
           <Route
             path="design"
-            element={!loading && <PwaForm appId={appId} isEdit={isEdit} />}
+            element={
+              !loading && (
+                <PwaForm appId={isEdit ? appId : null} isEdit={isEdit} />
+              )
+            }
           />
           <Route
             path="description"
@@ -338,18 +375,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           )}
           {showNextButton && (
             <button
-              onClick={() =>
-                handleNavigateNext(() =>
-                  dispatch(
-                    updateDescription({
-                      appId,
-                      adminId,
-                      language: currentLanguage?.label,
-                      country: currentCountry?.label.toLowerCase(),
-                    })
-                  )
-                )
-              }
+              onClick={() => handleNavigateNext(() => console.log("kek"))}
               className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 ml-3.25 py-3 pr-2.25 pl-10.5"
             >
               Далее

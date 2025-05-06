@@ -7,18 +7,12 @@ import {
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ChevronRightIcon,
-  ChevronLeftIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-} from "@heroicons/react/16/solid";
+import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Title } from "src/shared/ui/title";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import link_icon from "src/shared/assets/icons/link_icon.png";
 import play_icon from "src/shared/assets/icons/play_icon.png";
-import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
@@ -29,7 +23,11 @@ import { format } from "date-fns";
 import { deletePwa } from "src/features/appData/appDataAPI";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "src/shared/lib/store";
-import { setAppId } from "src/entities/pwa_create";
+import {
+  setAppId,
+  createRenderService,
+  UpdatePwaPayload,
+} from "src/entities/pwa_create";
 import clsx from "clsx";
 
 export const PwaTable: FC = () => {
@@ -46,10 +44,11 @@ export const PwaTable: FC = () => {
     return data.map((obj) => ({
       _id: obj._id,
       id: obj.displayId,
+      adminId: obj.adminId,
       marketerTag: obj.marketerTag,
-      name: obj.appTitle,
+      name: obj.displayName,
       defaultNaming: "Rqd - NL OLZ learning",
-      domain: "bestplinkonl.play-plinki.com",
+      domain: obj.domain,
       tag: "OLZ",
       created: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
     }));
@@ -85,6 +84,18 @@ export const PwaTable: FC = () => {
   const onUpdateHandler = (value: string) => {
     dispatch(setAppId(value));
     navigate(`/pwa_edit/${value}/design`);
+  };
+
+  const handleCreateRenderService = (
+    payload: Partial<UpdatePwaPayload> & { domain: string }
+  ) => {
+    dispatch(
+      createRenderService({
+        appId: payload._id,
+        adminId: payload.adminId,
+        domain: payload.domain,
+      })
+    );
   };
 
   return (
@@ -152,7 +163,10 @@ export const PwaTable: FC = () => {
 
                             {cell.column.id === "actions" && (
                               <div className="min-w-23 flex justify-around">
-                                <button onClick={() => onCopyHandler(row.id)}>
+                                <button
+                                  disabled
+                                  onClick={() => handleCreateRenderService(row)}
+                                >
                                   <img
                                     src={play_icon}
                                     style={{ height: "16px", width: "16px" }}

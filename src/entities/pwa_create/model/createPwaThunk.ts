@@ -1,12 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
 import { updatePwa, getPwa } from "src/shared/api/create";
-
 import {
   CreateInitPayload,
   UpdatePwaPayload,
   UpdatePwaResponse,
 } from "./types";
+import { AxiosRequestConfig } from "axios";
 
 export const updatePwaByLang = createAsyncThunk<
   UpdatePwaResponse,
@@ -87,7 +87,6 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       marketerTag: pwa_tags,
       oneSignalApiKey: "",
       oneSignalAppId: "",
-      name: title,
       lastUpdate: last_update,
       releaseDate: release_date,
       downloadsCount: number_of_downloads,
@@ -99,10 +98,11 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
       isEditorsChoice: checkboxes_state[1].value,
       isInAppPurchases: checkboxes_state[2].value,
       version,
-      whatsNew: whats_new,
+      newFeatures: whats_new,
+      updatedDate: last_update,
     };
 
-    const response = await updatePwa("pwa", fullPayload);
+    const response = await apiInstance.post("pwa", fullPayload);
 
     return response;
   }
@@ -118,3 +118,15 @@ export const getPwaByIdAndLanguage = createAsyncThunk(
     return response;
   }
 );
+
+export const createRenderService = createAsyncThunk<
+  unknown,
+  Partial<UpdatePwaPayload> & { domain: string }
+>("create/createRenderService", async (payload) => {
+  const response = await apiInstance.post(
+    "render",
+    payload as AxiosRequestConfig<Partial<UpdatePwaPayload>>
+  );
+
+  return response;
+});

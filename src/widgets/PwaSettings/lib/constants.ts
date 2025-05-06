@@ -2,9 +2,6 @@ import { Settings } from "../model/types";
 
 const domains: Array<Settings["domainApp"]> = [
   { label: "plinsters.pro", value: "plinsters.pro" },
-  { label: "example2", value: "example2" },
-  { label: "example3", value: "example3" },
-  { label: "example4", value: "example4" },
 ];
 
 const subdomains: Array<Settings["domainLanding"]> = [];
