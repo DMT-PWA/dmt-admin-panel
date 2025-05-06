@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Country, Language } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 type PwaFormProps = {
-  appId: string;
+  appId: string | null;
   isEdit?: boolean;
 };
 

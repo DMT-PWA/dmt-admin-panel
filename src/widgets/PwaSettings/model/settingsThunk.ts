@@ -8,9 +8,9 @@ export const updateSettings = createAsyncThunk<
   UpdatePwaPayload,
   Partial<UpdatePwaPayload>
 >("settings/updateSettings", async (payload, { getState }) => {
-  const state = (getState() as RootState).settings;
+  const state = getState() as RootState;
 
-  const { domainApp, currentCampaign, whitePage, subdomain } = state;
+  const { domainApp, currentCampaign, whitePage, subdomain } = state.settings;
 
   const {
     keitaroDomain,

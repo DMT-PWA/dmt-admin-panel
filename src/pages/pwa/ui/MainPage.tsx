@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -15,15 +15,8 @@ const MainPage = () => {
   const navigate = useNavigate();
 
   async function createApp() {
-    const userData = {
-      adminId,
-    };
-
-    const response = await createPwa(userData);
-    if (response?._id) {
-      dispatch(setAppId(response?._id));
-      navigate(`/pwa_create/${response?._id}/design`);
-    }
+    // dispatch(setAppId("1"));
+    navigate(`/pwa_create/design`);
   }
 
   async function saveApp(ev: MouseEvent<HTMLButtonElement>) {
