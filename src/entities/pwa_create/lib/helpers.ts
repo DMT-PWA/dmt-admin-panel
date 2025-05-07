@@ -53,6 +53,7 @@ export const usePwaCreate = (isEdit: boolean = false) => {
     showSaveButton,
     showPreview,
     finishCreateButton,
+    currentRoute,
     goToTable,
   };
 };

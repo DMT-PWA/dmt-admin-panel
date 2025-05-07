@@ -25,8 +25,8 @@ const defaultState: CombinedDescription = {
     { id: 2, value: false },
   ],
   raiting: null,
-  review_count: "3.2",
-  number_of_downloads: 100000000,
+  review_count: "",
+  number_of_downloads: "",
   grades: [
     { id: 1, value: 90, raiting: 5 },
     { id: 2, value: 40, raiting: 4 },
@@ -67,7 +67,6 @@ const pwaDescriptionSlice = createSlice({
   initialState: defaultState,
   reducers: {
     batchUpdate: (state, action) => handleUpdate(state, action),
-
     updateAboutDescription: (
       state,
       action: PayloadAction<UpdateFieldPayload<IAboutGameDescription>>
@@ -76,31 +75,13 @@ const pwaDescriptionSlice = createSlice({
 
       state.about_description[field] = value as never;
     },
-    setTitle: (state, action: PayloadAction<string>) => {
-      state.title = action.payload;
-    },
-    setDeveloperName: (state, action: PayloadAction<string>) => {
-      state.developer_name = action.payload;
-    },
-    setRaiting: (state, action: PayloadAction<string>) => {
-      state.raiting = action.payload;
-    },
-    setLastUpdate: (state, action: PayloadAction<Date | null>) => {
-      state.about_description.last_update = action.payload;
-    },
-    setReleaseDate: (state, action: PayloadAction<Date | null>) => {
-      state.about_description.release_date = action.payload;
-    },
-    setNumberOfDownloads: (state, action: PayloadAction<string>) => {
-      state.number_of_downloads = action.payload;
-    },
-    setReviewCount: (state, action: PayloadAction<string>) => {
-      state.review_count = action.payload;
-    },
+
     setGrade: (state, action) => {
       state.grades[action.payload.index].value = action.payload.value;
     },
     toggleCheckbox: (state, action) => handleCheckboxes(state, action),
+
+    resetState: () => defaultState,
   },
   extraReducers: (builder) => {
     builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
@@ -154,16 +135,10 @@ const pwaDescriptionSlice = createSlice({
 
 export const {
   updateAboutDescription,
-  setDeveloperName,
-  setTitle,
-  setRaiting,
-  setLastUpdate,
-  setNumberOfDownloads,
-  setReviewCount,
   setGrade,
   toggleCheckbox,
-  setReleaseDate,
   batchUpdate,
+  resetState,
 } = pwaDescriptionSlice.actions;
 
 export default pwaDescriptionSlice.reducer;

@@ -12,8 +12,9 @@ import { PwaMetrics } from "src/widgets/PwaMetrics";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import {
-  setDeveloperName,
+  batchUpdate,
   updateDescription,
+  resetState,
 } from "src/entities/pwa_description";
 import {
   setPwaTitle,
@@ -33,7 +34,7 @@ import {
 import clsx from "clsx";
 import { getCollection } from "src/features/collections_list";
 import { setComments, setSelectedCommentId } from "src/entities/comments";
-import { updateSettings, updateSettingField } from "src/widgets/PwaSettings";
+import { updateSettings } from "src/widgets/PwaSettings";
 
 type PwaCreateProps = {
   appId: string;
@@ -51,6 +52,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showNextButton,
     showSaveButton,
     showPreview,
+    currentRoute,
     finishCreateButton,
   } = usePwaCreate(isEdit);
 
@@ -100,7 +102,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
       dispatch(setPwaTitle(payload.displayName));
 
-      dispatch(setDeveloperName(payload.appSubTitle));
+      dispatch(batchUpdate({ developer_name: payload.appSubTitle }));
 
       dispatch(getCollection(payload.collectionId));
 
@@ -126,7 +128,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         dispatch(setLanguage(language));
         dispatch(updateLanguagesList(languagesList));
       }
-    } else {
+    }
+    if (!isEdit && !currentCountry && !currentLanguage && !languagesList) {
       dispatch(setCountry({ label: "Egypt", value: 0 }));
       dispatch(setLanguage({ label: "Arabic", value: 0 }));
       dispatch(setLanguagesList());
@@ -145,17 +148,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   ]);
 
   const pathname = useLocation().pathname;
-
-  const setCurrentLangInLS = (id = appId) => {
-    localStorage.setItem(
-      id,
-      JSON.stringify({
-        country: currentCountry,
-        language: currentLanguage,
-        languagesList,
-      })
-    );
-  };
 
   const handleCreate = async () => {
     if (currentLanguage && currentCountry) {
@@ -255,12 +247,26 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     }
   };
 
+  const fullDescription = useAppSelector((state) => state.pwa_description);
+
   const handleTabChange = (index: number) => {
     if (!languagesList) return;
 
-    dispatch(setLanguage(languagesList[index]));
+    /* const prev_description = { ...fullDescription };
 
-    // setCurrentLangInLS();
+    dispatch(resetState());
+
+    languagesList.forEach((item) => {
+      localStorage.setItem(
+        currentRoute,
+        JSON.stringify({
+          [item.label]: prev_description,
+          [currentLanguage?.label]: { ...fullDescription },
+        })
+      );
+    }); */
+
+    dispatch(setLanguage(languagesList[index]));
   };
 
   return (
