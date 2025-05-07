@@ -25,9 +25,9 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
   const CREATE_PAGE = pathname.startsWith("/pwa_create");
 
   const handleSidebarRoute = (routeName: string) => {
-    return navigate(
-      `${CREATE_PAGE ? "pwa_create" : "pwa_edit"}/${appId}/${routeName}`
-    );
+    return CREATE_PAGE
+      ? navigate(`pwa_create/${routeName}`)
+      : navigate(`pwa_edit/${appId}/${routeName}`);
   };
 
   const canHiglightItem = (item: string) => {

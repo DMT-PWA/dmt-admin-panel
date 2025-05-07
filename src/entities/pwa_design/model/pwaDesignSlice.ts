@@ -42,6 +42,11 @@ export const pwaDesignSlice = createSlice({
     },
     setLanguagesList: (state) => {
       switch (state.currentCountry.label.toLowerCase()) {
+        case "algeria":
+          state.languagesList = [{ label: "Arabic", value: 0 }];
+
+          break;
+
         case "egypt":
           state.languagesList = [{ label: "Arabic", value: 0 }];
 

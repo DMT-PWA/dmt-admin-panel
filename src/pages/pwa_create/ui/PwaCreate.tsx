@@ -375,7 +375,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           )}
           {showNextButton && (
             <button
-              onClick={() => handleNavigateNext(() => console.log("kek"))}
+              onClick={handleNavigateNext}
               className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 ml-3.25 py-3 pr-2.25 pl-10.5"
             >
               Далее
