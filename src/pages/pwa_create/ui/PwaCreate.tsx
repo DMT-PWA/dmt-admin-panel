@@ -149,9 +149,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const pathname = useLocation().pathname;
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (currentLanguage && currentCountry) {
-      await dispatch(
+      dispatch(
         finishCreatePWA({
           adminId: adminId,
           country: currentCountry?.label.toLowerCase(),
@@ -164,16 +164,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         })
       );
 
-      // setCurrentLangInLS(payload._id);
-
       goToTable();
     }
   };
 
-  const handleSavePwaGeneral = async () => {
-    // setCurrentLangInLS();
-
-    const payload = {
+  const handleSavePwaGeneral = () => {
+    const basePayload = {
       adminId,
       appId,
       isExist: true,
@@ -184,67 +180,40 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       languageList: languagesList,
     };
 
-    if (pathname.endsWith("design")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          appTitle: pwa_title || "",
-        })
-      );
+    const pathActions = {
+      design: () =>
+        dispatch(
+          updatePwaByLang({ ...basePayload, appTitle: pwa_title || "" })
+        ),
+      description: () => {
+        dispatch(updateDescription(basePayload));
+        dispatch(
+          updatePwaByLang({
+            ...basePayload,
+            collectionId: currentCollection?._id,
+            appSubTitle: developer_name,
+          })
+        );
+      },
+      comments: () =>
+        dispatch(
+          updatePwaByLang({ ...basePayload, commentId: selected_comment })
+        ),
+      settings: () => dispatch(updateSettings(basePayload)),
+      metrics: () =>
+        dispatch(
+          updatePwaByLang({
+            ...basePayload,
+            pixelId: facebookPixelList[0].pixel,
+            accessToken: facebookPixelList[0].token,
+          })
+        ),
+    };
 
-      return;
-    }
-
-    if (pathname.endsWith("description")) {
-      dispatch(
-        updateDescription({
-          ...payload,
-        })
-      );
-
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          collectionId: currentCollection?._id,
-          appSubTitle: developer_name,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("comments")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          commentId: selected_comment,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("settings")) {
-      dispatch(
-        updateSettings({
-          ...payload,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("metrics")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          pixelId: facebookPixelList[0].pixel,
-          accessToken: facebookPixelList[0].token,
-        })
-      );
-
-      return;
-    }
+    const pathKey = Object.keys(pathActions).find((key) =>
+      pathname.endsWith(key)
+    );
+    if (pathKey) pathActions[pathKey]();
   };
 
   const fullDescription = useAppSelector((state) => state.pwa_description);

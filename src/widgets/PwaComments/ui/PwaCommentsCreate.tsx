@@ -1,4 +1,4 @@
-import { Dialog, DialogBackdrop, Switch } from "@headlessui/react";
+import { Dialog, DialogBackdrop } from "@headlessui/react";
 import { FC, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -37,8 +37,10 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const onSaveHandler = () => {
+    if (!currentLanguage) return;
+
     dispatch(
-      createCommentHandler({ adminId, language: currentLanguage?.label })
+      createCommentHandler({ appId: adminId, language: currentLanguage?.label })
     );
   };
 
