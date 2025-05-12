@@ -164,7 +164,6 @@ export const PwaTable: FC = () => {
                             {cell.column.id === "actions" && (
                               <div className="min-w-23 flex justify-around">
                                 <button
-                                  disabled
                                   onClick={() => handleCreateRenderService(row)}
                                 >
                                   <img
