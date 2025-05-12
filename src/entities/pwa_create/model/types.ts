@@ -17,7 +17,7 @@ export interface UpdatePwaPayload {
   currentCountry: string;
   currentLanguage: string;
   languageList: LanguagesList;
-  appTitle: string;
+  displayName: string;
   appSubTitle: string;
   hundredPlus: string | undefined | null;
   about: string | undefined | null;

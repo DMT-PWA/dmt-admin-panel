@@ -77,7 +77,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     };
 
     const {
-      appTitle,
       currentCountry: country,
       currentLanguage: language,
       languageList: list,
@@ -86,8 +85,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     dispatch(setCountry({ label: country, value: 0 }));
     dispatch(setLanguage({ label: language, value: 0 }));
     dispatch(updateLanguagesList(list));
-
-    dispatch(setPwaTitle(appTitle));
   }, [appId, dispatch]);
 
   const fetchDataByCountry = useCallback(
@@ -183,7 +180,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     const pathActions = {
       design: () =>
         dispatch(
-          updatePwaByLang({ ...basePayload, appTitle: pwa_title || "" })
+          updatePwaByLang({ ...basePayload, displayName: pwa_title || "" })
         ),
       description: () => {
         dispatch(updateDescription(basePayload));

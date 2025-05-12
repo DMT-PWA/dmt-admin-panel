@@ -7,6 +7,7 @@ import {
   UpdatePwaResponse,
 } from "./types";
 import { AxiosRequestConfig } from "axios";
+import { AppDataProps } from "src/shared/types/commonTypes";
 
 export const updatePwaByLang = createAsyncThunk<
   UpdatePwaResponse,
@@ -26,7 +27,7 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
   }
 );
 
-export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
+export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
   "create/createPWA",
   async (payload, { getState }) => {
     const {
@@ -108,16 +109,16 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
   }
 );
 
-export const getPwaByIdAndLanguage = createAsyncThunk(
-  "create/getPwaByIdAndLanguage",
-  async (payload: Partial<UpdatePwaPayload>) => {
-    const response = await getPwa(
-      `pwa/${payload.appId}/${payload.language}/${payload.country}`
-    );
+export const getPwaByIdAndLanguage = createAsyncThunk<
+  AppDataProps,
+  Partial<UpdatePwaPayload>
+>("create/getPwaByIdAndLanguage", async (payload) => {
+  const response = await apiInstance.get<AppDataProps>(
+    `pwa/${payload.appId}/${payload.language}/${payload.country}`
+  );
 
-    return response;
-  }
-);
+  return response;
+});
 
 export const createRenderService = createAsyncThunk<
   unknown,
