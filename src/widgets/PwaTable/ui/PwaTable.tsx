@@ -89,6 +89,8 @@ export const PwaTable: FC = () => {
   const handleCreateRenderService = (
     payload: Partial<UpdatePwaPayload> & { domain: string }
   ) => {
+    console.log(payload);
+
     dispatch(
       createRenderService({
         appId: payload._id,
@@ -164,7 +166,9 @@ export const PwaTable: FC = () => {
                             {cell.column.id === "actions" && (
                               <div className="min-w-23 flex justify-around">
                                 <button
-                                  onClick={() => handleCreateRenderService(row)}
+                                  onClick={() =>
+                                    handleCreateRenderService(row.original)
+                                  }
                                 >
                                   <img
                                     src={play_icon}

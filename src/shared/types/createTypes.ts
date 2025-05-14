@@ -1,3 +1,5 @@
+import { LanguagesList } from "./designTypes";
+
 export interface UpdatePwaPayload {
   appId: string;
   adminId: string;
@@ -11,4 +13,11 @@ export interface UpdatePwaPayload {
   descriptionId?: string | undefined | null;
   commentId?: string | undefined | null;
   isExist: boolean;
+  languageList: LanguagesList;
+  currentCountry: string;
+  currentLanguage: string;
+  domain: string;
+  subDomain: string;
+  pixelId: string;
+  accessToken: string;
 }

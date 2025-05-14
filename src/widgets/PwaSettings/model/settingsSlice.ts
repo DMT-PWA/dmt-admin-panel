@@ -3,7 +3,8 @@ import { Settings } from "./types";
 import { SelectValueProp } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
 import { getAllCampaigns } from "./settingsThunk";
-import { getPwaByIdAndLanguage } from "src/entities/pwa_create";
+import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
+import { domains } from "../lib/constants";
 
 const initialState: Settings = {
   domainApp: null,
@@ -66,6 +67,19 @@ const settingsSlice = createSlice({
             state.currentCampaign = campaign;
           }
         }
+      })
+      .addCase(getPwaById.fulfilled, (state, action) => {
+        const { domain, subDomain } = action.payload;
+
+        const currentDomain = domains.find((item) => item?.value === domain);
+
+        if (!currentDomain) return;
+
+        state.domainApp = currentDomain;
+
+        if (!subDomain) return;
+
+        state.subdomain = subDomain;
       });
   },
 });

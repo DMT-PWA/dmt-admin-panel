@@ -11,8 +11,7 @@ import {
   updateDescription,
 } from "./descriptionThunk";
 import { UpdateFieldPayload } from "src/shared/lib/store";
-
-import { getPwaByIdAndLanguage } from "src/entities/pwa_create";
+import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const defaultState: CombinedDescription = {
   descriptionId: null,
@@ -101,8 +100,11 @@ const pwaDescriptionSlice = createSlice({
         isEditorsChoice,
         isInAppPurchases,
         appTitle,
+        appSubTitle,
       } = action.payload;
+
       state.title = appTitle;
+      state.developer_name = appSubTitle;
       state.raiting = rating;
       state.number_of_downloads = downloadsCount;
       state.review_count = reviewCount;

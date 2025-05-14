@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAllCollections } from "./collectionsThunk";
 import { Collections } from "./types";
 import { ICollection, CollectionResponse } from "src/entities/collection";
+import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 type InitialStateType = {
   collectionsList: Collections;
@@ -36,29 +37,32 @@ export const collectionsSlice = createSlice({
 
       state.currentCollection = action.payload as ICollection;
     },
-    getCollection: (state, action: PayloadAction<CollectionResponse>) => {
-      state.currentCollection = {
-        _id: action.payload._id,
-        collectionImage: action.payload.icon,
-        collectionName: action.payload.name,
-        images: action.payload.screenShots,
-      };
-    },
   },
   extraReducers: (builder) => {
-    builder.addCase(getAllCollections.fulfilled, (state, action) => {
-      action.payload.forEach((collection) => {
-        state.collectionsList.push({
-          _id: collection._id,
-          collectionImage: collection.icon,
-          images: collection.screenShots,
-          collectionName: collection.name,
+    builder
+      .addCase(getAllCollections.fulfilled, (state, action) => {
+        action.payload.forEach((collection) => {
+          state.collectionsList.push({
+            _id: collection._id,
+            collectionImage: collection.icon,
+            images: collection.screenShots,
+            collectionName: collection.name,
+          });
         });
+      })
+      .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+        const { _id, icon, screenShots, name } = action.payload.collectionId;
+
+        state.currentCollection = {
+          _id,
+          collectionImage: icon,
+          images: screenShots,
+          collectionName: name,
+        };
       });
-    });
   },
 });
 
-export const { setCurrentCollection, getCollection } = collectionsSlice.actions;
+export const { setCurrentCollection } = collectionsSlice.actions;
 
 export default collectionsSlice.reducer;

@@ -11,30 +11,20 @@ import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
+import { updateDescription } from "src/entities/pwa_description";
 import {
-  batchUpdate,
-  updateDescription,
-  resetState,
-} from "src/entities/pwa_description";
-import {
-  setPwaTitle,
   setCountry,
   setLanguage,
-  setLanguagesList,
   updateLanguagesList,
 } from "src/entities/pwa_design";
 import {
   updatePwaByLang,
-  getPwaById,
   usePwaCreate,
   finishCreatePWA,
-  getPwaByIdAndLanguage,
-  UpdatePwaPayload,
 } from "src/entities/pwa_create";
 import clsx from "clsx";
-import { getCollection } from "src/features/collections_list";
-import { setComments, setSelectedCommentId } from "src/entities/comments";
 import { updateSettings } from "src/widgets/PwaSettings";
+import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 
 type PwaCreateProps = {
   appId: string;
@@ -52,7 +42,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showNextButton,
     showSaveButton,
     showPreview,
-    currentRoute,
     finishCreateButton,
   } = usePwaCreate(isEdit);
 
@@ -61,9 +50,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const { currentLanguage, currentCountry, pwa_title, languagesList } =
     useAppSelector((state) => state.pwa_design);
 
-  const { currentCollection, collectionsList } = useAppSelector(
-    (state) => state.collections
-  );
+  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const { developer_name } = useAppSelector((state) => state.pwa_description);
 
@@ -71,43 +58,18 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const { facebookPixelList } = useAppSelector((state) => state.metrics);
 
-  const fetchAppById = useCallback(async () => {
-    const { payload } = (await dispatch(getPwaById(appId))) as {
-      payload: UpdatePwaPayload;
-    };
-
-    const {
-      currentCountry: country,
-      currentLanguage: language,
-      languageList: list,
-    } = payload;
-
-    dispatch(setCountry({ label: country, value: 0 }));
-    dispatch(setLanguage({ label: language, value: 0 }));
-    dispatch(updateLanguagesList(list));
-  }, [appId, dispatch]);
+  const fetchAppById = useCallback(
+    () => dispatch(getPwaById(appId)),
+    [appId, dispatch]
+  );
 
   const fetchDataByCountry = useCallback(
-    async (country: string, lang: string) => {
+    (country: string, lang: string) => {
       if (!appId || !country || !lang) return;
 
       setLoading(true);
 
-      const { payload } = await dispatch(
-        getPwaByIdAndLanguage({ appId, language: lang, country })
-      );
-
-      dispatch(setPwaTitle(payload.displayName));
-
-      dispatch(batchUpdate({ developer_name: payload.appSubTitle }));
-
-      dispatch(getCollection(payload.collectionId));
-
-      const { reviewObject, _id } = payload.commentId;
-
-      dispatch(setComments([...reviewObject]));
-
-      dispatch(setSelectedCommentId(_id));
+      dispatch(getPwaByIdAndLanguage({ appId, language: lang, country }));
 
       setLoading(false);
     },
@@ -125,11 +87,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         dispatch(setLanguage(language));
         dispatch(updateLanguagesList(languagesList));
       }
-    }
-    if (!isEdit && !currentCountry && !currentLanguage && !languagesList) {
-      dispatch(setCountry({ label: "Egypt", value: 0 }));
-      dispatch(setLanguage({ label: "Arabic", value: 0 }));
-      dispatch(setLanguagesList());
     }
   }, [isEdit, appId, dispatch, fetchAppById]);
 

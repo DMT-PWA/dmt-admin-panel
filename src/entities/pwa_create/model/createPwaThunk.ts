@@ -109,17 +109,6 @@ export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
   }
 );
 
-export const getPwaByIdAndLanguage = createAsyncThunk<
-  AppDataProps,
-  Partial<UpdatePwaPayload>
->("create/getPwaByIdAndLanguage", async (payload) => {
-  const response = await apiInstance.get<AppDataProps>(
-    `pwa/${payload.appId}/${payload.language}/${payload.country}`
-  );
-
-  return response;
-});
-
 export const createRenderService = createAsyncThunk<
   unknown,
   Partial<UpdatePwaPayload> & { domain: string }

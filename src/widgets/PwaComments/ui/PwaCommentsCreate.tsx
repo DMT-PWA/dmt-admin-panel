@@ -71,6 +71,10 @@ export const PwaCommentsCreate: FC = () => {
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
+    null
+  );
+
   useEffect(() => {
     dispatch(resetCommentsList());
   }, [dispatch]);
@@ -104,7 +108,10 @@ export const PwaCommentsCreate: FC = () => {
               return (
                 <CommentCreate
                   key={ind}
-                  setModalOpen={setModalOpen}
+                  setModalOpen={() => {
+                    setModalOpen(true);
+                    setCurrentModalIndex(ind);
+                  }}
                   onFiledUpdate={(field, value) =>
                     onUpdateCommentInList(field, ind, value)
                   }
@@ -113,7 +120,10 @@ export const PwaCommentsCreate: FC = () => {
               );
             })}
           <CommentCreate
-            setModalOpen={setModalOpen}
+            setModalOpen={() => {
+              setModalOpen(true);
+              setCurrentModalIndex(null);
+            }}
             onFiledUpdate={(field, value) => handleFieldUpdate(field, value)}
             {...comment}
           />
@@ -140,7 +150,10 @@ export const PwaCommentsCreate: FC = () => {
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <AvatarsCollectionModal onPopupHandler={() => setModalOpen(false)} />
+          <AvatarsCollectionModal
+            onPopupHandler={() => setModalOpen(false)}
+            index={currentModalIndex}
+          />
         </div>
       </Dialog>
     </div>

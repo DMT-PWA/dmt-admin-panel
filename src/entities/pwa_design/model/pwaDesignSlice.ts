@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
 import { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
-import { languages, modifiedCountryList } from "../lib/const";
-import { Language, ICollection, Country } from "src/shared/types/designTypes";
+import { languages } from "../lib/const";
+import { Language, Country } from "src/shared/types/designTypes";
+import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const defaultState: IDesign = {
   languages: languages,
@@ -11,9 +12,9 @@ const defaultState: IDesign = {
   collections: [],
   isChanged: false,
   appData: {},
-  languagesList: null,
-  currentCountry: null,
-  currentLanguage: null,
+  languagesList: [{ label: "Arabic", value: 0 }],
+  currentCountry: { label: "Egypt", value: 0 },
+  currentLanguage: { label: "Arabic", value: 0 },
 };
 
 export const pwaDesignSlice = createSlice({
@@ -41,7 +42,7 @@ export const pwaDesignSlice = createSlice({
       state.currentLanguage = action.payload;
     },
     setLanguagesList: (state) => {
-      switch (state.currentCountry.label.toLowerCase()) {
+      switch (state.currentCountry?.label.toLowerCase()) {
         case "algeria":
           state.languagesList = [{ label: "Arabic", value: 0 }];
 
@@ -129,6 +130,24 @@ export const pwaDesignSlice = createSlice({
     builder.addCase(fetchPwaInfo.fulfilled, (state, action) => {
       state.appData = action.payload;
     });
+    builder
+      .addCase(getPwaById.fulfilled, (state, action) => {
+        const { currentCountry, currentLanguage, languageList } =
+          action.payload;
+
+        if (!currentCountry || !currentLanguage) return;
+
+        state.currentCountry = { label: currentCountry, value: 0 };
+        state.currentLanguage = { label: currentLanguage, value: 0 };
+        state.languagesList = languageList;
+      })
+      .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+        const { displayName } = action.payload;
+
+        if (!displayName) return;
+
+        state.pwa_title = displayName;
+      });
   },
 });
 
