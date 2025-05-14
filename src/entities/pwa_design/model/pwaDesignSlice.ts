@@ -12,9 +12,9 @@ const defaultState: IDesign = {
   collections: [],
   isChanged: false,
   appData: {},
-  languagesList: [{ label: "Arabic", value: 0 }],
-  currentCountry: { label: "Egypt", value: 0 },
-  currentLanguage: { label: "Arabic", value: 0 },
+  languagesList: null,
+  currentCountry: null,
+  currentLanguage: null,
 };
 
 export const pwaDesignSlice = createSlice({

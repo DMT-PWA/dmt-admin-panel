@@ -1,13 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
-import { updatePwa, getPwa } from "src/shared/api/create";
+import { updatePwa } from "src/shared/api/create";
 import {
   CreateInitPayload,
   UpdatePwaPayload,
   UpdatePwaResponse,
 } from "./types";
 import { AxiosRequestConfig } from "axios";
-import { AppDataProps } from "src/shared/types/commonTypes";
 
 export const updatePwaByLang = createAsyncThunk<
   UpdatePwaResponse,

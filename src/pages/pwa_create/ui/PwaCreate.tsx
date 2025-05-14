@@ -13,9 +13,9 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
 import { updateDescription } from "src/entities/pwa_description";
 import {
-  setCountry,
   setLanguage,
-  updateLanguagesList,
+  setCountry,
+  setLanguagesList,
 } from "src/entities/pwa_design";
 import {
   updatePwaByLang,
@@ -79,14 +79,11 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   useEffect(() => {
     if (isEdit) {
       fetchAppById();
-
-      const lsData = localStorage.getItem(appId);
-      if (lsData) {
-        const { country, language, languagesList } = JSON.parse(lsData);
-        dispatch(setCountry(country));
-        dispatch(setLanguage(language));
-        dispatch(updateLanguagesList(languagesList));
-      }
+    }
+    if (!isEdit && !currentCountry && !currentLanguage && !languagesList) {
+      dispatch(setCountry({ label: "Egypt", value: 0 }));
+      dispatch(setLanguage({ label: "Arabic", value: 0 }));
+      dispatch(setLanguagesList());
     }
   }, [isEdit, appId, dispatch, fetchAppById]);
 
