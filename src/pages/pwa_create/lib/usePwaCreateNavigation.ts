@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { ROUTE_ORDER } from "./const";
+import { ROUTE_ORDER } from "src/entities/pwa_create/lib/const";
 
-export const usePwaCreate = (isEdit: boolean = false) => {
+export const usePwaCreateNavigation = (isEdit: boolean = false) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -55,5 +55,6 @@ export const usePwaCreate = (isEdit: boolean = false) => {
     finishCreateButton,
     currentRoute,
     goToTable,
+    useLocation,
   };
 };

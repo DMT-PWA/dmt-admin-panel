@@ -5,7 +5,7 @@ import {
   Label,
   Textarea,
 } from "@headlessui/react";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
@@ -14,6 +14,7 @@ import {
   toggleCheckbox,
   updateAboutDescription,
   batchUpdate,
+  CombinedDescription,
 } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
@@ -30,12 +31,12 @@ import {
 
 type DescriptionFormProps = {
   adminId: string;
-  language: string;
+  descriptionState: CombinedDescription;
 };
 
 export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   adminId,
-  language,
+  descriptionState,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -52,10 +53,10 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     review_count,
     developer_name,
     number_of_downloads,
-  } = useAppSelector((state) => state.pwa_description);
+  } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
-    useAppSelector((state) => state.pwa_description.about_description);
+    about_description;
 
   const { collectionsList, currentCollection } = useAppSelector(
     (state) => state.collections
@@ -87,12 +88,6 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   useEffect(() => {
     if (!collectionsList.length) dispatch(getAllCollections());
   }, [dispatch, collectionsList]);
-
-  /* useEffect(() => {
-    if (!descriptionId) {
-      dispatch(createDescriptionById({ adminId, language }));
-    }
-  }, []); */
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">

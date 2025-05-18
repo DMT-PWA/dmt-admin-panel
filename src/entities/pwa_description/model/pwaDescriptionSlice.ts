@@ -83,7 +83,7 @@ const pwaDescriptionSlice = createSlice({
     resetState: () => defaultState,
   },
   extraReducers: (builder) => {
-    builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+    /*  builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
       if (!action.payload) return;
 
       const {
@@ -120,7 +120,7 @@ const pwaDescriptionSlice = createSlice({
       state.checkboxes_state[0].value = isContainsAds;
       state.checkboxes_state[1].value = isInAppPurchases;
       state.checkboxes_state[2].value = isEditorsChoice;
-    });
+    }); */
 
     builder.addCase(
       createDescriptionById.pending,

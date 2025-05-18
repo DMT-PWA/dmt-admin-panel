@@ -14,10 +14,11 @@ interface ITabletProps {
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout } = props;
+  const { toAbout, currentDataByLanguage } = props;
+
+  const { descriptionState } = currentDataByLanguage.value;
 
   const [isAppSupport] = useState(false);
-  const [, setIsInstall] = useState(false);
   const { currentCountry, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
@@ -38,7 +39,7 @@ const Tablet: FC<ITabletProps> = (props) => {
     checkboxes_state,
     about_description,
     review_count,
-  } = useAppSelector((state) => state.pwa_description);
+  } = descriptionState;
 
   const { comments_list } = useAppSelector((state) => state.comments);
 
@@ -51,9 +52,6 @@ const Tablet: FC<ITabletProps> = (props) => {
   };
   const modifiedNumberOfDownloads = formatDownloads(number_of_downloads);
 
-  //===================================================================================================
-  //==========================={Translations Block}====================================================
-  //===================================================================================================
   const {
     reviews,
     downloads,
@@ -67,15 +65,6 @@ const Tablet: FC<ITabletProps> = (props) => {
     no,
     screenShots,
   } = langData;
-
-  // const isArabic = currentLanguage?.label === "Arabic";
-  //===================================================================================================
-  //================================={React states}====================================================
-  //===================================================================================================
-
-  async function installApp() {
-    setIsInstall(true);
-  }
 
   return (
     <>
@@ -268,7 +257,6 @@ const Tablet: FC<ITabletProps> = (props) => {
 
                       <button
                         className={`cursor-pointer hover:opacity-80 [border:none] py-2 px-5 self-stretch rounded-1 tabletBlack:rounded-lg overflow-hidden flex flex-row items-start justify-center bg-onexBlue tabletBlack:bg-blue_default`}
-                        onClick={installApp}
                       >
                         <div className="relative text-sm tracking-[0.25px] leading-4 font-product_sans text-neutral-100 text-left inline-block min-w-[40px]">
                           {install}
