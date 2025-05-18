@@ -10,9 +10,6 @@ import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import {
-  setLastUpdate,
-  setReleaseDate,
-  setNumberOfDownloads,
   setGrade,
   toggleCheckbox,
   updateAboutDescription,
@@ -24,10 +21,7 @@ import { format } from "date-fns";
 import { ButtonDefault } from "src/shared/ui/button";
 import { CollectionCreate } from "src/features/collection_create";
 import { ICollection } from "src/shared/types";
-import {
-  createCollection,
-  getDescriptionById,
-} from "src/features/appData/appDataAPI";
+import { createCollection } from "src/features/appData/appDataAPI";
 import {
   CollectionsList,
   getAllCollections,
@@ -265,7 +259,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   showIcon
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
-                  onChange={(date) => dispatch(setReleaseDate(date))}
+                  onChange={(date) =>
+                    dispatch(
+                      updateAboutDescription({
+                        field: "release_date",
+                        value: date,
+                      })
+                    )
+                  }
                   icon={
                     <svg
                       width="15"
@@ -291,7 +292,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 placeholder="10000000"
                 value={number_of_downloads}
                 onUpdateValue={(e) =>
-                  dispatch(setNumberOfDownloads(e.target.value))
+                  dispatch(batchUpdate({ number_of_downloads: e.target.value }))
                 }
               />
             </div>
@@ -318,7 +319,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   showIcon={!last_update}
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
-                  onChange={(date) => dispatch(setLastUpdate(date))}
+                  onChange={(date) =>
+                    dispatch(
+                      updateAboutDescription({
+                        field: "last_update",
+                        value: date,
+                      })
+                    )
+                  }
                   icon={
                     <svg
                       width="15"

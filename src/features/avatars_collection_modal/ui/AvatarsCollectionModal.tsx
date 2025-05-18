@@ -4,15 +4,17 @@ import close_icon from "src/shared/assets/icons/close_icon.png";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
 import avatar_icon from "src/shared/assets/icons/avatar_icon.png";
-import { updateCommentField } from "src/entities/comments";
+import { updateCommentField, updateCommentInList } from "src/entities/comments";
 import { useAppDispatch } from "src/shared/lib/store";
 import { handleFileUpload } from "src/features/appData/appDataAPI";
 interface IAvatarsCollectionProps {
   onPopupHandler: () => void;
+  index?: number | null;
 }
 
 export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
   onPopupHandler,
+  index,
 }) => {
   const [avatar, setTempAvatar] = useState<string | null>(null);
 
@@ -33,6 +35,12 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
 
   const handleAvatarChoose = () => {
     if (avatar) {
+      if (index) {
+        dispatch(updateCommentInList({ index, changes: { avatar: avatar } }));
+        onPopupHandler();
+        return;
+      }
+
       dispatch(updateCommentField({ field: "avatar", value: avatar }));
       onPopupHandler();
     }

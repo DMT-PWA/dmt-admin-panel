@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
-import { updatePwa, getPwa } from "src/shared/api/create";
+import { updatePwa } from "src/shared/api/create";
 import {
   CreateInitPayload,
   UpdatePwaPayload,
@@ -26,7 +26,7 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
   }
 );
 
-export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
+export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
   "create/createPWA",
   async (payload, { getState }) => {
     const {
@@ -103,17 +103,6 @@ export const finishCreatePWA = createAsyncThunk<any, CreateInitPayload>(
     };
 
     const response = await apiInstance.post("pwa", fullPayload);
-
-    return response;
-  }
-);
-
-export const getPwaByIdAndLanguage = createAsyncThunk(
-  "create/getPwaByIdAndLanguage",
-  async (payload: Partial<UpdatePwaPayload>) => {
-    const response = await getPwa(
-      `pwa/${payload.appId}/${payload.language}/${payload.country}`
-    );
 
     return response;
   }

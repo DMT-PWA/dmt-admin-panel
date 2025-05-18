@@ -1925,7 +1925,6 @@ export const translations = {
   },
 };
 
-
 export const dataByTrasnslation = {
   egypt: {
     arabic: translations.egyptArabic,
@@ -1994,8 +1993,12 @@ export const dataByTrasnslation = {
     lithuanian: translations.lithuanian,
     english: translations.english,
   },
-}
+  algeria: {
+    arabic: translations.arabic,
+    english: translations.english,
+  },
+};
 
 export type Countries = keyof typeof dataByTrasnslation;
 
-export type Translations = ReturnType<typeof dataByTrasnslation>
+export type Translations = ReturnType<typeof dataByTrasnslation>;

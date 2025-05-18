@@ -10,12 +10,12 @@ export const usePwaCreate = (isEdit: boolean = false) => {
 
   const basePath = pathSegments.slice(0, -1).join("/");
 
-  const handleNavigateNext = (callback: () => void) => {
-    if (currentRoute === "description") callback();
-
+  const handleNavigateNext = () => {
     const currentIndex = ROUTE_ORDER.indexOf(currentRoute);
     if (currentIndex < ROUTE_ORDER.length - 1) {
       const nextRoute = ROUTE_ORDER[currentIndex + 1];
+      console.log(`${basePath}/${nextRoute}`);
+
       navigate(`${basePath}/${nextRoute}`);
     }
   };
@@ -53,6 +53,7 @@ export const usePwaCreate = (isEdit: boolean = false) => {
     showSaveButton,
     showPreview,
     finishCreateButton,
+    currentRoute,
     goToTable,
   };
 };

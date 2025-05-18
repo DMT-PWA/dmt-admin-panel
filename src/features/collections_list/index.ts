@@ -5,5 +5,4 @@ export { getAllCollections } from "./model/collectionsThunk";
 export {
   default as collectionsReducer,
   setCurrentCollection,
-  getCollection,
 } from "./model/collectionsSlice";

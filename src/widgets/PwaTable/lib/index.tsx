@@ -51,7 +51,7 @@ const columns = [
       <div className="flex items-center gap-2 min-w-23">
         <button>
           <img
-            src="src/shared/assets/icons/refresh.png"
+            src="/pwa_icons/refresh.png"
             alt="refresh"
             width={20}
             height={20}
@@ -59,19 +59,14 @@ const columns = [
         </button>
         <button>
           <img
-            src="src/shared/assets/icons/switch_vertical.png"
+            src="/pwa_icons/switch_vertical.png"
             alt="sort"
             width={20}
             height={20}
           />
         </button>
         <button>
-          <img
-            src="src/shared/assets/icons/cog.png"
-            alt="settings"
-            width={20}
-            height={20}
-          />
+          <img src="/pwa_icons/cog.png" alt="settings" width={20} height={20} />
         </button>
       </div>
     ),

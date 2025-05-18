@@ -7,9 +7,7 @@ export {
 } from "./pwaCreateSlice";
 export {
   updatePwaByLang,
-  getPwaById,
   finishCreatePWA,
-  getPwaByIdAndLanguage,
   createRenderService,
 } from "./createPwaThunk";
 

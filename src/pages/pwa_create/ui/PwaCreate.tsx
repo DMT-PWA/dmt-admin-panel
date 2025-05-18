@@ -11,29 +11,20 @@ import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { adminId } from "src/shared/lib/data";
+import { updateDescription } from "src/entities/pwa_description";
 import {
-  setDeveloperName,
-  updateDescription,
-} from "src/entities/pwa_description";
-import {
-  setPwaTitle,
-  setCountry,
   setLanguage,
+  setCountry,
   setLanguagesList,
-  updateLanguagesList,
 } from "src/entities/pwa_design";
 import {
   updatePwaByLang,
-  getPwaById,
   usePwaCreate,
   finishCreatePWA,
-  getPwaByIdAndLanguage,
-  UpdatePwaPayload,
 } from "src/entities/pwa_create";
 import clsx from "clsx";
-import { getCollection } from "src/features/collections_list";
-import { setComments, setSelectedCommentId } from "src/entities/comments";
-import { updateSettings, updateSettingField } from "src/widgets/PwaSettings";
+import { updateSettings } from "src/widgets/PwaSettings";
+import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 
 type PwaCreateProps = {
   appId: string;
@@ -59,9 +50,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const { currentLanguage, currentCountry, pwa_title, languagesList } =
     useAppSelector((state) => state.pwa_design);
 
-  const { currentCollection, collectionsList } = useAppSelector(
-    (state) => state.collections
-  );
+  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const { developer_name } = useAppSelector((state) => state.pwa_description);
 
@@ -69,46 +58,18 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const { facebookPixelList } = useAppSelector((state) => state.metrics);
 
-  const fetchAppById = useCallback(async () => {
-    const { payload } = (await dispatch(getPwaById(appId))) as {
-      payload: UpdatePwaPayload;
-    };
-
-    const {
-      appTitle,
-      currentCountry: country,
-      currentLanguage: language,
-      languageList: list,
-    } = payload;
-
-    dispatch(setCountry({ label: country, value: 0 }));
-    dispatch(setLanguage({ label: language, value: 0 }));
-    dispatch(updateLanguagesList(list));
-
-    dispatch(setPwaTitle(appTitle));
-  }, [appId, dispatch]);
+  const fetchAppById = useCallback(
+    () => dispatch(getPwaById(appId)),
+    [appId, dispatch]
+  );
 
   const fetchDataByCountry = useCallback(
-    async (country: string, lang: string) => {
+    (country: string, lang: string) => {
       if (!appId || !country || !lang) return;
 
       setLoading(true);
 
-      const { payload } = await dispatch(
-        getPwaByIdAndLanguage({ appId, language: lang, country })
-      );
-
-      dispatch(setPwaTitle(payload.displayName));
-
-      dispatch(setDeveloperName(payload.appSubTitle));
-
-      dispatch(getCollection(payload.collectionId));
-
-      const { reviewObject, _id } = payload.commentId;
-
-      dispatch(setComments([...reviewObject]));
-
-      dispatch(setSelectedCommentId(_id));
+      dispatch(getPwaByIdAndLanguage({ appId, language: lang, country }));
 
       setLoading(false);
     },
@@ -118,15 +79,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   useEffect(() => {
     if (isEdit) {
       fetchAppById();
-
-      const lsData = localStorage.getItem(appId);
-      if (lsData) {
-        const { country, language, languagesList } = JSON.parse(lsData);
-        dispatch(setCountry(country));
-        dispatch(setLanguage(language));
-        dispatch(updateLanguagesList(languagesList));
-      }
-    } else {
+    }
+    if (!isEdit && !currentCountry && !currentLanguage && !languagesList) {
       dispatch(setCountry({ label: "Egypt", value: 0 }));
       dispatch(setLanguage({ label: "Arabic", value: 0 }));
       dispatch(setLanguagesList());
@@ -146,20 +100,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const pathname = useLocation().pathname;
 
-  const setCurrentLangInLS = (id = appId) => {
-    localStorage.setItem(
-      id,
-      JSON.stringify({
-        country: currentCountry,
-        language: currentLanguage,
-        languagesList,
-      })
-    );
-  };
-
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (currentLanguage && currentCountry) {
-      await dispatch(
+      dispatch(
         finishCreatePWA({
           adminId: adminId,
           country: currentCountry?.label.toLowerCase(),
@@ -172,16 +115,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         })
       );
 
-      // setCurrentLangInLS(payload._id);
-
       goToTable();
     }
   };
 
-  const handleSavePwaGeneral = async () => {
-    // setCurrentLangInLS();
-
-    const payload = {
+  const handleSavePwaGeneral = () => {
+    const basePayload = {
       adminId,
       appId,
       isExist: true,
@@ -192,75 +131,62 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       languageList: languagesList,
     };
 
-    if (pathname.endsWith("design")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          appTitle: pwa_title || "",
-        })
-      );
+    const pathActions = {
+      design: () =>
+        dispatch(
+          updatePwaByLang({ ...basePayload, displayName: pwa_title || "" })
+        ),
+      description: () => {
+        dispatch(updateDescription(basePayload));
+        dispatch(
+          updatePwaByLang({
+            ...basePayload,
+            collectionId: currentCollection?._id,
+            appSubTitle: developer_name,
+          })
+        );
+      },
+      comments: () =>
+        dispatch(
+          updatePwaByLang({ ...basePayload, commentId: selected_comment })
+        ),
+      settings: () => dispatch(updateSettings(basePayload)),
+      metrics: () =>
+        dispatch(
+          updatePwaByLang({
+            ...basePayload,
+            pixelId: facebookPixelList[0].pixel,
+            accessToken: facebookPixelList[0].token,
+          })
+        ),
+    };
 
-      return;
-    }
-
-    if (pathname.endsWith("description")) {
-      dispatch(
-        updateDescription({
-          ...payload,
-        })
-      );
-
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          collectionId: currentCollection?._id,
-          appSubTitle: developer_name,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("comments")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          commentId: selected_comment,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("settings")) {
-      dispatch(
-        updateSettings({
-          ...payload,
-        })
-      );
-
-      return;
-    }
-
-    if (pathname.endsWith("metrics")) {
-      dispatch(
-        updatePwaByLang({
-          ...payload,
-          pixelId: facebookPixelList[0].pixel,
-          accessToken: facebookPixelList[0].token,
-        })
-      );
-
-      return;
-    }
+    const pathKey = Object.keys(pathActions).find((key) =>
+      pathname.endsWith(key)
+    );
+    if (pathKey) pathActions[pathKey]();
   };
+
+  const fullDescription = useAppSelector((state) => state.pwa_description);
 
   const handleTabChange = (index: number) => {
     if (!languagesList) return;
 
-    dispatch(setLanguage(languagesList[index]));
+    /* const prev_description = { ...fullDescription };
 
-    // setCurrentLangInLS();
+    dispatch(resetState());
+
+    languagesList.forEach((item) => {
+      localStorage.setItem(
+        currentRoute,
+        JSON.stringify({
+          [item.label]: prev_description,
+          [currentLanguage?.label]: { ...fullDescription },
+        })
+      );
+    }); */
+
+    dispatch(setLanguage(languagesList[index]));
   };
 
   return (
@@ -375,7 +301,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           )}
           {showNextButton && (
             <button
-              onClick={() => handleNavigateNext(() => console.log("kek"))}
+              onClick={handleNavigateNext}
               className="btn__default btn__orange btn__orange-view-6 flex gap-3.25 ml-3.25 py-3 pr-2.25 pl-10.5"
             >
               Далее

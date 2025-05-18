@@ -1,4 +1,5 @@
 const countryList = [
+  "Algeria",
   "Egypt",
   "Iraq",
   "Saudi Arabia",

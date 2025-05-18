@@ -1,4 +1,4 @@
-import { Dialog, DialogBackdrop, Switch } from "@headlessui/react";
+import { Dialog, DialogBackdrop } from "@headlessui/react";
 import { FC, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -37,8 +37,10 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const onSaveHandler = () => {
+    if (!currentLanguage) return;
+
     dispatch(
-      createCommentHandler({ adminId, language: currentLanguage?.label })
+      createCommentHandler({ appId: adminId, language: currentLanguage?.label })
     );
   };
 
@@ -68,6 +70,10 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     dispatch(resetCommentsList());
@@ -102,7 +108,10 @@ export const PwaCommentsCreate: FC = () => {
               return (
                 <CommentCreate
                   key={ind}
-                  setModalOpen={setModalOpen}
+                  setModalOpen={() => {
+                    setModalOpen(true);
+                    setCurrentModalIndex(ind);
+                  }}
                   onFiledUpdate={(field, value) =>
                     onUpdateCommentInList(field, ind, value)
                   }
@@ -111,7 +120,10 @@ export const PwaCommentsCreate: FC = () => {
               );
             })}
           <CommentCreate
-            setModalOpen={setModalOpen}
+            setModalOpen={() => {
+              setModalOpen(true);
+              setCurrentModalIndex(null);
+            }}
             onFiledUpdate={(field, value) => handleFieldUpdate(field, value)}
             {...comment}
           />
@@ -138,7 +150,10 @@ export const PwaCommentsCreate: FC = () => {
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <AvatarsCollectionModal onPopupHandler={() => setModalOpen(false)} />
+          <AvatarsCollectionModal
+            onPopupHandler={() => setModalOpen(false)}
+            index={currentModalIndex}
+          />
         </div>
       </Dialog>
     </div>

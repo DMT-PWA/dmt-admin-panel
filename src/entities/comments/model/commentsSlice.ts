@@ -7,6 +7,7 @@ import {
 } from "./commentsThunk";
 import { IUserComment } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
+import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const initialState: ICommentsState = {
   comment: {
@@ -26,6 +27,21 @@ const initialState: ICommentsState = {
   selected_comment: null,
   comments_list: [],
   all_comments: [],
+};
+
+const handleComments = (payload) => {
+  const modifiedComments = payload.map((item) => ({
+    review_date: item.date,
+    author_name: item.name,
+    avatar: item.photo,
+    raiting: item.rating,
+    comments_text: item.review,
+    developer_answer: item.isResponse,
+    answer_text: item.response,
+    answer_date: item.responseDate,
+  }));
+
+  return modifiedComments;
 };
 
 export const comments = createSlice({
@@ -57,16 +73,7 @@ export const comments = createSlice({
     },
 
     setComments: (state, action) => {
-      const modifiedComments = action.payload.map((item) => ({
-        review_date: item.date,
-        author_name: item.name,
-        avatar: item.photo,
-        raiting: item.rating,
-        comments_text: item.review,
-        developer_answer: item.isResponse,
-        answer_text: item.response,
-        answer_date: item.responseDate,
-      }));
+      const modifiedComments = handleComments(action.payload);
 
       state.comments_list = [...modifiedComments];
     },
@@ -101,9 +108,19 @@ export const comments = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder.addCase(getAllComments.fulfilled, (state, action) => {
-      state.all_comments = [...action.payload];
-    });
+    builder
+      .addCase(getAllComments.fulfilled, (state, action) => {
+        state.all_comments = [...action.payload];
+      })
+      .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+        const { commentId } = action.payload;
+
+        state.selected_comment = commentId._id;
+
+        const modifiedComments = handleComments(commentId.reviewObject);
+
+        state.comments_list = [...modifiedComments];
+      });
 
     builder.addCase(
       removeCommentById.fulfilled,

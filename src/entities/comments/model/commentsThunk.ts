@@ -6,8 +6,6 @@ import {
   createComment,
 } from "src/shared/api/comments";
 
-import { ICommentsState } from "./types";
-
 export const getAllComments = createAsyncThunk(
   "comments/getAllComments",
   async () => {
@@ -28,32 +26,32 @@ export const removeCommentById = createAsyncThunk(
   }
 );
 
-export const createCommentHandler = createAsyncThunk(
-  "comments/createCommentHandler",
-  async (data: { appId: string; language: string }, { getState }) => {
-    const state = (getState() as RootState).comments;
+export const createCommentHandler = createAsyncThunk<
+  unknown,
+  { appId: string; language: string }
+>("comments/createCommentHandler", async (data, { getState }) => {
+  const state = (getState() as RootState).comments;
 
-    const { comment_group_name, comments_list } = state;
+  const { comment_group_name, comments_list } = state;
 
-    const newCommentsList = comments_list?.map((item) => ({
-      date: item.review_date,
-      name: item.author_name,
-      photo: item.avatar,
-      rating: item.raiting,
-      review: item.comments_text,
-      isResponse: item.developer_answer,
-      response: item.answer_text,
-      responseDate: item.answer_date,
-    }));
+  const newCommentsList = comments_list?.map((item) => ({
+    date: item.review_date,
+    name: item.author_name,
+    photo: item.avatar,
+    rating: item.raiting,
+    review: item.comments_text,
+    isResponse: item.developer_answer,
+    response: item.answer_text,
+    responseDate: item.answer_date,
+  }));
 
-    const fullPayload = {
-      ...data,
-      name: comment_group_name,
-      reviewObject: newCommentsList,
-    };
+  const fullPayload = {
+    ...data,
+    name: comment_group_name,
+    reviewObject: newCommentsList,
+  };
 
-    const response = await createComment("comment", fullPayload);
+  const response = await createComment("comment", fullPayload);
 
-    return response;
-  }
-);
+  return response;
+});
