@@ -6,6 +6,11 @@ import { AppDataProps } from "src/shared/types/commonTypes";
 import { getPwaByIdAndLanguage } from "src/shared/api/create";
 import { ICommentsState } from "src/entities/comments";
 import { PayloadAction } from "@reduxjs/toolkit";
+import {
+  setLanguage,
+  setCountry,
+  setLanguagesList,
+} from "src/entities/pwa_design";
 
 type DataByLanguage = {
   language: Language;
@@ -15,7 +20,7 @@ type DataByLanguage = {
   };
 };
 
-export const usePwaCreate = () => {
+export const usePwaCreate = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
 
   const { languagesList, currentLanguage, currentCountry, pwa_title } =
@@ -31,6 +36,16 @@ export const usePwaCreate = () => {
   const [currentDataByLanguage, setCurrentDataByLanguage] =
     useState<DataByLanguage | null>(null);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isEdit) {
+      dispatch(setCountry({ label: "Egypt", value: 0 }));
+      dispatch(setLanguage({ label: "Arabic", value: 0 }));
+      dispatch(setLanguagesList());
+    }
+  }, [isEdit, dispatch]);
+
   useEffect(() => {
     if (languagesList) {
       setLanguageDataStates(() =>
@@ -39,14 +54,16 @@ export const usePwaCreate = () => {
           value: { descriptionState, commentState },
         }))
       );
-
-      languageDataStates.forEach((item) => {
-        if (item.language.label === currentLanguage?.label) {
-          setCurrentDataByLanguage(item);
-        }
-      });
     }
-  }, [languagesList, descriptionState, commentState]);
+  }, [languagesList, commentState, descriptionState]);
+
+  useEffect(() => {
+    languageDataStates.forEach((item) => {
+      if (item.language.label === currentLanguage?.label) {
+        setCurrentDataByLanguage(item);
+      }
+    });
+  }, [languageDataStates, currentLanguage?.label]);
 
   const loadDescriptionData = (action: PayloadAction) => {
     setCurrentDataByLanguage(() => {
@@ -104,11 +121,13 @@ export const usePwaCreate = () => {
     currentCountry,
     currentLanguage,
     pwa_title,
+    loading,
     useAppSelector,
     useEffect,
     useState,
     dispatch,
     setLanguageDataStates,
     loadDescriptionData,
+    setLoading,
   };
 };

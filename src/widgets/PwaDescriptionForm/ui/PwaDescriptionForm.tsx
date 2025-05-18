@@ -12,8 +12,6 @@ import { Title } from "src/shared/ui/title";
 import {
   setGrade,
   toggleCheckbox,
-  updateAboutDescription,
-  batchUpdate,
   CombinedDescription,
 } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
@@ -32,11 +30,13 @@ import {
 type DescriptionFormProps = {
   adminId: string;
   descriptionState: CombinedDescription;
+  handleUpdateField: (payload: Partial<CombinedDescription>) => void;
 };
 
 export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   adminId,
   descriptionState,
+  handleUpdateField,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -104,7 +104,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 placeholder="App Name"
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ title: e.target.value }))
+                  handleUpdateField({ title: e.target.value })
                 }
               />
               <InputDefault
@@ -114,7 +114,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 placeholder="Developer Name"
                 value={developer_name}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ developer_name: e.target.value }))
+                  handleUpdateField({ developer_name: e.target.value })
                 }
               />
             </div>
@@ -133,7 +133,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 value={raiting ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ raiting: e.target.value }))
+                  handleUpdateField({ raiting: e.target.value })
                 }
               />
               <InputDefault
@@ -144,7 +144,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 value={review_count ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ review_count: e.currentTarget.value }))
+                  handleUpdateField({ review_count: e.currentTarget.value })
                 }
               />
             </div>
@@ -184,7 +184,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 <div className="flex gap-9.75">
                   <div className="flex flex-col justify-between">
                     <img
-                      src={currentCollection.collectionImage}
+                      src={currentCollection.collectionImage ?? ""}
                       style={{ maxHeight: "92px", borderRadius: "10px" }}
                       width={92}
                       height={92}
@@ -222,12 +222,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 value={about_description.description}
                 style={{ minHeight: "125px" }}
                 onChange={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "description",
-                      value: e.target.value,
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      description: e.target.value,
+                    },
+                  })
                 }
               ></Textarea>
             </Field>
@@ -236,14 +236,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-1/4"
                 label="Версия"
                 type="number"
-                value={version}
+                value={version ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "version",
-                      value: Number(e.target.value),
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      version: e.target.value,
+                    },
+                  })
                 }
               />
               <Field className="flex flex-1/4 flex-col gap-1.5">
@@ -255,12 +255,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "release_date",
-                        value: date,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        release_date: date,
+                      },
+                    })
                   }
                   icon={
                     <svg
@@ -287,7 +287,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 placeholder="10000000"
                 value={number_of_downloads}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ number_of_downloads: e.target.value }))
+                  handleUpdateField({
+                    number_of_downloads: e.target.value,
+                  })
                 }
               />
             </div>
@@ -298,12 +300,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 type="text"
                 value={android_version}
                 onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "android_version",
-                      value: e.target.value,
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      android_version: e.target.value,
+                    },
+                  })
                 }
               />
               <Field className="flex-1/3 flex flex-col gap-1.5 mr-5">
@@ -315,12 +317,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "last_update",
-                        value: date,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        last_update: date,
+                      },
+                    })
                   }
                   icon={
                     <svg
@@ -352,14 +354,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   className="min-h-[120px]"
                   placeholder="Исправлены баги и ошибки"
                   name="whats_new"
-                  value={whats_new}
+                  value={whats_new ?? ""}
                   onChange={(e) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "whats_new",
-                        value: e.target.value,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        whats_new: e.target.value,
+                      },
+                    })
                   }
                 ></Textarea>
               </Field>

@@ -10,12 +10,11 @@ import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
 import { adminId } from "src/shared/lib/data";
-import { updateDescription } from "src/entities/pwa_description";
 import {
-  setLanguage,
-  setCountry,
-  setLanguagesList,
-} from "src/entities/pwa_design";
+  CombinedDescription,
+  updateDescription,
+} from "src/entities/pwa_description";
+import { setLanguage } from "src/entities/pwa_design";
 import { updatePwaByLang, finishCreatePWA } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { updateSettings } from "src/widgets/PwaSettings";
@@ -26,7 +25,7 @@ import { useAppDispatch } from "src/shared/lib/store";
 
 type PwaCreateProps = {
   appId: string;
-  isEdit?: boolean;
+  isEdit: boolean;
 };
 
 export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
@@ -50,10 +49,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     currentLanguage,
     currentCountry,
     pwa_title,
-    useState,
+    loading,
+    setLoading,
     useAppSelector,
     loadDescriptionData,
-  } = usePwaCreate();
+    setLanguageDataStates,
+  } = usePwaCreate(isEdit);
 
   const {
     handleNavigateNext,
@@ -66,8 +67,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showPreview,
     finishCreateButton,
   } = usePwaCreateNavigation(isEdit);
-
-  const [loading, setLoading] = useState<boolean>(false);
 
   const { currentCollection } = useAppSelector((state) => state.collections);
 
@@ -95,14 +94,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     },
     [appId, dispatch]
   );
-
-  useEffect(() => {
-    if (!isEdit && !currentCountry && !currentLanguage && !languagesList) {
-      dispatch(setCountry({ label: "Egypt", value: 0 }));
-      dispatch(setLanguage({ label: "Arabic", value: 0 }));
-      dispatch(setLanguagesList());
-    }
-  }, [isEdit, appId, dispatch, fetchAppById]);
 
   useEffect(() => {
     if (isEdit && currentCountry?.label && currentLanguage?.label) {
@@ -195,6 +186,28 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     dispatch(setLanguage(languagesList[index]));
   };
 
+  const handleUpdateField = (payload: Partial<CombinedDescription>) => {
+    if (!currentDataByLanguage || !currentLanguage) return;
+
+    setLanguageDataStates((prevStates) =>
+      prevStates.map((item) => {
+        if (item.language.label === currentLanguage.label) {
+          return {
+            ...item,
+            value: {
+              ...item.value,
+              descriptionState: {
+                ...item.value.descriptionState,
+                ...payload,
+              },
+            },
+          };
+        }
+        return item;
+      })
+    );
+  };
+
   return (
     <div className="container__default">
       <Title
@@ -203,70 +216,74 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         withContainer={!isEdit}
       />
 
-      <div className="flex gap-[54px]">
-        <Routes>
-          <Route
-            path="design"
-            element={
-              !loading && (
-                <PwaForm appId={isEdit ? appId : null} isEdit={isEdit} />
-              )
-            }
-          />
-          {["description", "comments"].map((path) => (
+      {currentDataByLanguage && (
+        <div className="flex gap-[54px]">
+          <Routes>
             <Route
-              key={path}
-              path={path}
+              path="design"
               element={
-                <TabGroup
-                  className={
-                    path === "comments" ? "flex-1 mt-[78px]" : "flex-1"
-                  }
-                  onChange={handleTabChange}
-                >
-                  <TabList className={"pl-6.5"}>
-                    {languageDataStates?.map((item, ind) => (
-                      <Tab key={ind} className={clsx({ "ml-6.25": ind === 1 })}>
-                        {item.language.label}
-                      </Tab>
-                    ))}
-                  </TabList>
-                  <TabPanels>
-                    {languageDataStates?.map((item, ind) => {
-                      return (
-                        <TabPanel key={ind}>
-                          {path === "description" ? (
-                            <PwaDescriptionForm
-                              key={`desc-${item.language.value}`}
-                              adminId={adminId}
-                              descriptionState={
-                                currentDataByLanguage?.value.descriptionState
-                              }
-                            />
-                          ) : (
-                            <PwaComments
-                              key={`comments-${item.language.value}`}
-                              isEdit={isEdit}
-                            />
-                          )}
-                        </TabPanel>
-                      );
-                    })}
-                  </TabPanels>
-                </TabGroup>
+                !loading && (
+                  <PwaForm appId={isEdit ? appId : null} isEdit={isEdit} />
+                )
               }
             />
-          ))}
-          <Route path="comments_create" element={<PwaCommentsCreate />} />
-          <Route path="settings" element={<PwaSettings />} />
-          <Route path="metrics" element={<PwaMetrics />} />
-          <Route path="*" element={<PwaForm appId={appId} />} />
-        </Routes>
+            {["description", "comments"].map((path) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <TabGroup
+                    className={
+                      path === "comments" ? "flex-1 mt-[78px]" : "flex-1"
+                    }
+                    onChange={handleTabChange}
+                  >
+                    <TabList className={"pl-6.5"}>
+                      {languageDataStates?.map((item, ind) => (
+                        <Tab
+                          key={ind}
+                          className={clsx({ "ml-6.25": ind === 1 })}
+                        >
+                          {item.language.label}
+                        </Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      {languageDataStates?.map((item, ind) => {
+                        return (
+                          <TabPanel key={ind}>
+                            {path === "description" ? (
+                              <PwaDescriptionForm
+                                key={`desc-${item.language.value}`}
+                                adminId={adminId}
+                                descriptionState={item.value.descriptionState}
+                                handleUpdateField={handleUpdateField}
+                              />
+                            ) : (
+                              <PwaComments
+                                key={`comments-${item.language.value}`}
+                                isEdit={isEdit}
+                              />
+                            )}
+                          </TabPanel>
+                        );
+                      })}
+                    </TabPanels>
+                  </TabGroup>
+                }
+              />
+            ))}
+            <Route path="comments_create" element={<PwaCommentsCreate />} />
+            <Route path="settings" element={<PwaSettings />} />
+            <Route path="metrics" element={<PwaMetrics />} />
+            <Route path="*" element={<PwaForm appId={appId} />} />
+          </Routes>
 
-        {!loading && showPreview && (
-          <PhonePreview value={currentDataByLanguage?.value} />
-        )}
-      </div>
+          {!loading && showPreview && (
+            <PhonePreview value={currentDataByLanguage?.value} />
+          )}
+        </div>
+      )}
 
       {showSaveButton && (
         <ButtonDefault
