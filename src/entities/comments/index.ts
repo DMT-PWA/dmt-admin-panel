@@ -22,3 +22,5 @@ export type {
   CommentsList,
   ICommentsState,
 } from "./model";
+
+export { handleComments } from "./model/commentsSlice";

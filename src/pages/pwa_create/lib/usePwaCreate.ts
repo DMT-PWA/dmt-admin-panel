@@ -1,22 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CombinedDescription } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
-import { Language } from "src/shared/types";
+import { ICollection, Language } from "src/shared/types";
 import { AppDataProps } from "src/shared/types/commonTypes";
-import { getPwaByIdAndLanguage } from "src/shared/api/create";
-import { ICommentsState } from "src/entities/comments";
-import { PayloadAction } from "@reduxjs/toolkit";
+import { handleComments, ICommentsState } from "src/entities/comments";
 import {
   setLanguage,
   setCountry,
   setLanguagesList,
+  resetState,
 } from "src/entities/pwa_design";
+import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 type DataByLanguage = {
   language: Language;
   value: {
-    descriptionState: CombinedDescription;
-    commentState: ICommentsState;
+    descriptionState: Partial<CombinedDescription>;
+    commentState: Partial<ICommentsState>;
+    collectionState: ICollection | null;
   };
 };
 
@@ -29,6 +30,8 @@ export const usePwaCreate = (isEdit: boolean) => {
 
   const commentState = useAppSelector((state) => state.comments);
 
+  const collectionState = useAppSelector((state) => state.collection);
+
   const [languageDataStates, setLanguageDataStates] = useState<
     DataByLanguage[]
   >([]);
@@ -40,6 +43,7 @@ export const usePwaCreate = (isEdit: boolean) => {
 
   useEffect(() => {
     if (!isEdit) {
+      dispatch(resetState());
       dispatch(setCountry({ label: "Egypt", value: 0 }));
       dispatch(setLanguage({ label: "Arabic", value: 0 }));
       dispatch(setLanguagesList());
@@ -51,11 +55,11 @@ export const usePwaCreate = (isEdit: boolean) => {
       setLanguageDataStates(() =>
         languagesList.map((item) => ({
           language: item,
-          value: { descriptionState, commentState },
+          value: { descriptionState, commentState, collectionState: null },
         }))
       );
     }
-  }, [languagesList, commentState, descriptionState]);
+  }, [languagesList, commentState, descriptionState, collectionState]);
 
   useEffect(() => {
     languageDataStates.forEach((item) => {
@@ -65,51 +69,84 @@ export const usePwaCreate = (isEdit: boolean) => {
     });
   }, [languageDataStates, currentLanguage?.label]);
 
-  const loadDescriptionData = (action: PayloadAction) => {
-    setCurrentDataByLanguage(() => {
-      const {
-        about,
-        rating,
-        downloadsCount,
-        reviewCount,
-        version,
-        whatsNew,
-        androidVersion,
-        lastUpdate,
-        releaseDate,
-        isContainsAds,
-        isEditorsChoice,
-        isInAppPurchases,
-        appTitle,
-        appSubTitle,
-      } = action.payload as unknown as AppDataProps;
+  const loadDescriptionData = async (
+    appId: string,
+    lang: string,
+    country: string
+  ) => {
+    const action = await dispatch(
+      getPwaByIdAndLanguage({
+        appId,
+        language: lang,
+        country,
+      })
+    );
 
-      return {
-        ...currentDataByLanguage,
-        value: {
-          descriptionState: {
-            about_description: {
-              description: about,
-              last_update: lastUpdate,
-              release_date: releaseDate,
-              android_version: androidVersion,
-              version,
-              whats_new: whatsNew,
+    const {
+      about,
+      rating,
+      downloadsCount,
+      reviewCount,
+      version,
+      whatsNew,
+      androidVersion,
+      lastUpdate,
+      releaseDate,
+      isContainsAds,
+      isEditorsChoice,
+      isInAppPurchases,
+      appTitle,
+      appSubTitle,
+      collectionId,
+      commentId,
+    } = action.payload as unknown as AppDataProps;
+
+    const { icon, screenShots, name } = collectionId;
+
+    const { reviewObject, _id } = commentId;
+
+    setLanguageDataStates((prevStates) =>
+      prevStates.map((item) => {
+        if (item.language.label === lang) {
+          return {
+            ...item,
+            value: {
+              descriptionState: {
+                about_description: {
+                  description: about ?? "",
+                  last_update: lastUpdate ?? new Date(),
+                  release_date: releaseDate ?? new Date(),
+                  android_version: androidVersion ?? "",
+                  version: version ?? "",
+                  whats_new: whatsNew ?? "",
+                },
+                title: appTitle ?? "",
+                developer_name: appSubTitle ?? "",
+                raiting: rating ?? "",
+                number_of_downloads: downloadsCount,
+                review_count: reviewCount ?? "",
+                checkboxes_state: [
+                  { id: 0, value: isContainsAds ?? false },
+                  { id: 1, value: isInAppPurchases ?? false },
+                  { id: 2, value: isEditorsChoice ?? false },
+                ],
+              },
+              collectionState: {
+                _id: _id ?? "",
+                collectionImage: icon ?? "",
+                images: screenShots ?? [null, null, null, null],
+                collectionName: name ?? "",
+              },
+              commentState: {
+                selected_comment: _id ?? "",
+                comments_list: [...handleComments(reviewObject)],
+              },
             },
-            title: appTitle,
-            developer_name: appSubTitle,
-            raiting: rating,
-            number_of_downloads: downloadsCount,
-            review_count: reviewCount,
-            checkboxes_state: [
-              { id: 0, value: isContainsAds },
-              { id: 1, value: isInAppPurchases },
-              { id: 2, value: isEditorsChoice },
-            ],
-          },
-        },
-      };
-    });
+          };
+        }
+        return item;
+      })
+    );
   };
 
   return {

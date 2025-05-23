@@ -18,10 +18,12 @@ import { setLanguage } from "src/entities/pwa_design";
 import { updatePwaByLang, finishCreatePWA } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { updateSettings } from "src/widgets/PwaSettings";
-import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
+import { getPwaById } from "src/shared/api/create";
 import { usePwaCreate } from "../lib/usePwaCreate";
 import { usePwaCreateNavigation } from "../lib/usePwaCreateNavigation";
 import { useAppDispatch } from "src/shared/lib/store";
+import { ICommentsState } from "src/entities/comments";
+import { ICollection } from "src/shared/types";
 
 type PwaCreateProps = {
   appId: string;
@@ -75,24 +77,14 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const { facebookPixelList } = useAppSelector((state) => state.metrics);
 
   const fetchDataByCountry = useCallback(
-    async (country: string, lang: string) => {
-      if (!appId || !country || !lang) return;
-
+    (country: string, lang: string) => {
       setLoading(true);
 
-      const action = await dispatch(
-        getPwaByIdAndLanguage({
-          appId,
-          language: lang,
-          country,
-        })
-      );
-
-      loadDescriptionData(action);
+      loadDescriptionData(appId, lang, country);
 
       setLoading(false);
     },
-    [appId, dispatch]
+    [appId, dispatch, setLoading]
   );
 
   useEffect(() => {
@@ -109,22 +101,29 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const pathname = useLocation().pathname;
 
   const handleCreate = () => {
-    if (currentLanguage && currentCountry) {
+    if (!currentCountry) return;
+
+    languageDataStates.forEach((item) => {
       dispatch(
         finishCreatePWA({
-          adminId: adminId,
-          country: currentCountry?.label.toLowerCase(),
-          language: currentLanguage?.label,
-          defaultCountry: currentCountry?.label.toLowerCase(),
-          defaultLanguage: currentLanguage?.label,
-          currentCountry: currentCountry?.label,
-          currentLanguage: currentLanguage?.label,
-          languageList: languagesList,
+          payload: {
+            adminId: adminId,
+            country: currentCountry.label.toLowerCase(),
+            language: item.language.label,
+            defaultCountry: currentCountry?.label.toLowerCase(),
+            defaultLanguage: item.language?.label,
+            currentCountry: currentCountry?.label,
+            currentLanguage: item.language?.label,
+            languageList: languagesList,
+          },
+          collectionState: item.value.collectionState,
+          commentState: item.value.commentState,
+          descriptionState: item.value.descriptionState,
         })
       );
+    });
 
-      goToTable();
-    }
+    goToTable();
   };
 
   const handleSavePwaGeneral = () => {
@@ -186,7 +185,14 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     dispatch(setLanguage(languagesList[index]));
   };
 
-  const handleUpdateField = (payload: Partial<CombinedDescription>) => {
+  const handleUpdateField = (
+    payload:
+      | Partial<CombinedDescription>
+      | Partial<ICommentsState>
+      | Partial<ICollection>
+      | null,
+    state: "descriptionState" | "commentState" | "collectionState"
+  ) => {
     if (!currentDataByLanguage || !currentLanguage) return;
 
     setLanguageDataStates((prevStates) =>
@@ -196,10 +202,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             ...item,
             value: {
               ...item.value,
-              descriptionState: {
-                ...item.value.descriptionState,
-                ...payload,
-              },
+              [state]:
+                payload === null ? null : { ...item.value[state], ...payload },
             },
           };
         }
@@ -257,12 +261,22 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                                 key={`desc-${item.language.value}`}
                                 adminId={adminId}
                                 descriptionState={item.value.descriptionState}
-                                handleUpdateField={handleUpdateField}
+                                collectionState={item.value.collectionState}
+                                handleUpdateField={(payload) =>
+                                  handleUpdateField(payload, "descriptionState")
+                                }
+                                handleCollectionUpdate={(payload) =>
+                                  handleUpdateField(payload, "collectionState")
+                                }
                               />
                             ) : (
                               <PwaComments
                                 key={`comments-${item.language.value}`}
                                 isEdit={isEdit}
+                                commentState={item.value.commentState}
+                                handleUpdateField={(payload) =>
+                                  handleUpdateField(payload, "commentState")
+                                }
                               />
                             )}
                           </TabPanel>

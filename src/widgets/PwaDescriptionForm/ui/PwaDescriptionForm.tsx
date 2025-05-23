@@ -9,34 +9,33 @@ import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
-import {
-  setGrade,
-  toggleCheckbox,
-  CombinedDescription,
-} from "src/entities/pwa_description";
+import { setGrade, CombinedDescription } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { ButtonDefault } from "src/shared/ui/button";
 import { CollectionCreate } from "src/features/collection_create";
-import { ICollection } from "src/shared/types";
+import { IAboutGameDescription, ICollection } from "src/shared/types";
 import { createCollection } from "src/features/appData/appDataAPI";
 import {
   CollectionsList,
   getAllCollections,
-  setCurrentCollection,
 } from "src/features/collections_list";
 
 type DescriptionFormProps = {
   adminId: string;
-  descriptionState: CombinedDescription;
+  descriptionState: Partial<CombinedDescription>;
+  collectionState: ICollection;
   handleUpdateField: (payload: Partial<CombinedDescription>) => void;
+  handleCollectionUpdate: (payload: Partial<ICollection> | null) => void;
 };
 
 export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   adminId,
   descriptionState,
+  collectionState,
   handleUpdateField,
+  handleCollectionUpdate,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -56,11 +55,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
-    about_description;
+    about_description as IAboutGameDescription;
 
-  const { collectionsList, currentCollection } = useAppSelector(
-    (state) => state.collections
-  );
+  const { collectionsList } = useAppSelector((state) => state.collections);
 
   const collectionCreateHandler = async ({
     collectionImage,
@@ -74,17 +71,23 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
       screenShots: images,
     });
 
-    dispatch(
-      setCurrentCollection({
-        _id,
-        collectionImage: icon,
-        collectionName: name,
-        images: screenShots,
-      })
-    );
+    handleCollectionUpdate({
+      _id,
+      collectionImage: icon,
+      collectionName: name,
+      images: screenShots,
+    });
 
     dispatch(getAllCollections());
   };
+
+  const handleCheckboxes = (val: { id: number; value: boolean }) =>
+    handleUpdateField({
+      checkboxes_state: checkboxes_state?.map((checkbox) =>
+        checkbox.id === val.id ? { ...checkbox, value: val.value } : checkbox
+      ),
+    });
+
   useEffect(() => {
     if (!collectionsList.length) dispatch(getAllCollections());
   }, [dispatch, collectionsList]);
@@ -120,7 +123,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
             </div>
             <div className="flex flex-col gap-[9px] pt-[21px] max-w-[243px]">
               <CheckboxList
-                handleChange={(val) => dispatch(toggleCheckbox(val))}
+                handleChange={handleCheckboxes}
                 values={checkboxes_state}
               />
             </div>
@@ -179,25 +182,25 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 />
               )}
             </div>
-            {currentCollection && (
+            {collectionState && (
               <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
                 <div className="flex gap-9.75">
-                  <div className="flex flex-col justify-between">
-                    <img
-                      src={currentCollection.collectionImage ?? ""}
-                      style={{ maxHeight: "92px", borderRadius: "10px" }}
-                      width={92}
-                      height={92}
-                    />
-                    <ButtonDefault
-                      btn_text="Удалить"
-                      btn_classes="btn__orange btn__orange-view-4"
-                      onClickHandler={() =>
-                        dispatch(setCurrentCollection(null))
-                      }
-                    />
-                  </div>
-                  {currentCollection.images.map((el: string | null, index) => {
+                  {collectionState.collectionImage && (
+                    <div className="flex flex-col justify-between">
+                      <img
+                        src={collectionState.collectionImage}
+                        style={{ maxHeight: "92px", borderRadius: "10px" }}
+                        width={92}
+                        height={92}
+                      />
+                      <ButtonDefault
+                        btn_text="Удалить"
+                        btn_classes="btn__orange btn__orange-view-4"
+                        onClickHandler={() => handleCollectionUpdate(null)}
+                      />
+                    </div>
+                  )}
+                  {collectionState.images.map((el: string | null, index) => {
                     return el ? (
                       <div key={index} className="flex  h-full">
                         <img
@@ -389,7 +392,10 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
+          <CollectionsList
+            onPopupHandler={() => setCollectionsOpen(false)}
+            handleCollectionUpdate={handleCollectionUpdate}
+          />
         </div>
       </Dialog>
     </div>

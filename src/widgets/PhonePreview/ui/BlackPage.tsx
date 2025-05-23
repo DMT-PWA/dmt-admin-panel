@@ -3,9 +3,19 @@ import { Tablet } from "src/widgets/tablet";
 import { AboutPage } from "src/entities/playStore";
 import { useAppSelector } from "src/shared/lib/store";
 import { CombinedDescription } from "src/entities/pwa_description";
+import { ICommentsState } from "src/entities/comments";
+import { ICollection } from "src/shared/types";
 
-const BlackPage: FC = ({ currentDataByLanguage }) => {
-  const { descriptionState } = currentDataByLanguage.value;
+type PropsValue = {
+  value: {
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
+    collectionState: ICollection | null;
+  };
+};
+
+const BlackPage: FC<PropsValue> = (props) => {
+  const { descriptionState } = props.value;
 
   const [stage, setStage] = useState<{ id: number; stage: string } | null>(
     null
@@ -36,7 +46,7 @@ const BlackPage: FC = ({ currentDataByLanguage }) => {
       return (
         <Tablet
           toAbout={() => setStage({ id: 1, stage: "About" })}
-          currentDataByLanguage={currentDataByLanguage}
+          value={props.value}
         />
       );
     }

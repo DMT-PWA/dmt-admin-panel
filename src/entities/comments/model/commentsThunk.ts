@@ -5,13 +5,14 @@ import {
   removeComment,
   createComment,
 } from "src/shared/api/comments";
+import { ICommentsState } from "./types";
 
 export const getAllComments = createAsyncThunk(
   "comments/getAllComments",
   async () => {
     const response = await getComments();
 
-    return response;
+    return response as ICommentsState["all_comments"];
   }
 );
 
@@ -39,6 +40,7 @@ export const createCommentHandler = createAsyncThunk<
     name: item.author_name,
     photo: item.avatar,
     rating: item.raiting,
+    helpfulCount: item.likes_count,
     review: item.comments_text,
     isResponse: item.developer_answer,
     response: item.answer_text,

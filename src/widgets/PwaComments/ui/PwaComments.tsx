@@ -1,13 +1,12 @@
 import { FC, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  setComments,
+  handleComments,
   getAllComments,
   removeCommentById,
-  setSelectedCommentId,
 } from "src/entities/comments";
-import type { ReviewObject } from "src/entities/comments";
-import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
+import type { ReviewObject, ICommentsState } from "src/entities/comments";
+import { useAppDispatch } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
 
@@ -17,12 +16,15 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 
 type PwaCommentsProps = {
   isEdit?: boolean;
+  commentState: Partial<ICommentsState>;
+  handleUpdateField: (payload: Partial<ICommentsState>) => void;
 };
 
-export const PwaComments: FC<PwaCommentsProps> = () => {
-  const { all_comments, selected_comment } = useAppSelector(
-    (state) => state.comments
-  );
+export const PwaComments: FC<PwaCommentsProps> = ({
+  commentState,
+  handleUpdateField,
+}) => {
+  const { all_comments, selected_comment } = commentState;
 
   const dispatch = useAppDispatch();
 
@@ -37,14 +39,24 @@ export const PwaComments: FC<PwaCommentsProps> = () => {
   };
 
   const selectCommentHandler = (commentsObject: ReviewObject, id: string) => {
-    dispatch(setSelectedCommentId(id));
-
-    dispatch(setComments(commentsObject));
+    handleUpdateField({
+      selected_comment: id,
+      comments_list: [...handleComments(commentsObject)],
+    });
   };
 
   useEffect(() => {
-    dispatch(getAllComments());
-  }, [dispatch]);
+    if (all_comments?.length) return;
+
+    const fetchComments = async () => {
+      const res = await dispatch(getAllComments());
+      handleUpdateField({
+        all_comments: res.payload,
+      });
+    };
+
+    fetchComments();
+  }, [dispatch, all_comments]);
 
   return (
     <div className="flex flex-1 flex-col">

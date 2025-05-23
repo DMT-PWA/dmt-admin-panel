@@ -5,6 +5,10 @@ export {
   setExistsCampaign,
 } from "./model/settingsSlice";
 
-export { updateSettings, getAllCampaigns } from "./model/settingsThunk";
+export {
+  updateSettings,
+  getAllCampaigns,
+  verifyCustomDomain,
+} from "./model/settingsThunk";
 
 export type { Settings } from "./model/types";

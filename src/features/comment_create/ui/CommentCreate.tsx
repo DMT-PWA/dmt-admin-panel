@@ -145,7 +145,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
                 placeholder="Введите количество лайков"
                 value={likes_count || ""}
                 onUpdateValue={(e) =>
-                  onFiledUpdate("likes_count", Number(e.target.value))
+                  onFiledUpdate("likes_count", e.target.value)
                 }
               />
               <Field className="flex flex-col mt-2">

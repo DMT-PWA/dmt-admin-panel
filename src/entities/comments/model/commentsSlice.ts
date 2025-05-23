@@ -1,13 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICommentsState } from "./types";
-import {
-  getAllComments,
-  removeCommentById,
-  createCommentHandler,
-} from "./commentsThunk";
+import { removeCommentById, createCommentHandler } from "./commentsThunk";
 import { IUserComment } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
-import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const initialState: ICommentsState = {
   comment: {
@@ -29,7 +24,7 @@ const initialState: ICommentsState = {
   all_comments: [],
 };
 
-const handleComments = (payload) => {
+export const handleComments = (payload) => {
   const modifiedComments = payload.map((item) => ({
     review_date: item.date,
     author_name: item.name,
@@ -108,11 +103,10 @@ export const comments = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder
-      .addCase(getAllComments.fulfilled, (state, action) => {
-        state.all_comments = [...action.payload];
-      })
-      .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+    /*  builder.addCase(getAllComments.fulfilled, (state, action) => {
+      state.all_comments = [...action.payload];
+    }); */
+    /*  .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
         const { commentId } = action.payload;
 
         state.selected_comment = commentId._id;
@@ -120,7 +114,7 @@ export const comments = createSlice({
         const modifiedComments = handleComments(commentId.reviewObject);
 
         state.comments_list = [...modifiedComments];
-      });
+      }); */
 
     builder.addCase(
       removeCommentById.fulfilled,

@@ -8,22 +8,28 @@ import {
 import { Reviewer } from "src/entities/reviewer";
 import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
+import { CombinedDescription } from "src/entities/pwa_description";
+import { ICommentsState } from "src/entities/comments";
+import { ICollection } from "src/shared/types";
 
 interface ITabletProps {
   toAbout: () => void;
+  value: {
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
+    collectionState: ICollection | null;
+  };
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout, currentDataByLanguage } = props;
+  const { toAbout, value } = props;
 
-  const { descriptionState } = currentDataByLanguage.value;
+  const { descriptionState, commentState, collectionState } = value;
 
   const [isAppSupport] = useState(false);
   const { currentCountry, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
-
-  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const { isArabic, langData, formatNumber } = usePhonePreview(
     currentLanguage,
@@ -41,11 +47,13 @@ const Tablet: FC<ITabletProps> = (props) => {
     review_count,
   } = descriptionState;
 
-  const { comments_list } = useAppSelector((state) => state.comments);
+  const { comments_list } = commentState;
 
   const { description } = about_description;
 
-  const icon = currentCollection?.collectionImage;
+  const icon = collectionState?.collectionImage;
+
+  const currentCollection = collectionState;
 
   const formatDownloads = (downloads: number | string | null): string => {
     return Number(downloads) > 100000 ? "100K+" : `${downloads}`;
@@ -63,7 +71,6 @@ const Tablet: FC<ITabletProps> = (props) => {
     findHelpful,
     yes,
     no,
-    screenShots,
   } = langData;
 
   return (
@@ -114,7 +121,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                             </div>
                           </div>
                           <div className="flex flex-row items-start justify-start flex-wrap content-start text-xs text-blue_default">
-                            <div className="relative font-bold tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
+                            <div
+                              className={clsx(
+                                "relative font-bold tracking-[0.3px] leading-[16px] inline-block",
+                                { "min-w-[74px]": !isArabic }
+                              )}
+                            >
                               {developer_name}
                             </div>
                           </div>
@@ -272,7 +284,7 @@ const Tablet: FC<ITabletProps> = (props) => {
               propWidth="100%"
               propHeight="140px"
               propFlex="unset"
-              screenShots={screenShots}
+              currentCollection={currentCollection}
             />
             <section className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-left text-lg text-gray-100 font-roboto">
               <div className="flex-1 flex flex-col items-start justify-start gap-5 shrink-0 max-w-full">

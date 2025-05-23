@@ -119,6 +119,7 @@ export const pwaDesignSlice = createSlice({
     setCountry: (state, action: PayloadAction<Country>) => {
       state.currentCountry = action.payload;
     },
+    resetState: () => defaultState,
   },
   extraReducers: (builder) => {
     builder.addCase(fetchDesignInfo.fulfilled, (state, action) => {
@@ -132,13 +133,17 @@ export const pwaDesignSlice = createSlice({
     });
     builder
       .addCase(getPwaById.fulfilled, (state, action) => {
-        const { currentCountry, currentLanguage, languageList } =
-          action.payload;
+        const {
+          currentCountry,
+          currentLanguage,
+          languageList,
+          defaultLanguage,
+        } = action.payload;
 
         if (!currentCountry || !currentLanguage) return;
 
         state.currentCountry = { label: currentCountry, value: 0 };
-        state.currentLanguage = { label: currentLanguage, value: 0 };
+        state.currentLanguage = { label: defaultLanguage, value: 0 };
         state.languagesList = languageList;
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
@@ -163,6 +168,7 @@ export const {
   addLanguage,
   removeLanguage,
   updateLanguagesList,
+  resetState,
 } = pwaDesignSlice.actions;
 
 export default pwaDesignSlice.reducer;

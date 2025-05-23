@@ -7,6 +7,9 @@ import {
   UpdatePwaResponse,
 } from "./types";
 import { AxiosRequestConfig } from "axios";
+import { CombinedDescription } from "src/entities/pwa_description";
+import { ICommentsState } from "src/entities/comments";
+import { IAboutGameDescription, ICollection } from "src/shared/types";
 
 export const updatePwaByLang = createAsyncThunk<
   UpdatePwaResponse,
@@ -25,18 +28,21 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
     return response;
   }
 );
-
-export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
+export const finishCreatePWA = createAsyncThunk<
+  unknown,
+  {
+    payload: CreateInitPayload;
+    descriptionState: Partial<CombinedDescription>;
+    commentState: Partial<ICommentsState>;
+    collectionState: ICollection | null;
+  }
+>(
   "create/createPWA",
-  async (payload, { getState }) => {
-    const {
-      comments,
-      metrics,
-      pwa_description,
-      pwa_design,
-      collections,
-      settings,
-    } = getState() as RootState;
+  async (
+    { payload, collectionState, commentState, descriptionState },
+    { getState }
+  ) => {
+    const { metrics, pwa_design, settings } = getState() as RootState;
 
     const { pwa_title, pwa_tags } = pwa_design;
 
@@ -48,13 +54,13 @@ export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
       raiting,
       number_of_downloads,
       review_count,
-    } = pwa_description;
+    } = descriptionState;
 
-    const { selected_comment } = comments;
+    const { selected_comment } = commentState;
 
     const { facebookPixelList } = metrics;
 
-    const { currentCollection } = collections;
+    const currentCollection = collectionState;
 
     const { domainApp, subdomain, currentCampaign } = settings;
 
@@ -65,7 +71,7 @@ export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
       release_date,
       version,
       whats_new,
-    } = about_description;
+    } = about_description as IAboutGameDescription;
 
     const fullPayload = {
       ...payload,
@@ -94,15 +100,23 @@ export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
       about: description,
       rating: raiting,
       reviewCount: review_count,
-      isContainsAds: checkboxes_state[0].value,
-      isEditorsChoice: checkboxes_state[1].value,
-      isInAppPurchases: checkboxes_state[2].value,
+      isContainsAds: checkboxes_state?.[0].value,
+      isEditorsChoice: checkboxes_state?.[1].value,
+      isInAppPurchases: checkboxes_state?.[2].value,
       version,
       newFeatures: whats_new,
       updatedDate: last_update,
     };
 
-    const response = await apiInstance.post("pwa", fullPayload);
+    const response = await apiInstance.post(
+      "pwa",
+      fullPayload as AxiosRequestConfig<{
+        payload: CreateInitPayload;
+        descriptionState: Partial<CombinedDescription>;
+        commentState: Partial<ICommentsState>;
+        collectionState: ICollection | null;
+      }>
+    );
 
     return response;
   }
@@ -110,12 +124,9 @@ export const finishCreatePWA = createAsyncThunk<unknown, CreateInitPayload>(
 
 export const createRenderService = createAsyncThunk<
   unknown,
-  Partial<UpdatePwaPayload> & { domain: string }
+  AxiosRequestConfig<Partial<UpdatePwaPayload>> & { domain: string }
 >("create/createRenderService", async (payload) => {
-  const response = await apiInstance.post(
-    "render",
-    payload as AxiosRequestConfig<Partial<UpdatePwaPayload>>
-  );
+  const response = await apiInstance.post("render", payload);
 
   return response;
 });

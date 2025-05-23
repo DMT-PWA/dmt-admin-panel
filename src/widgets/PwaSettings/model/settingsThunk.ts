@@ -46,3 +46,15 @@ export const getAllCampaigns = createAsyncThunk(
     return resp;
   }
 );
+
+export const verifyCustomDomain = createAsyncThunk<
+  unknown,
+  { serviceId: string; name: string }
+>("settings/verifyCustomDomain", async (payload) => {
+  const resp = await apiInstance.post("/render/verifyCustomDomain", {
+    serviceId: payload.serviceId,
+    name: payload.name,
+  });
+
+  return resp;
+});

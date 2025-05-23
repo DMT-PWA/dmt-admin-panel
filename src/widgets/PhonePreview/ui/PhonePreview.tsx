@@ -1,8 +1,19 @@
 import { FC } from "react";
 import phoneBg from "src/shared/assets/images/phone_bg.png";
 import BlackPage from "./BlackPage";
+import { CombinedDescription } from "src/entities/pwa_description";
+import { ICommentsState } from "src/entities/comments";
+import { ICollection } from "src/shared/types";
 
-export const PhonePreview: FC = (value) => {
+type PropsValue = {
+  value: {
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
+    collectionState: ICollection | null;
+  };
+};
+
+export const PhonePreview: FC<PropsValue> = (props) => {
   return (
     <div>
       <div
@@ -18,7 +29,7 @@ export const PhonePreview: FC = (value) => {
           padding: "18px",
         }}
       >
-        {<BlackPage currentDataByLanguage={value} />}
+        {<BlackPage value={props.value} />}
       </div>
     </div>
   );
