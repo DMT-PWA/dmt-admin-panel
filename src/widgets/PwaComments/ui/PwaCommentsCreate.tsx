@@ -40,7 +40,7 @@ export const PwaCommentsCreate: FC = () => {
     if (!currentLanguage) return;
 
     dispatch(
-      createCommentHandler({ appId: adminId, language: currentLanguage?.label })
+      createCommentHandler({ adminId, language: currentLanguage?.label })
     );
   };
 

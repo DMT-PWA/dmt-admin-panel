@@ -5,7 +5,9 @@ import {
   removeComment,
   createComment,
 } from "src/shared/api/comments";
-import { ICommentsState } from "./types";
+import { AllComments, ICommentsState } from "./types";
+import { AxiosRequestConfig } from "axios";
+import { apiInstance } from "src/shared/api/base";
 
 export const getAllComments = createAsyncThunk(
   "comments/getAllComments",
@@ -53,7 +55,7 @@ export const createCommentHandler = createAsyncThunk<
     reviewObject: newCommentsList,
   };
 
-  const response = await createComment("comment", fullPayload);
+  const response = await apiInstance.post("comment", fullPayload);
 
   return response;
 });

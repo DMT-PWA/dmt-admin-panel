@@ -25,7 +25,7 @@ import {
 type DescriptionFormProps = {
   adminId: string;
   descriptionState: Partial<CombinedDescription>;
-  collectionState: ICollection;
+  collectionState: ICollection | null;
   handleUpdateField: (payload: Partial<CombinedDescription>) => void;
   handleCollectionUpdate: (payload: Partial<ICollection> | null) => void;
 };

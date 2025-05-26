@@ -46,17 +46,15 @@ export const PwaComments: FC<PwaCommentsProps> = ({
   };
 
   useEffect(() => {
-    if (all_comments?.length) return;
-
     const fetchComments = async () => {
       const res = await dispatch(getAllComments());
       handleUpdateField({
-        all_comments: res.payload,
+        all_comments: res.payload as ICommentsState["all_comments"],
       });
     };
 
     fetchComments();
-  }, [dispatch, all_comments]);
+  }, [dispatch, handleUpdateField]);
 
   return (
     <div className="flex flex-1 flex-col">
