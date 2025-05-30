@@ -193,11 +193,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       | null,
     state: "descriptionState" | "commentState" | "collectionState"
   ) => {
-    if (!currentDataByLanguage || !currentLanguage) return;
-
     setLanguageDataStates((prevStates) =>
       prevStates.map((item) => {
-        if (item.language.label === currentLanguage.label) {
+        if (item.language.label === currentLanguage?.label) {
           return {
             ...item,
             value: {
@@ -294,7 +292,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           </Routes>
 
           {!loading && showPreview && (
-            <PhonePreview value={currentDataByLanguage?.value} />
+            <PhonePreview value={currentDataByLanguage.value} />
           )}
         </div>
       )}

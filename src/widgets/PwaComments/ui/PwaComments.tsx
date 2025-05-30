@@ -53,8 +53,10 @@ export const PwaComments: FC<PwaCommentsProps> = ({
       });
     };
 
-    fetchComments();
-  }, [dispatch, handleUpdateField]);
+    if (!all_comments?.length) {
+      fetchComments();
+    }
+  }, [dispatch, handleUpdateField, all_comments]);
 
   return (
     <div className="flex flex-1 flex-col">

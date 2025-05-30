@@ -11,12 +11,13 @@ import {
   resetState,
 } from "src/entities/pwa_design";
 import { getPwaByIdAndLanguage } from "src/shared/api/create";
+import { shallowEqual } from "react-redux";
 
 type DataByLanguage = {
   language: Language;
   value: {
-    descriptionState: Partial<CombinedDescription>;
-    commentState: Partial<ICommentsState>;
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
     collectionState: ICollection | null;
   };
 };
@@ -25,7 +26,7 @@ export const usePwaCreate = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
 
   const { languagesList, currentLanguage, currentCountry, pwa_title } =
-    useAppSelector((state) => state.pwa_design);
+    useAppSelector((state) => state.pwa_design, shallowEqual);
   const descriptionState = useAppSelector((state) => state.pwa_description);
 
   const commentState = useAppSelector((state) => state.comments);
