@@ -1,12 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import {
-  getComments,
-  removeComment,
-  createComment,
-} from "src/shared/api/comments";
-import { AllComments, ICommentsState } from "./types";
-import { AxiosRequestConfig } from "axios";
+import { getComments, removeComment } from "src/shared/api/comments";
+import { ICommentsState } from "./types";
 import { apiInstance } from "src/shared/api/base";
 
 export const getAllComments = createAsyncThunk(
@@ -31,7 +26,7 @@ export const removeCommentById = createAsyncThunk(
 
 export const createCommentHandler = createAsyncThunk<
   unknown,
-  { appId: string; language: string }
+  { adminId: string; language: string }
 >("comments/createCommentHandler", async (data, { getState }) => {
   const state = (getState() as RootState).comments;
 
