@@ -1,4 +1,4 @@
-export { PwaSettings } from "./ui";
+export { PwaSettings } from "./ui/PwaSettings";
 export {
   default as settingsReducer,
   updateSettingField,

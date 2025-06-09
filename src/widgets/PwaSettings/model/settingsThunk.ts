@@ -3,6 +3,7 @@ import { UpdatePwaPayload } from "src/shared/types/createTypes";
 import { updatePwa } from "src/shared/api/create";
 import { UpdatePwaResponse } from "src/entities/pwa_create";
 import { apiInstance } from "src/shared/api/base";
+import { ValidationResponse } from "src/shared/types";
 
 export const updateSettings = createAsyncThunk<
   UpdatePwaPayload,
@@ -48,13 +49,11 @@ export const getAllCampaigns = createAsyncThunk(
 );
 
 export const verifyCustomDomain = createAsyncThunk<
-  unknown,
-  { serviceId: string; name: string }
+  ValidationResponse,
+  { domain: string; subDomain: string }
 >("settings/verifyCustomDomain", async (payload) => {
-  const resp = await apiInstance.post("/render/verifyCustomDomain", {
-    serviceId: payload.serviceId,
-    name: payload.name,
+  return await apiInstance.post("/pwa/verifySubdomain", {
+    domain: payload.domain,
+    subDomain: payload?.subDomain,
   });
-
-  return resp;
 });

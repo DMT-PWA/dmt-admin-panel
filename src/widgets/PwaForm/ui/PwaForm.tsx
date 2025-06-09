@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, memo, useEffect } from "react";
+import { ChangeEvent, FC, memo, useEffect, useState } from "react";
 import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -7,33 +7,44 @@ import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
   setLanguage,
-  setLanguagesList,
   setCountry,
   modifiedCountryList,
-  addLanguage,
-  removeLanguage,
+  updateLanguagesList,
   setMarketerTag,
+  selectLanguagesList,
+  validatePwaDisplayName,
 } from "src/entities/pwa_design";
 import { useNavigate } from "react-router-dom";
-import { Country, Language } from "src/shared/types";
+import { Country } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
+import { useDebounce } from "react-use";
 type PwaFormProps = {
   appId: string | null;
   isEdit?: boolean;
 };
 
 const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
+  const [valid, setValid] = useState<boolean>(true);
+
   const navigate = useNavigate();
-  const { pwa_title, pwa_tags, languagesList, currentCountry } = useAppSelector(
+  const { languagesList, pwa_title, pwa_tags, currentCountry } = useAppSelector(
     (state) => state.pwa_design
   );
   const dispatch = useAppDispatch();
 
+  const selectedLanguages = useAppSelector(selectLanguagesList);
+
+  const countriesList = useAppSelector(modifiedCountryList);
+
   const handleCountryChange = (option: Country) => {
     dispatch(setCountry(option));
-
-    dispatch(setLanguagesList());
   };
+
+  useEffect(() => {
+    if (selectedLanguages && !isEdit) {
+      dispatch(updateLanguagesList([selectedLanguages]));
+    }
+  }, [selectedLanguages, dispatch, isEdit]);
 
   useEffect(() => {
     if (languagesList) dispatch(setLanguage(languagesList[0]));
@@ -43,8 +54,22 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
     return navigate("/pwa");
   };
 
-  const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) =>
+  useDebounce(
+    async () => {
+      if (pwa_title && !isEdit) {
+        const result = await dispatch(validatePwaDisplayName(pwa_title));
+
+        if (validatePwaDisplayName.fulfilled.match(result)) {
+          setValid(result.payload.status);
+        }
+      }
+    },
+    500,
+    [pwa_title]
+  );
+  const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setPwaTitle(e.target.value));
+  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -74,10 +99,11 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
           <InputDefault
             value={pwa_title ?? ""}
             label="Название PWA"
-            input_classes="!border-0"
+            input_classes={valid ? "!border-0" : ""}
             placeholder="..."
             onUpdateValue={onSetPwaTitle}
             isRequired={true}
+            valid={valid}
           />
           <label className="title__view-1">
             Страна PWA
@@ -85,8 +111,8 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
           </label>
 
           <CustomSelect
-            options={modifiedCountryList}
-            value={currentCountry}
+            options={countriesList}
+            value={currentCountry ?? countriesList[0]}
             onChange={handleCountryChange}
             placeholder="Английский"
           />
@@ -107,7 +133,12 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
             {languagesList && languagesList.length === 1 && (
               <button
                 onClick={() =>
-                  dispatch(addLanguage({ label: "English", value: 1 }))
+                  dispatch(
+                    updateLanguagesList([
+                      ...languagesList,
+                      { label: "English", value: 1 },
+                    ])
+                  )
                 }
                 className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
               >
@@ -127,19 +158,16 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
                   disabled
                   input_classes="!border-0"
                 />
-                <button onClick={() => dispatch(removeLanguage())}>
+                <button
+                  onClick={() =>
+                    dispatch(updateLanguagesList(languagesList.slice(0, 1)))
+                  }
+                >
                   <img src={trash_icon} width={14} height={14} alt="" />
                 </button>
               </>
             )}
           </div>
-          {/* <CustomSelect
-            options={languagesList}
-            value={currentLanguage}
-            onChange={handleLanguageChange}
-            isDisabled={true}
-            placeholder="Английский"
-          /> */}
           <InputDefault
             value={pwa_tags}
             label="Теги PWA"

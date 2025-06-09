@@ -18,9 +18,7 @@ export interface IRating {
 }
 
 export type CombinedDescription = IMainDescription &
-  Partial<IRating> & { about_description: IAboutGameDescription } & {
-    descriptionId: string | number | null;
-  };
+  Partial<IRating> & { about_description: IAboutGameDescription };
 
 export type DescriptionByIdResponse = {
   about: string;

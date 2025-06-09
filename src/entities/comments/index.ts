@@ -16,6 +16,8 @@ export {
   resetCommentsList,
 } from "./model";
 
+export { getCommentById } from "./model/commentsThunk";
+
 export type {
   AllComments,
   ReviewObject,

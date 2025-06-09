@@ -2,7 +2,6 @@ import { FC } from "react";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
-  addFacebookPixelField,
   removeFacebookPixelField,
   setPixelValue,
   setTokenValue,

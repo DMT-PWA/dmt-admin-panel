@@ -26,9 +26,9 @@ export type AllComments = {
   _id: string;
 };
 export interface ICommentsState {
-  comment: IUserComment & { commentId: string | null };
+  comment: (IUserComment & { commentId: string | null }) | null;
   comments_list: CommentsList;
-  comment_group_name: string | null;
-  selected_comment: string | null,
-  all_comments: Array<AllComments>
+  comment_group_name?: string | null;
+  selected_comment: string | null;
+  all_comments: Array<AllComments> | null;
 }

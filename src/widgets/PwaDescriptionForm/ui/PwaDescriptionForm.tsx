@@ -21,6 +21,7 @@ import {
   CollectionsList,
   getAllCollections,
 } from "src/features/collections_list";
+import { NUMBER_FIELDS, TEXT_FIELDS } from "../lib/const";
 
 type DescriptionFormProps = {
   adminId: string;
@@ -100,26 +101,17 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
           <h2 className="text__default">Основное</h2>
           <div className="bg-white rounded-[6px] mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
             <div className="flex gap-10">
-              <InputDefault
-                label="Название"
-                input_classes=""
-                value={title || ""}
-                container_classes="flex-[0.5]"
-                placeholder="App Name"
-                onUpdateValue={(e) =>
-                  handleUpdateField({ title: e.target.value })
-                }
-              />
-              <InputDefault
-                label="Разработчик"
-                input_classes=""
-                container_classes="flex-[0.5]"
-                placeholder="Developer Name"
-                value={developer_name}
-                onUpdateValue={(e) =>
-                  handleUpdateField({ developer_name: e.target.value })
-                }
-              />
+              {TEXT_FIELDS.map((field, ind) => (
+                <InputDefault
+                  key={ind}
+                  {...field}
+                  value={descriptionState[field.name] || ""}
+                  container_classes="flex-[0.5]"
+                  onUpdateValue={(e) =>
+                    handleUpdateField({ [field.name]: e.target.value })
+                  }
+                />
+              ))}
             </div>
             <div className="flex flex-col gap-[9px] pt-[21px] max-w-[243px]">
               <CheckboxList
@@ -147,7 +139,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 value={review_count ?? ""}
                 onUpdateValue={(e) =>
-                  handleUpdateField({ review_count: e.currentTarget.value })
+                  handleUpdateField({ review_count: e.target.value })
                 }
               />
             </div>

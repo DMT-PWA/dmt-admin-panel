@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICommentsState } from "./types";
-import { removeCommentById, createCommentHandler } from "./commentsThunk";
+import {
+  removeCommentById,
+  createCommentHandler,
+  getCommentById,
+} from "./commentsThunk";
 import { IUserComment } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
 
@@ -103,19 +107,6 @@ export const comments = createSlice({
   },
 
   extraReducers: (builder) => {
-    /*  builder.addCase(getAllComments.fulfilled, (state, action) => {
-      state.all_comments = [...action.payload];
-    }); */
-    /*  .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-        const { commentId } = action.payload;
-
-        state.selected_comment = commentId._id;
-
-        const modifiedComments = handleComments(commentId.reviewObject);
-
-        state.comments_list = [...modifiedComments];
-      }); */
-
     builder.addCase(
       removeCommentById.fulfilled,
       (state, action: PayloadAction<ICommentsState["comments_list"]>) => {
@@ -125,6 +116,11 @@ export const comments = createSlice({
 
     builder.addCase(createCommentHandler.fulfilled, (state, action) => {
       state.comment.commentId = action.payload._id;
+    });
+
+    builder.addCase(getCommentById.fulfilled, (state, action) => {
+      state.comment_group_name = action.payload.name;
+      state.comments_list = handleComments(action.payload.reviewObject);
     });
   },
 });

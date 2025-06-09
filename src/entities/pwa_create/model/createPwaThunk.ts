@@ -9,7 +9,11 @@ import {
 import { AxiosRequestConfig } from "axios";
 import { CombinedDescription } from "src/entities/pwa_description";
 import { ICommentsState } from "src/entities/comments";
-import { IAboutGameDescription, ICollection } from "src/shared/types";
+import {
+  IAboutGameDescription,
+  ICollection,
+  AppDataProps,
+} from "src/shared/types";
 
 export const updatePwaByLang = createAsyncThunk<
   UpdatePwaResponse,
@@ -29,7 +33,7 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
   }
 );
 export const finishCreatePWA = createAsyncThunk<
-  unknown,
+  AppDataProps,
   {
     payload: CreateInitPayload;
     descriptionState: Partial<CombinedDescription>;
@@ -108,17 +112,11 @@ export const finishCreatePWA = createAsyncThunk<
       updatedDate: last_update,
     };
 
-    const response = await apiInstance.post(
-      "pwa",
-      fullPayload as AxiosRequestConfig<{
-        payload: CreateInitPayload;
-        descriptionState: Partial<CombinedDescription>;
-        commentState: Partial<ICommentsState>;
-        collectionState: ICollection | null;
-      }>
-    );
+    if (!payload.appId) {
+      return await apiInstance.post("pwa", fullPayload);
+    }
 
-    return response;
+    return await apiInstance.patch("pwa", fullPayload);
   }
 );
 

@@ -32,13 +32,22 @@ export const PwaComments: FC<PwaCommentsProps> = ({
 
   const location = useLocation().pathname;
 
-  const handleNavigate = () => {
-    const toCreate = location.replace("comments", "comments_create");
+  const handleNavigate = (isUpdate: boolean = false, commentId?: string) => {
+    if (!isUpdate) {
+      const toCreate = location.replace("comments", "comments_create");
 
-    navigate(toCreate);
+      return navigate(toCreate);
+    }
+
+    const toUpdate = location.replace(
+      "comments",
+      `comment_update/${commentId}`
+    );
+
+    navigate(toUpdate);
   };
 
-  const selectCommentHandler = (commentsObject: ReviewObject, id: string) => {
+  const selectCommentHandler = (commentsObject: ReviewObject, id?: string) => {
     handleUpdateField({
       selected_comment: id,
       comments_list: [...handleComments(commentsObject)],
@@ -53,8 +62,10 @@ export const PwaComments: FC<PwaCommentsProps> = ({
       });
     };
 
-    fetchComments();
-  }, [dispatch, handleUpdateField]);
+    if (!all_comments?.length) {
+      fetchComments();
+    }
+  }, [dispatch, handleUpdateField, all_comments]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -70,9 +81,9 @@ export const PwaComments: FC<PwaCommentsProps> = ({
             вашего PWA приложения Добавить коментарий
           </p>
           <ButtonDefault
-            btn_text="Добавить коментарий"
+            btn_text="Добавить группу"
             btn_classes="btn__orange btn__orange-view-1 mt-2 max-w-48.5"
-            onClickHandler={handleNavigate}
+            onClickHandler={() => handleNavigate(false)}
           />
         </div>
       </div>
@@ -101,7 +112,10 @@ export const PwaComments: FC<PwaCommentsProps> = ({
                   </div>
                   <h2 className="text-view-4 flex-1">{item.name}</h2>
                   <div className="flex gap-4">
-                    <button className="w-5 h-5">
+                    <button
+                      className="w-5 h-5"
+                      onClick={() => handleNavigate(true, item._id)}
+                    >
                       <img src={pencil_icon} width={14} height={14} alt="" />
                     </button>
                     <button

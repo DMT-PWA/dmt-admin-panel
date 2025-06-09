@@ -7,16 +7,17 @@ import { handleComments, ICommentsState } from "src/entities/comments";
 import {
   setLanguage,
   setCountry,
-  setLanguagesList,
+  updateLanguagesList,
   resetState,
 } from "src/entities/pwa_design";
 import { getPwaByIdAndLanguage } from "src/shared/api/create";
+import { shallowEqual } from "react-redux";
 
 type DataByLanguage = {
   language: Language;
   value: {
-    descriptionState: Partial<CombinedDescription>;
-    commentState: Partial<ICommentsState>;
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
     collectionState: ICollection | null;
   };
 };
@@ -25,7 +26,7 @@ export const usePwaCreate = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
 
   const { languagesList, currentLanguage, currentCountry, pwa_title } =
-    useAppSelector((state) => state.pwa_design);
+    useAppSelector((state) => state.pwa_design, shallowEqual);
   const descriptionState = useAppSelector((state) => state.pwa_description);
 
   const commentState = useAppSelector((state) => state.comments);
@@ -44,9 +45,9 @@ export const usePwaCreate = (isEdit: boolean) => {
   useEffect(() => {
     if (!isEdit) {
       dispatch(resetState());
-      dispatch(setCountry({ label: "Egypt", value: 0 }));
+      dispatch(setCountry({ label: "Egypt", value: "egypt" }));
       dispatch(setLanguage({ label: "Arabic", value: 0 }));
-      dispatch(setLanguagesList());
+      dispatch(updateLanguagesList([{ label: "Arabic", value: 0 }]));
     }
   }, [isEdit, dispatch]);
 
@@ -99,6 +100,7 @@ export const usePwaCreate = (isEdit: boolean) => {
       appSubTitle,
       collectionId,
       commentId,
+      age,
     } = action.payload as unknown as AppDataProps;
 
     const { icon, screenShots, name } = collectionId;
@@ -120,10 +122,11 @@ export const usePwaCreate = (isEdit: boolean) => {
                   version: version ?? "",
                   whats_new: whatsNew ?? "",
                 },
+                age: age ?? 0,
                 title: appTitle ?? "",
                 developer_name: appSubTitle ?? "",
                 raiting: rating ?? "",
-                number_of_downloads: downloadsCount,
+                number_of_downloads: downloadsCount ?? "",
                 review_count: reviewCount ?? "",
                 checkboxes_state: [
                   { id: 0, value: isContainsAds ?? false },
@@ -140,6 +143,9 @@ export const usePwaCreate = (isEdit: boolean) => {
               commentState: {
                 selected_comment: _id ?? "",
                 comments_list: [...handleComments(reviewObject)],
+                comment_group_name: null,
+                all_comments: null,
+                comment: null,
               },
             },
           };

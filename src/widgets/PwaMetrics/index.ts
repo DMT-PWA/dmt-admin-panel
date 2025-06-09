@@ -1,1 +1,1 @@
-export { PwaMetrics } from "./ui";
+export { PwaMetrics } from "./ui/PwaMetrics";

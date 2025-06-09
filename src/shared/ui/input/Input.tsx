@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ChangeEvent, FC, ReactNode } from "react";
+import { ChangeEvent, FC, KeyboardEvent, ReactNode } from "react";
 
 type InputProps = {
   label: string;
@@ -14,6 +14,7 @@ type InputProps = {
   onUpdateValue: (event: ChangeEvent<HTMLInputElement>) => void;
   children: ReactNode;
   isRequired: boolean;
+  valid: boolean;
 };
 
 export const InputDefault: FC<Partial<InputProps>> = ({
@@ -29,7 +30,15 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   onUpdateValue,
   children,
   isRequired = false,
+  valid = true,
 }) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "+" || e.key === "-") {
+      e.preventDefault();
+      return;
+    }
+  };
+
   return (
     <div
       className={clsx("flex", container_classes, {
@@ -39,7 +48,11 @@ export const InputDefault: FC<Partial<InputProps>> = ({
       })}
     >
       <label
-        className={clsx({ "title__view-1": !label_classes }, label_classes)}
+        className={clsx(
+          { "title__view-1": !label_classes },
+          { "title__view-1 !text-red-1": !valid },
+          label_classes
+        )}
       >
         {label}
         {isRequired && (
@@ -50,10 +63,18 @@ export const InputDefault: FC<Partial<InputProps>> = ({
         type={type}
         value={value}
         max={max}
+        min={0}
         disabled={disabled}
-        className={clsx(`input__default`, input_classes)}
+        className={clsx(
+          `input__default`,
+          {
+            "border-red-1": !valid,
+          },
+          input_classes
+        )}
         placeholder={placeholder}
         onChange={onUpdateValue}
+        onKeyDown={onKeyDown}
       />
       {children}
     </div>

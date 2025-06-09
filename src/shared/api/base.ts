@@ -11,6 +11,7 @@ class ApiInstance {
       headers: {
         "Content-Type": "application/json",
       },
+      withCredentials: true,
     });
   }
 
@@ -19,11 +20,16 @@ class ApiInstance {
     return response.data;
   }
 
-  async post<T>(
+  async post<T, D>(
     endpoint: string,
+    data: D,
     options: AxiosRequestConfig = {}
   ): Promise<T> {
-    const response: AxiosResponse<T> = await this.axios.post(endpoint, options);
+    const response: AxiosResponse<T> = await this.axios.post(
+      endpoint,
+      data,
+      options
+    );
 
     return response.data;
   }
@@ -31,13 +37,13 @@ class ApiInstance {
   async delete(endpoint: string) {
     const response = await this.axios.delete(endpoint);
 
-    return response.data
+    return response.data;
   }
 
   async patch(endpoint: string, options) {
     const response = await this.axios.patch(endpoint, options);
 
-    return response.data
+    return response.data;
   }
 }
 

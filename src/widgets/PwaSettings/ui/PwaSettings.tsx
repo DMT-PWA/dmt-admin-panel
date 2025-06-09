@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
@@ -14,17 +14,10 @@ import clsx from "clsx";
 export const PwaSettings: FC = () => {
   const dispatch = useAppDispatch();
 
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(true);
 
-  const {
-    domainApp,
-    domainLanding,
-    marketerTag,
-    whitePage,
-    currentCampaign,
-    campaigns,
-    subdomain,
-  } = useAppSelector((state) => state.settings);
+  const { domainApp, whitePage, currentCampaign, campaigns, subdomain } =
+    useAppSelector((state) => state.settings);
 
   /* const handleCampaign = useCallback(async () => {
     const data = await dispatch(getAllCampaigns());
@@ -50,13 +43,20 @@ export const PwaSettings: FC = () => {
   };
 
   useDebounce(
-    () =>
-      dispatch(
-        verifyCustomDomain({
-          serviceId: "682209c3451d947dcdfea597",
-          name: subdomain,
-        })
-      ),
+    async () => {
+      if (subdomain) {
+        const result = await dispatch(
+          verifyCustomDomain({
+            domain: domainApp?.value,
+            subDomain: subdomain,
+          })
+        );
+
+        if (verifyCustomDomain.fulfilled.match(result)) {
+          setValid(result.payload.status);
+        }
+      }
+    },
     500,
     [subdomain]
   );
@@ -77,7 +77,7 @@ export const PwaSettings: FC = () => {
           </label>
           <CustomSelect
             value={currentCampaign ?? undefined}
-            options={campaigns}
+            options={campaigns ?? undefined}
             onChange={(val) =>
               dispatch(
                 updateSettingField({ field: "currentCampaign", value: val })
@@ -119,12 +119,12 @@ export const PwaSettings: FC = () => {
           <InputDefault
             label="Subdomen"
             label_classes={clsx("title__view-1 mb-2", {
-              "!text-red-1": !isValid,
+              "!text-red-1": !valid,
             })}
             placeholder="Введите поддомен"
             input_classes={clsx({
-              "!border-0": isValid,
-              "border-red-1": !isValid,
+              "!border-0": valid,
+              "border-red-1": !valid,
             })}
             value={subdomain ?? ""}
             onUpdateValue={(val) => handleSubdomain(val.target.value)}

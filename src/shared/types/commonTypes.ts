@@ -328,4 +328,9 @@ export type AppDataProps = {
   reviewObject: CommentResponse[];
 };
 
-export type { AdminId, Icon };
+type ValidationResponse = {
+  message: string;
+  status: boolean;
+};
+
+export type { AdminId, Icon, ValidationResponse };
