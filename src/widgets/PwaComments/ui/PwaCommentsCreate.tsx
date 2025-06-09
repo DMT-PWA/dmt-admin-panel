@@ -13,6 +13,7 @@ import {
   updateCommentInList,
   updateCommentField,
   resetCommentsList,
+  getCommentById,
 } from "src/entities/comments";
 import { CommentCreate } from "src/features/comment_create";
 import { adminId } from "src/shared/lib/data";
@@ -20,7 +21,9 @@ import { InputDefault } from "src/shared/ui/input";
 import { IUserComment } from "src/shared/types";
 
 export const PwaCommentsCreate: FC = () => {
-  const { comment, comments_list } = useAppSelector((state) => state.comments);
+  const { comment, comments_list, comment_group_name } = useAppSelector(
+    (state) => state.comments
+  );
 
   const { currentLanguage } = useAppSelector((state) => state.pwa_design);
 
@@ -28,19 +31,31 @@ export const PwaCommentsCreate: FC = () => {
 
   const navigate = useNavigate();
 
-  const location = useLocation().pathname;
+  const { pathname } = useLocation();
+
+  const getPathSegments = pathname.split("/");
+  const isCommentUpdate = () => getPathSegments.includes("comment_update");
+  const getLastSegment = () => getPathSegments.pop();
+
+  useEffect(() => {
+    if (isCommentUpdate()) {
+      dispatch(getCommentById(getLastSegment()));
+    }
+  }, [pathname, dispatch]);
 
   const handleNavigate = () => {
-    const toComments = location.replace("comments_create", "comments");
+    const targetPath = isCommentUpdate()
+      ? pathname.replace(`comment_update/${getLastSegment()}`, "comments")
+      : pathname.replace("comments_create", "comments");
 
-    navigate(toComments);
+    navigate(targetPath);
   };
 
   const onSaveHandler = () => {
     if (!currentLanguage) return;
 
     dispatch(
-      createCommentHandler({ appId: adminId, language: currentLanguage?.label })
+      createCommentHandler({ adminId, language: currentLanguage?.label })
     );
   };
 
@@ -98,6 +113,7 @@ export const PwaCommentsCreate: FC = () => {
         label="Название группы"
         input_classes=""
         onUpdateValue={(e) => dispatch(setCommentGroupName(e.target.value))}
+        value={comment_group_name ?? ""}
         container_classes="max-w-128.25"
         placeholder="Введите название группы"
       />

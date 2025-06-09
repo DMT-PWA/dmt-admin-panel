@@ -1,20 +1,20 @@
+export { selectLanguagesList, modifiedCountryList } from "./model/selectors";
+
 export {
-  pwaDesignReducer,
-  setPwaTitle,
+  resetState,
   addCollection,
   removeCollection,
-  fetchDesignInfo,
-  setChanged,
-  fetchPwaInfo,
-  setLanguage,
-  setLanguagesList,
   setCountry,
-  addLanguage,
-  removeLanguage,
-  updateLanguagesList,
+  setChanged,
   setMarketerTag,
-} from "./model";
+  updateLanguagesList,
+  setPwaTitle,
+  setLanguage,
+  default as pwaDesignReducer,
+} from "./model/pwaDesignSlice";
 
-export { selectPwaDesignLanguages } from "./model/selectors";
-
-export { modifiedCountryList } from "./lib/const";
+export {
+  validatePwaDisplayName,
+  fetchDesignInfo,
+  fetchPwaInfo,
+} from "./model/pwaDesignThunk";

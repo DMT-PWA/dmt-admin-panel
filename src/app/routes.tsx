@@ -36,7 +36,7 @@ const LayoutWithSidebar = () => {
         />
         <Route
           path="/pwa_edit/:appId/*"
-          element={appId && <PwaCreate appId={appId} isEdit={isEdit} />}
+          element={appId && <PwaCreate appId={appId} isEdit={true} />}
         />
       </Routes>
     </div>

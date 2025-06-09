@@ -1,17 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import {
-  getComments,
-  removeComment,
-  createComment,
-} from "src/shared/api/comments";
+import { getComments, removeComment } from "src/shared/api/comments";
+import { ICommentsState } from "./types";
+import { apiInstance } from "src/shared/api/base";
 
 export const getAllComments = createAsyncThunk(
   "comments/getAllComments",
   async () => {
     const response = await getComments();
 
-    return response;
+    return response as ICommentsState["all_comments"];
+  }
+);
+
+export const getCommentById = createAsyncThunk(
+  "comments/getCommentById",
+  async (id: string) => {
+    return await apiInstance.get(`comment/${id}`);
   }
 );
 
@@ -28,7 +33,7 @@ export const removeCommentById = createAsyncThunk(
 
 export const createCommentHandler = createAsyncThunk<
   unknown,
-  { appId: string; language: string }
+  { adminId: string; language: string }
 >("comments/createCommentHandler", async (data, { getState }) => {
   const state = (getState() as RootState).comments;
 
@@ -39,6 +44,7 @@ export const createCommentHandler = createAsyncThunk<
     name: item.author_name,
     photo: item.avatar,
     rating: item.raiting,
+    helpfulCount: item.likes_count,
     review: item.comments_text,
     isResponse: item.developer_answer,
     response: item.answer_text,
@@ -51,7 +57,7 @@ export const createCommentHandler = createAsyncThunk<
     reviewObject: newCommentsList,
   };
 
-  const response = await createComment("comment", fullPayload);
+  const response = await apiInstance.post("comment", fullPayload);
 
   return response;
 });

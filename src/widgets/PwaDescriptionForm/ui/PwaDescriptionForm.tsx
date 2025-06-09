@@ -5,37 +5,38 @@ import {
   Label,
   Textarea,
 } from "@headlessui/react";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/entities/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
-import {
-  setGrade,
-  toggleCheckbox,
-  updateAboutDescription,
-  batchUpdate,
-} from "src/entities/pwa_description";
+import { setGrade, CombinedDescription } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { ButtonDefault } from "src/shared/ui/button";
 import { CollectionCreate } from "src/features/collection_create";
-import { ICollection } from "src/shared/types";
+import { IAboutGameDescription, ICollection } from "src/shared/types";
 import { createCollection } from "src/features/appData/appDataAPI";
 import {
   CollectionsList,
   getAllCollections,
-  setCurrentCollection,
 } from "src/features/collections_list";
+import { NUMBER_FIELDS, TEXT_FIELDS } from "../lib/const";
 
 type DescriptionFormProps = {
   adminId: string;
-  language: string;
+  descriptionState: Partial<CombinedDescription>;
+  collectionState: ICollection | null;
+  handleUpdateField: (payload: Partial<CombinedDescription>) => void;
+  handleCollectionUpdate: (payload: Partial<ICollection> | null) => void;
 };
 
 export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
   adminId,
-  language,
+  descriptionState,
+  collectionState,
+  handleUpdateField,
+  handleCollectionUpdate,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -52,14 +53,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
     review_count,
     developer_name,
     number_of_downloads,
-  } = useAppSelector((state) => state.pwa_description);
+  } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
-    useAppSelector((state) => state.pwa_description.about_description);
+    about_description as IAboutGameDescription;
 
-  const { collectionsList, currentCollection } = useAppSelector(
-    (state) => state.collections
-  );
+  const { collectionsList } = useAppSelector((state) => state.collections);
 
   const collectionCreateHandler = async ({
     collectionImage,
@@ -73,26 +72,26 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
       screenShots: images,
     });
 
-    dispatch(
-      setCurrentCollection({
-        _id,
-        collectionImage: icon,
-        collectionName: name,
-        images: screenShots,
-      })
-    );
+    handleCollectionUpdate({
+      _id,
+      collectionImage: icon,
+      collectionName: name,
+      images: screenShots,
+    });
 
     dispatch(getAllCollections());
   };
+
+  const handleCheckboxes = (val: { id: number; value: boolean }) =>
+    handleUpdateField({
+      checkboxes_state: checkboxes_state?.map((checkbox) =>
+        checkbox.id === val.id ? { ...checkbox, value: val.value } : checkbox
+      ),
+    });
+
   useEffect(() => {
     if (!collectionsList.length) dispatch(getAllCollections());
   }, [dispatch, collectionsList]);
-
-  /* useEffect(() => {
-    if (!descriptionId) {
-      dispatch(createDescriptionById({ adminId, language }));
-    }
-  }, []); */
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -102,30 +101,21 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
           <h2 className="text__default">Основное</h2>
           <div className="bg-white rounded-[6px] mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
             <div className="flex gap-10">
-              <InputDefault
-                label="Название"
-                input_classes=""
-                value={title || ""}
-                container_classes="flex-[0.5]"
-                placeholder="App Name"
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ title: e.target.value }))
-                }
-              />
-              <InputDefault
-                label="Разработчик"
-                input_classes=""
-                container_classes="flex-[0.5]"
-                placeholder="Developer Name"
-                value={developer_name}
-                onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ developer_name: e.target.value }))
-                }
-              />
+              {TEXT_FIELDS.map((field, ind) => (
+                <InputDefault
+                  key={ind}
+                  {...field}
+                  value={descriptionState[field.name] || ""}
+                  container_classes="flex-[0.5]"
+                  onUpdateValue={(e) =>
+                    handleUpdateField({ [field.name]: e.target.value })
+                  }
+                />
+              ))}
             </div>
             <div className="flex flex-col gap-[9px] pt-[21px] max-w-[243px]">
               <CheckboxList
-                handleChange={(val) => dispatch(toggleCheckbox(val))}
+                handleChange={handleCheckboxes}
                 values={checkboxes_state}
               />
             </div>
@@ -138,7 +128,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 value={raiting ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ raiting: e.target.value }))
+                  handleUpdateField({ raiting: e.target.value })
                 }
               />
               <InputDefault
@@ -149,7 +139,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-[0.5]"
                 value={review_count ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ review_count: e.currentTarget.value }))
+                  handleUpdateField({ review_count: e.target.value })
                 }
               />
             </div>
@@ -184,25 +174,25 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 />
               )}
             </div>
-            {currentCollection && (
+            {collectionState && (
               <div className="bg-white rounded-2 mt-2 pl-4 pr-[19px] pt-3 pb-[30px]">
                 <div className="flex gap-9.75">
-                  <div className="flex flex-col justify-between">
-                    <img
-                      src={currentCollection.collectionImage}
-                      style={{ maxHeight: "92px", borderRadius: "10px" }}
-                      width={92}
-                      height={92}
-                    />
-                    <ButtonDefault
-                      btn_text="Удалить"
-                      btn_classes="btn__orange btn__orange-view-4"
-                      onClickHandler={() =>
-                        dispatch(setCurrentCollection(null))
-                      }
-                    />
-                  </div>
-                  {currentCollection.images.map((el: string | null, index) => {
+                  {collectionState.collectionImage && (
+                    <div className="flex flex-col justify-between">
+                      <img
+                        src={collectionState.collectionImage}
+                        style={{ maxHeight: "92px", borderRadius: "10px" }}
+                        width={92}
+                        height={92}
+                      />
+                      <ButtonDefault
+                        btn_text="Удалить"
+                        btn_classes="btn__orange btn__orange-view-4"
+                        onClickHandler={() => handleCollectionUpdate(null)}
+                      />
+                    </div>
+                  )}
+                  {collectionState.images.map((el: string | null, index) => {
                     return el ? (
                       <div key={index} className="flex  h-full">
                         <img
@@ -227,12 +217,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 value={about_description.description}
                 style={{ minHeight: "125px" }}
                 onChange={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "description",
-                      value: e.target.value,
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      description: e.target.value,
+                    },
+                  })
                 }
               ></Textarea>
             </Field>
@@ -241,14 +231,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-1/4"
                 label="Версия"
                 type="number"
-                value={version}
+                value={version ?? ""}
                 onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "version",
-                      value: Number(e.target.value),
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      version: e.target.value,
+                    },
+                  })
                 }
               />
               <Field className="flex flex-1/4 flex-col gap-1.5">
@@ -260,12 +250,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "release_date",
-                        value: date,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        release_date: date,
+                      },
+                    })
                   }
                   icon={
                     <svg
@@ -292,7 +282,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 placeholder="10000000"
                 value={number_of_downloads}
                 onUpdateValue={(e) =>
-                  dispatch(batchUpdate({ number_of_downloads: e.target.value }))
+                  handleUpdateField({
+                    number_of_downloads: e.target.value,
+                  })
                 }
               />
             </div>
@@ -303,12 +295,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 type="text"
                 value={android_version}
                 onUpdateValue={(e) =>
-                  dispatch(
-                    updateAboutDescription({
-                      field: "android_version",
-                      value: e.target.value,
-                    })
-                  )
+                  handleUpdateField({
+                    about_description: {
+                      ...about_description,
+                      android_version: e.target.value,
+                    },
+                  })
                 }
               />
               <Field className="flex-1/3 flex flex-col gap-1.5 mr-5">
@@ -320,12 +312,12 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "last_update",
-                        value: date,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        last_update: date,
+                      },
+                    })
                   }
                   icon={
                     <svg
@@ -357,14 +349,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                   className="min-h-[120px]"
                   placeholder="Исправлены баги и ошибки"
                   name="whats_new"
-                  value={whats_new}
+                  value={whats_new ?? ""}
                   onChange={(e) =>
-                    dispatch(
-                      updateAboutDescription({
-                        field: "whats_new",
-                        value: e.target.value,
-                      })
-                    )
+                    handleUpdateField({
+                      about_description: {
+                        ...about_description,
+                        whats_new: e.target.value,
+                      },
+                    })
                   }
                 ></Textarea>
               </Field>
@@ -392,7 +384,10 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
-          <CollectionsList onPopupHandler={() => setCollectionsOpen(false)} />
+          <CollectionsList
+            onPopupHandler={() => setCollectionsOpen(false)}
+            handleCollectionUpdate={handleCollectionUpdate}
+          />
         </div>
       </Dialog>
     </div>

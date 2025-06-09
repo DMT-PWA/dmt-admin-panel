@@ -1,17 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CombinedDescription } from "./types";
-import {
-  checkbox,
-  IAboutGameDescription,
-  DescriptionResponse,
-} from "src/shared/types";
-import {
-  fetchDescriptionInfoById,
-  createDescriptionById,
-  updateDescription,
-} from "./descriptionThunk";
+import { IAboutGameDescription, DescriptionResponse } from "src/shared/types";
+import { createDescriptionById, updateDescription } from "./descriptionThunk";
 import { UpdateFieldPayload } from "src/shared/lib/store";
-import { getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const defaultState: CombinedDescription = {
   descriptionId: null,
@@ -43,17 +34,6 @@ const defaultState: CombinedDescription = {
   },
 };
 
-const handleCheckboxes = (
-  state: CombinedDescription,
-  action: PayloadAction<checkbox>
-) => {
-  const { id, value } = action.payload;
-
-  state.checkboxes_state = state.checkboxes_state.map((checkbox) =>
-    checkbox.id === id ? { ...checkbox, value: value } : checkbox
-  );
-};
-
 const handleUpdate = (
   state: CombinedDescription,
   action: PayloadAction<Partial<CombinedDescription>>
@@ -78,12 +58,11 @@ const pwaDescriptionSlice = createSlice({
     setGrade: (state, action) => {
       state.grades[action.payload.index].value = action.payload.value;
     },
-    toggleCheckbox: (state, action) => handleCheckboxes(state, action),
 
     resetState: () => defaultState,
   },
   extraReducers: (builder) => {
-    builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
+    /*  builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
       if (!action.payload) return;
 
       const {
@@ -120,7 +99,7 @@ const pwaDescriptionSlice = createSlice({
       state.checkboxes_state[0].value = isContainsAds;
       state.checkboxes_state[1].value = isInAppPurchases;
       state.checkboxes_state[2].value = isEditorsChoice;
-    });
+    }); */
 
     builder.addCase(
       createDescriptionById.pending,
@@ -135,12 +114,7 @@ const pwaDescriptionSlice = createSlice({
   },
 });
 
-export const {
-  updateAboutDescription,
-  setGrade,
-  toggleCheckbox,
-  batchUpdate,
-  resetState,
-} = pwaDescriptionSlice.actions;
+export const { updateAboutDescription, setGrade, batchUpdate, resetState } =
+  pwaDescriptionSlice.actions;
 
 export default pwaDescriptionSlice.reducer;

@@ -11,6 +11,10 @@
   color: var(--color-white);
 }
 
+.btn__orange:hover {
+  opacity: 0.75;
+}
+
 .btn__orange.btn__orange-view-1 {
   font-family: "Onest", serif;
   border-radius: 6px;

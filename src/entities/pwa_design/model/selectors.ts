@@ -1,5 +1,22 @@
 import { createSelector } from "@reduxjs/toolkit";
+import { countryList, countryToLanguageMap } from "../lib/const";
 
-const selectBase = createSelector((state: RootState) => state, (state) => state.pwa_design);
+export const selectLanguagesList = createSelector(
+  (state: RootState) => state.pwa_design.currentCountry,
+  (currentCountry) => {
+    if (!currentCountry) return;
+    const countryKey = currentCountry.label.toLocaleLowerCase();
 
-export const selectPwaDesignLanguages = createSelector(selectBase, (state) => state.languages);
+    return countryToLanguageMap[countryKey];
+  }
+);
+
+export const modifiedCountryList = createSelector(
+  (state: RootState) => state,
+  (): Array<{ value: string; label: string }> => {
+    return countryList.map((item) => ({
+      value: item,
+      label: item,
+    }));
+  }
+);

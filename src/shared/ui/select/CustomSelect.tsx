@@ -8,9 +8,9 @@ type Option = {
 
 interface ISelectProps {
   placeholder: string;
-  options: Option[];
+  options: Option[] | undefined;
   classes: string;
-  value: Option;
+  value: Option | undefined;
   onChange?: (
     selectedOption: SingleValue<{ value: string; label: string }>,
     actionMeta: ActionMeta<{ value: string; label: string }>

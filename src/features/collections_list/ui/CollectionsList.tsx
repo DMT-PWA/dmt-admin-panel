@@ -6,14 +6,17 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { setCurrentCollection } from "../model/collectionsSlice";
 import { ICollection } from "src/entities/collection";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
+  handleCollectionUpdate: (payload: Partial<ICollection>) => void;
 };
 
-export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
+export const CollectionsList: FC<CollectionCreate> = ({
+  onPopupHandler,
+  handleCollectionUpdate,
+}) => {
   const { collectionsList, currentCollection } = useAppSelector(
     (state) => state.collections
   );
@@ -34,7 +37,13 @@ export const CollectionsList: FC<CollectionCreate> = ({ onPopupHandler }) => {
   const collectionPickHandler = () => {
     if (!collectionItem) return;
 
-    dispatch(setCurrentCollection(collectionItem._id));
+    const currentCollection = collectionsList.find(
+      (item) => item._id === collectionItem._id
+    );
+
+    if (currentCollection) {
+      handleCollectionUpdate(currentCollection);
+    }
     onPopupHandler();
   };
 

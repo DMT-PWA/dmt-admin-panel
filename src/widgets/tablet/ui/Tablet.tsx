@@ -8,21 +8,28 @@ import {
 import { Reviewer } from "src/entities/reviewer";
 import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
+import { CombinedDescription } from "src/entities/pwa_description";
+import { ICommentsState } from "src/entities/comments";
+import { ICollection } from "src/shared/types";
 
 interface ITabletProps {
   toAbout: () => void;
+  value: {
+    descriptionState: CombinedDescription;
+    commentState: ICommentsState;
+    collectionState: ICollection | null;
+  };
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout } = props;
+  const { toAbout, value } = props;
+
+  const { descriptionState, commentState, collectionState } = value;
 
   const [isAppSupport] = useState(false);
-  const [, setIsInstall] = useState(false);
   const { currentCountry, currentLanguage } = useAppSelector(
     (state) => state.pwa_design
   );
-
-  const { currentCollection } = useAppSelector((state) => state.collections);
 
   const { isArabic, langData, formatNumber } = usePhonePreview(
     currentLanguage,
@@ -38,22 +45,21 @@ const Tablet: FC<ITabletProps> = (props) => {
     checkboxes_state,
     about_description,
     review_count,
-  } = useAppSelector((state) => state.pwa_description);
+  } = descriptionState;
 
-  const { comments_list } = useAppSelector((state) => state.comments);
+  const { comments_list } = commentState;
 
   const { description } = about_description;
 
-  const icon = currentCollection?.collectionImage;
+  const icon = collectionState?.collectionImage;
+
+  const currentCollection = collectionState;
 
   const formatDownloads = (downloads: number | string | null): string => {
     return Number(downloads) > 100000 ? "100K+" : `${downloads}`;
   };
   const modifiedNumberOfDownloads = formatDownloads(number_of_downloads);
 
-  //===================================================================================================
-  //==========================={Translations Block}====================================================
-  //===================================================================================================
   const {
     reviews,
     downloads,
@@ -65,17 +71,7 @@ const Tablet: FC<ITabletProps> = (props) => {
     findHelpful,
     yes,
     no,
-    screenShots,
   } = langData;
-
-  // const isArabic = currentLanguage?.label === "Arabic";
-  //===================================================================================================
-  //================================={React states}====================================================
-  //===================================================================================================
-
-  async function installApp() {
-    setIsInstall(true);
-  }
 
   return (
     <>
@@ -125,7 +121,12 @@ const Tablet: FC<ITabletProps> = (props) => {
                             </div>
                           </div>
                           <div className="flex flex-row items-start justify-start flex-wrap content-start text-xs text-blue_default">
-                            <div className="relative font-bold tracking-[0.3px] leading-[16px] inline-block min-w-[74px]">
+                            <div
+                              className={clsx(
+                                "relative font-bold tracking-[0.3px] leading-[16px] inline-block",
+                                { "min-w-[74px]": !isArabic }
+                              )}
+                            >
                               {developer_name}
                             </div>
                           </div>
@@ -268,7 +269,6 @@ const Tablet: FC<ITabletProps> = (props) => {
 
                       <button
                         className={`cursor-pointer hover:opacity-80 [border:none] py-2 px-5 self-stretch rounded-1 tabletBlack:rounded-lg overflow-hidden flex flex-row items-start justify-center bg-onexBlue tabletBlack:bg-blue_default`}
-                        onClick={installApp}
                       >
                         <div className="relative text-sm tracking-[0.25px] leading-4 font-product_sans text-neutral-100 text-left inline-block min-w-[40px]">
                           {install}
@@ -284,7 +284,7 @@ const Tablet: FC<ITabletProps> = (props) => {
               propWidth="100%"
               propHeight="140px"
               propFlex="unset"
-              screenShots={screenShots}
+              currentCollection={currentCollection}
             />
             <section className="self-stretch flex flex-row items-start justify-start pt-0 px-5 pb-5 box-border max-w-full shrink-0 text-left text-lg text-gray-100 font-roboto">
               <div className="flex-1 flex flex-col items-start justify-start gap-5 shrink-0 max-w-full">

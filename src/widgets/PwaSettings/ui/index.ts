@@ -1,1 +1,0 @@
-export { PwaSettings } from "./PwaSettings";

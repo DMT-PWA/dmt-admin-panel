@@ -42,21 +42,21 @@ export const createDescriptionById = createAsyncThunk<
 
 export const updateDescription = createAsyncThunk<
   UpdatePwaPayload,
-  Partial<UpdatePwaPayload>,
-  { state: RootState }
->("description/updateDescription", async (payload, { getState }) => {
-  const state = (getState() as RootState).pwa_description;
-
-  const { adminId, language, appId, isExist, country } = payload;
-
+  Partial<UpdatePwaPayload>
+>("description/updateDescription", async (payload) => {
   const {
+    adminId,
+    language,
+    appId,
+    isExist,
+    country,
     title,
     about_description,
     number_of_downloads,
     raiting,
     review_count,
     checkboxes_state,
-  } = state;
+  } = payload;
 
   const {
     release_date,

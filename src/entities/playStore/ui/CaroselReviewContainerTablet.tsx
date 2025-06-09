@@ -7,13 +7,13 @@ type CaroselReviewContainerTabletProps = {
   propWidth: number | string;
   propHeight: number | string;
   propFlex: string;
-  screenShots: Array<string>;
+  currentCollection: ICollection;
 };
 
 const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
   props
 ) => {
-  const { currentCollection } = useAppSelector((state) => state.collections);
+  const currentCollection = props.currentCollection;
 
   const emptyCollections = () => {
     if (!currentCollection) {
@@ -46,7 +46,7 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       );
     });
   };
-  const { propWidth, propHeight, propFlex, screenShots } = props;
+  const { propWidth, propHeight, propFlex } = props;
   const caroselReviewContainerStyle = useMemo(() => {
     return {
       width: propWidth,

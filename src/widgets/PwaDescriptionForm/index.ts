@@ -1,1 +1,1 @@
-export { PwaDescriptionForm } from "./ui"
+export { PwaDescriptionForm } from "./ui/PwaDescriptionForm";

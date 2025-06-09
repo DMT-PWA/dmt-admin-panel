@@ -49,7 +49,7 @@ export const PwaTable: FC = () => {
       name: obj.displayName,
       defaultNaming: "Rqd - NL OLZ learning",
       domain: obj.domain,
-      tag: "OLZ",
+      tag: obj.marketerTag,
       created: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
     }));
   }, []);

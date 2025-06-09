@@ -2000,5 +2000,3 @@ export const dataByTrasnslation = {
 };
 
 export type Countries = keyof typeof dataByTrasnslation;
-
-export type Translations = ReturnType<typeof dataByTrasnslation>;

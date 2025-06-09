@@ -37,6 +37,7 @@ export interface UpdatePwaResponse {
 }
 
 export type CreateInitPayload = {
+  appId?: string;
   adminId: string;
   language: string;
   country: string;

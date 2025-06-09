@@ -4,8 +4,6 @@ const domains: Array<Settings["domainApp"]> = [
   { label: "plinsters.pro", value: "plinsters.pro" },
 ];
 
-const subdomains: Array<Settings["domainLanding"]> = [];
-
 const whitePages: Array<Settings["whitePage"]> = [
   {
     label: "404 page",
