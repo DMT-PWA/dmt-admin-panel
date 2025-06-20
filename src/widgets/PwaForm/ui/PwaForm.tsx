@@ -17,7 +17,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Country } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
-import { useDebounce } from "react-use";
+import { useBeforeUnload, useDebounce, useMount } from "react-use";
+import { cloneDeep, isEqual } from "lodash";
+import { IDesign } from "src/shared/api/design";
+
 type PwaFormProps = {
   appId: string | null;
   isEdit?: boolean;
@@ -27,9 +30,12 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const [valid, setValid] = useState<boolean>(true);
 
   const navigate = useNavigate();
-  const { languagesList, pwa_title, pwa_tags, currentCountry } = useAppSelector(
-    (state) => state.pwa_design
-  );
+  const state = useAppSelector((state) => state.pwa_design);
+
+  const { languagesList, pwa_title, pwa_tags, currentCountry } = state;
+
+  const [initStateCopy, setInitStateCopy] = useState<IDesign | null>(null);
+
   const dispatch = useAppDispatch();
 
   const selectedLanguages = useAppSelector(selectLanguagesList);
@@ -53,6 +59,12 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const handleNavigate = () => {
     return navigate("/pwa");
   };
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state));
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
 
   useDebounce(
     async () => {
@@ -170,9 +182,9 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
           </div>
           <InputDefault
             value={pwa_tags}
-            label="Теги PWA"
+            label="Тег PWA"
             input_classes="!border-0"
-            placeholder="Выберите теги"
+            placeholder="Введите тег"
             onUpdateValue={(val) => dispatch(setMarketerTag(val.target.value))}
             isRequired={true}
           />

@@ -28,21 +28,35 @@ export const PwaMetrics: FC = () => {
             Регистрация
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={registration} placeholder="" classes="mb-2" />
+          <CustomSelect
+            value={registration[0]}
+            options={registration}
+            placeholder=""
+            classes="mb-2"
+          />
         </div>
         <div className="flex flex-col flex-1/3">
           <label className="title__view-1 mb-2">
             Депозит
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={deposit} placeholder="Введите депозит" />
+          <CustomSelect
+            value={install[0]}
+            options={deposit}
+            placeholder="Введите депозит"
+          />
         </div>
         <div className="flex flex-col flex-1/3">
           <label className="title__view-1 mb-2">
             Скачивание
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={install} placeholder="" classes="mb-2" />
+          <CustomSelect
+            value={install[0]}
+            options={install}
+            placeholder=""
+            classes="mb-2"
+          />
         </div>
       </div>
       <div className="flex flex-col gap-3.25">

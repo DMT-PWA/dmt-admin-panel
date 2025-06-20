@@ -13,7 +13,6 @@ interface CommentCreateProps extends IUserComment {
     value: IUserComment[K]
   ) => void;
   setModalOpen: (arg: boolean) => void;
-  developer_answer: boolean;
 }
 
 export const CommentCreate: FC<CommentCreateProps> = ({
@@ -64,7 +63,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
               onUpdateValue={(e) =>
                 onFiledUpdate("author_name", e.target.value)
               }
-              value={author_name}
+              value={author_name ?? ""}
               container_classes="flex-[0.5]"
               placeholder="Введите имя автора"
             />
@@ -154,7 +153,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
                   className="min-h-[120px]"
                   placeholder="Введите текст "
                   name="whats_new"
-                  value={comments_text}
+                  value={comments_text ?? ""}
                   onChange={(e) =>
                     onFiledUpdate("comments_text", e.target.value)
                   }
@@ -174,7 +173,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
                 "!text-gray-4": !developer_answer,
               })}
               placeholder="Введите имя разработчика"
-              value={developer_name}
+              value={developer_name ?? ""}
               onUpdateValue={(e) =>
                 onFiledUpdate("developer_name", e.target.value)
               }
@@ -188,7 +187,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
                 placeholder="Введите ответ"
                 disabled={!developer_answer}
                 name="whats_new"
-                value={answer_text}
+                value={answer_text ?? ""}
                 onChange={(e) => onFiledUpdate("answer_text", e.target.value)}
               ></Textarea>
             </Field>

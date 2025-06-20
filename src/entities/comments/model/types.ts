@@ -1,6 +1,8 @@
 import { IUserComment } from "src/shared/types";
 
-export type CommentsList = Array<IUserComment> | null;
+export type CommentsList = Array<
+  IUserComment & { commentId: string | null }
+> | null;
 
 export type ReviewObject = Array<{
   date: string;
@@ -16,7 +18,7 @@ export type ReviewObject = Array<{
   _id: string;
 }>;
 
-export type AllComments = {
+export type CommentGroup = {
   adminId: string;
   createdAt: string;
   name: string;
@@ -30,5 +32,10 @@ export interface ICommentsState {
   comments_list: CommentsList;
   comment_group_name?: string | null;
   selected_comment: string | null;
-  all_comments: Array<AllComments> | null;
+  all_comments: Array<CommentGroup> | null;
 }
+
+export type CommentUpdatePayload = Record<
+  "commentId" | "adminId" | "reviewId" | "name",
+  string
+>;

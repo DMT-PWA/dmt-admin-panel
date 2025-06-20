@@ -34,8 +34,8 @@ class ApiInstance {
     return response.data;
   }
 
-  async delete(endpoint: string) {
-    const response = await this.axios.delete(endpoint);
+  async delete<T>(endpoint: string) {
+    const response: AxiosResponse<T> = await this.axios.delete(endpoint);
 
     return response.data;
   }

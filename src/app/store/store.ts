@@ -8,6 +8,8 @@ import { commentsReducer } from "src/entities/comments";
 import { metricsReducer } from "src/entities/metrics";
 import { settingsReducer } from "src/widgets/PwaSettings";
 import { collectionsReducer } from "src/features/collections_list";
+import { languageDataReducer } from "src/features/languageData";
+import { notificationReducer } from "src/entities/notification";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +22,8 @@ export const store = configureStore({
     comments: commentsReducer,
     metrics: metricsReducer,
     settings: settingsReducer,
+    language_data: languageDataReducer,
+    notification: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -39,7 +39,8 @@ export const usePwaCreateNavigation = (isEdit: boolean = false) => {
   const showPreview =
     currentRoute === "description" ||
     currentRoute === "comments" ||
-    currentRoute === "comments_create";
+    currentRoute === "comments_create" ||
+    pathSegments[pathSegments.length - 2] === "comment_update";
 
   const finishCreateButton = !isEdit && currentRoute === "metrics";
 

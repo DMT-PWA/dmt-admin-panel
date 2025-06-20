@@ -6,31 +6,40 @@ import {
   removeCommentById,
 } from "src/entities/comments";
 import type { ReviewObject, ICommentsState } from "src/entities/comments";
-import { useAppDispatch } from "src/shared/lib/store";
+import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
 
 import pencil_icon from "src/shared/assets/icons/pencil.png";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 import circle_icon from "src/shared/assets/icons/circle_icon.png";
+import {
+  selectCurrentLanguageValue,
+  selectLanguage,
+  updateLanguageData,
+} from "src/features/languageData";
 
-type PwaCommentsProps = {
-  isEdit?: boolean;
-  commentState: Partial<ICommentsState>;
-  handleUpdateField: (payload: Partial<ICommentsState>) => void;
-};
+export const PwaComments: FC = () => {
+  const value = useAppSelector(selectCurrentLanguageValue);
 
-export const PwaComments: FC<PwaCommentsProps> = ({
-  commentState,
-  handleUpdateField,
-}) => {
-  const { all_comments, selected_comment } = commentState;
+  const language = useAppSelector(selectLanguage);
 
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   const location = useLocation().pathname;
+
+  useEffect(() => {
+    if (!language) return;
+    dispatch(getAllComments(language));
+  }, [dispatch, language]);
+
+  if (!value) return <div>Loading...</div>;
+
+  const { commentState } = value;
+
+  const { all_comments, selected_comment } = commentState;
 
   const handleNavigate = (isUpdate: boolean = false, commentId?: string) => {
     if (!isUpdate) {
@@ -47,6 +56,18 @@ export const PwaComments: FC<PwaCommentsProps> = ({
     navigate(toUpdate);
   };
 
+  const handleUpdateField = (payload: Partial<ICommentsState>) => {
+    if (!language) return;
+
+    dispatch(
+      updateLanguageData({
+        state: "commentState",
+        payload,
+        currentLanguage: language,
+      })
+    );
+  };
+
   const selectCommentHandler = (commentsObject: ReviewObject, id?: string) => {
     handleUpdateField({
       selected_comment: id,
@@ -54,18 +75,13 @@ export const PwaComments: FC<PwaCommentsProps> = ({
     });
   };
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      const res = await dispatch(getAllComments());
-      handleUpdateField({
-        all_comments: res.payload as ICommentsState["all_comments"],
-      });
-    };
+  const handleRemoveComment = async (id: string) => {
+    if (!language) return;
 
-    if (!all_comments?.length) {
-      fetchComments();
-    }
-  }, [dispatch, handleUpdateField, all_comments]);
+    await dispatch(removeCommentById(id));
+
+    await dispatch(getAllComments(language));
+  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -119,7 +135,7 @@ export const PwaComments: FC<PwaCommentsProps> = ({
                       <img src={pencil_icon} width={14} height={14} alt="" />
                     </button>
                     <button
-                      onClick={() => dispatch(removeCommentById(item?._id))}
+                      onClick={() => handleRemoveComment(item?._id)}
                       className="w-5 h-5"
                     >
                       <img src={trash_icon} width={14} height={16} alt="" />

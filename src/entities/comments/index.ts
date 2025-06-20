@@ -1,25 +1,17 @@
 export {
   commentsReducer,
-  addComment,
   removeComment,
   resetState,
   getAllComments,
   removeCommentById,
   createCommentHandler,
-  setComments,
-  setAllComments,
-  resetComment,
-  setCommentGroupName,
-  setSelectedCommentId,
-  updateCommentInList,
-  updateCommentField,
   resetCommentsList,
 } from "./model";
 
-export { getCommentById } from "./model/commentsThunk";
+export { getCommentById, updateCommentById } from "./model/commentsThunk";
 
 export type {
-  AllComments,
+  CommentGroup,
   ReviewObject,
   CommentsList,
   ICommentsState,

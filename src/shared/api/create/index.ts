@@ -22,9 +22,7 @@ export const getPwaByIdAndLanguage = createAsyncThunk<
   AppDataProps,
   Partial<UpdatePwaPayload>
 >("create/getPwaByIdAndLanguage", async (payload) => {
-  const response = await apiInstance.get<AppDataProps>(
+  return await apiInstance.get(
     `pwa/${payload.appId}/${payload.language}/${payload.country}`
   );
-
-  return response;
 });

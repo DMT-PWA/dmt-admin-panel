@@ -1,18 +1,10 @@
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
 import trash_icon from "src/shared/assets/icons/trash_icon.png";
 import close_icon from "src/shared/assets/icons/close_icon.png";
 import cloud_icon from "src/shared/assets/icons/cloud_icon.png";
-import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
-import {
-  removeCollectionImage,
-  removeImage,
-  setCollectionImage,
-  setImage,
-  setCollectionName,
-  resetState,
-} from "src/entities/collection";
+import { useAppDispatch } from "src/shared/lib/store";
 import { addCollection } from "src/entities/pwa_design";
 import { ICollection } from "src/shared/types";
 import { handleFileUpload } from "src/features/appData/appDataAPI";
@@ -26,10 +18,14 @@ export const CollectionCreate: FC<CollectionCreate> = ({
   onPopupHandler,
   collectionCreateHandler,
 }) => {
-  const { collectionImage, images, collectionName } = useAppSelector(
-    (state) => state.collection
-  );
+  const [collectionState, setCollectionState] = useState<Partial<ICollection>>({
+    _id: "",
+    collectionImage: null,
+    collectionName: null,
+    images: [null, null, null, null],
+  });
 
+  const { collectionImage, images, collectionName } = collectionState;
   const dispatch = useAppDispatch();
 
   const handleColleactionImageChange = async (
@@ -38,7 +34,10 @@ export const CollectionCreate: FC<CollectionCreate> = ({
     const file = event.target.files?.[0];
     if (file) {
       const reader = await handleFileUpload(file);
-      dispatch(setCollectionImage(reader as string));
+      setCollectionState((prevState) => ({
+        ...prevState,
+        collectionImage: reader,
+      }));
     }
   };
 
@@ -49,11 +48,33 @@ export const CollectionCreate: FC<CollectionCreate> = ({
     const file = event.target.files?.[0];
     if (file) {
       const reader = await handleFileUpload(file);
-      dispatch(setImage({ index, image: reader as string }));
+
+      setCollectionState((prevState) => ({
+        ...prevState,
+        images: prevState.images?.map((img, i) =>
+          i === index ? reader : img
+        ) || [reader],
+      }));
     }
   };
 
+  const removeCollectionIcon = () => {
+    setCollectionState((prevState) => ({
+      ...prevState,
+      collectionImage: null,
+    }));
+  };
+
+  const removeColelctionImage = (index: number) => {
+    setCollectionState((prevState) => ({
+      ...prevState,
+      images: prevState.images?.map((img, i) => (i === index ? null : img)),
+    }));
+  };
+
   const onSaveBtnHandler = () => {
+    if (!collectionName || !collectionImage) return;
+
     if (collectionName.length > 0 && collectionImage !== null) {
       dispatch(
         addCollection({
@@ -65,7 +86,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({
 
       collectionCreateHandler({ collectionImage, images, collectionName });
 
-      dispatch(resetState());
+      // dispatch(resetState());
 
       onPopupHandler();
 
@@ -91,7 +112,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({
                 className="w-full h-full object-cover rounded-lg"
               />
               <button
-                onClick={() => dispatch(removeCollectionImage())}
+                onClick={removeCollectionIcon}
                 className="absolute bottom-2 right-2 bg-orange p-1 rounded-1"
               >
                 <img src={trash_icon} width={11} height={11} />
@@ -114,13 +135,18 @@ export const CollectionCreate: FC<CollectionCreate> = ({
         <InputDefault
           label="Название коллекции"
           placeholder="Добавьте название коллекции"
-          value={collectionName}
-          onUpdateValue={(e) => dispatch(setCollectionName(e.target.value))}
+          value={collectionName ?? ""}
+          onUpdateValue={(e) =>
+            setCollectionState((prevVal) => ({
+              ...prevVal,
+              collectionName: e.target.value,
+            }))
+          }
           container_classes="flex flex-col gap-4.5 flex-auto"
         />
       </div>
       <div className="flex gap-2.25 mt-7.75 mb-11.75">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div
             key={index}
             className="w-33.25 h-69.5 border-2 border-gray-1 rounded-lg flex items-center justify-center relative"
@@ -133,7 +159,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({
                   className="w-full h-full rounded-lg"
                 />
                 <button
-                  onClick={() => dispatch(removeImage(index))}
+                  onClick={() => removeColelctionImage(index)}
                   className="absolute bottom-2 right-2 bg-orange p-1 rounded-1"
                 >
                   <img src={trash_icon} width={11} height={11} />

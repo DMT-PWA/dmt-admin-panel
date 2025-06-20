@@ -6,7 +6,7 @@ import {
   Textarea,
 } from "@headlessui/react";
 import { FC, useEffect, useState } from "react";
-import { CheckboxList } from "src/entities/checkbox_list";
+import { CheckboxList } from "src/shared/ui/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
 import { setGrade, CombinedDescription } from "src/entities/pwa_description";
@@ -21,44 +21,72 @@ import {
   CollectionsList,
   getAllCollections,
 } from "src/features/collections_list";
-import { NUMBER_FIELDS, TEXT_FIELDS } from "../lib/const";
+import { TEXT_FIELDS } from "../lib/const";
+import {
+  updateLanguageData,
+  selectLanguage,
+  selectCurrentLanguageValue,
+} from "src/features/languageData";
 
 type DescriptionFormProps = {
   adminId: string;
-  descriptionState: Partial<CombinedDescription>;
-  collectionState: ICollection | null;
-  handleUpdateField: (payload: Partial<CombinedDescription>) => void;
-  handleCollectionUpdate: (payload: Partial<ICollection> | null) => void;
 };
 
-export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
-  adminId,
-  descriptionState,
-  collectionState,
-  handleUpdateField,
-  handleCollectionUpdate,
-}) => {
+export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
   const dispatch = useAppDispatch();
+
+  const language = useAppSelector(selectLanguage);
+
+  const value = useAppSelector(selectCurrentLanguageValue);
+
+  const { collectionsList } = useAppSelector((state) => state.collections);
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (!collectionsList.length) dispatch(getAllCollections());
+  }, [dispatch, collectionsList]);
+
+  if (!value) return <div>Loading...</div>;
+
+  const { descriptionState, collectionState } = value;
+
   const {
     grades,
     checkboxes_state,
-    title,
     about_description,
     raiting,
     review_count,
-    developer_name,
     number_of_downloads,
   } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
     about_description as IAboutGameDescription;
 
-  const { collectionsList } = useAppSelector((state) => state.collections);
+  const handleUpdateField = (payload: Partial<CombinedDescription>) => {
+    if (language) {
+      dispatch(
+        updateLanguageData({
+          state: "descriptionState",
+          payload,
+          currentLanguage: language,
+        })
+      );
+    }
+  };
+
+  const handleCollectionUpdate = (payload: Partial<ICollection> | null) => {
+    if (!language) return;
+    dispatch(
+      updateLanguageData({
+        state: "collectionState",
+        payload,
+        currentLanguage: language,
+      })
+    );
+  };
 
   const collectionCreateHandler = async ({
     collectionImage,
@@ -71,14 +99,20 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
       icon: collectionImage,
       screenShots: images,
     });
-
-    handleCollectionUpdate({
-      _id,
-      collectionImage: icon,
-      collectionName: name,
-      images: screenShots,
-    });
-
+    if (language) {
+      dispatch(
+        updateLanguageData({
+          state: "collectionState",
+          payload: {
+            _id,
+            collectionImage: icon,
+            collectionName: name,
+            images: screenShots,
+          },
+          currentLanguage: language,
+        })
+      );
+    }
     dispatch(getAllCollections());
   };
 
@@ -88,10 +122,6 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         checkbox.id === val.id ? { ...checkbox, value: val.value } : checkbox
       ),
     });
-
-  useEffect(() => {
-    if (!collectionsList.length) dispatch(getAllCollections());
-  }, [dispatch, collectionsList]);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -373,7 +403,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         <div className="fixed inset-0 flex w-screen items-center justify-center">
           <CollectionCreate
             onPopupHandler={() => setModalOpen(false)}
-            collectionCreateHandler={(val) => collectionCreateHandler(val)}
+            collectionCreateHandler={collectionCreateHandler}
           />
         </div>
       </Dialog>
@@ -383,7 +413,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         className="relative z-50"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center">
+        <div className="fixed inset-0 flex w-screen items-center justify-center overflow-y-scroll">
           <CollectionsList
             onPopupHandler={() => setCollectionsOpen(false)}
             handleCollectionUpdate={handleCollectionUpdate}

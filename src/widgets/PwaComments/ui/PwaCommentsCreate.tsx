@@ -6,26 +6,37 @@ import { Title } from "src/shared/ui/title";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { AvatarsCollectionModal } from "src/features/avatars_collection_modal";
 import {
-  addComment,
   createCommentHandler,
-  resetComment,
-  setCommentGroupName,
-  updateCommentInList,
-  updateCommentField,
-  resetCommentsList,
   getCommentById,
+  ICommentsState,
 } from "src/entities/comments";
 import { CommentCreate } from "src/features/comment_create";
 import { adminId } from "src/shared/lib/data";
 import { InputDefault } from "src/shared/ui/input";
 import { IUserComment } from "src/shared/types";
+import {
+  selectCurrentLanguageValue,
+  selectLanguage,
+  updateLanguageData,
+} from "src/features/languageData";
+import {
+  updateComment,
+  updateCommentById,
+} from "src/entities/comments/model/commentsThunk";
+import { debounce } from "src/shared/lib/helpers";
 
 export const PwaCommentsCreate: FC = () => {
-  const { comment, comments_list, comment_group_name } = useAppSelector(
-    (state) => state.comments
-  );
+  const value = useAppSelector(selectCurrentLanguageValue);
 
-  const { currentLanguage } = useAppSelector((state) => state.pwa_design);
+  const language = useAppSelector(selectLanguage);
+
+  const reset = useAppSelector((state) => state.comments.comment);
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
+    null
+  );
 
   const dispatch = useAppDispatch();
 
@@ -34,14 +45,20 @@ export const PwaCommentsCreate: FC = () => {
   const { pathname } = useLocation();
 
   const getPathSegments = pathname.split("/");
+
   const isCommentUpdate = () => getPathSegments.includes("comment_update");
   const getLastSegment = () => getPathSegments.pop();
-
   useEffect(() => {
-    if (isCommentUpdate()) {
-      dispatch(getCommentById(getLastSegment()));
+    if (isCommentUpdate() && language) {
+      dispatch(getCommentById({ id: getLastSegment(), language }));
     }
   }, [pathname, dispatch]);
+
+  if (!value || !language) return <div>Loading...</div>;
+
+  const { commentState } = value;
+
+  const { comment, comments_list, comment_group_name } = commentState;
 
   const handleNavigate = () => {
     const targetPath = isCommentUpdate()
@@ -52,47 +69,91 @@ export const PwaCommentsCreate: FC = () => {
   };
 
   const onSaveHandler = () => {
-    if (!currentLanguage) return;
+    if (!comment_group_name) return;
 
-    dispatch(
-      createCommentHandler({ adminId, language: currentLanguage?.label })
-    );
+    if (!isCommentUpdate()) {
+      dispatch(
+        createCommentHandler({
+          adminId,
+          language,
+          name: comment_group_name,
+          comments_list,
+        })
+      );
+    } else {
+      dispatch(
+        updateComment({
+          adminId,
+          commentId: getLastSegment(),
+          name: comment_group_name,
+          reviewObject: comments_list,
+        })
+      );
+    }
   };
 
-  const onUpdateCommentInList = (
-    key: string,
-    ind: number,
-    val: IUserComment[keyof IUserComment]
-  ) => {
+  const handleUpdateField = (payload: Partial<ICommentsState>) => {
+    if (!language) return;
+
     dispatch(
-      updateCommentInList({
-        index: ind,
-        changes: { [key]: val },
+      updateLanguageData({
+        state: "commentState",
+        payload,
+        currentLanguage: language,
       })
     );
   };
 
-  const handleFieldUpdate = (
+  const onUpdateCommentInList = (
+    key: keyof IUserComment,
+    ind: number,
+    value: IUserComment[keyof IUserComment]
+  ) => {
+    if (!comments_list) return;
+
+    const newList = comments_list.map((comment, i) =>
+      i === ind ? { ...comment, [key]: value } : comment
+    );
+
+    handleUpdateField({
+      comments_list: newList,
+    });
+
+    if (isCommentUpdate()) {
+      const updatedComment = newList[ind];
+      debounce(
+        () =>
+          dispatch(
+            updateCommentById({
+              adminId,
+              commentId: getLastSegment(),
+              reviewId: updatedComment.commentId,
+              updatedReview: updatedComment,
+            })
+          ),
+        500
+      );
+    }
+  };
+
+  const updateNewComment = (
     field: keyof IUserComment,
     value: IUserComment[keyof IUserComment]
   ) => {
-    dispatch(updateCommentField({ field, value }));
+    if (!comment) return;
+
+    handleUpdateField({ comment: { ...comment, [field]: value } });
   };
 
   const onAddNewComment = () => {
-    dispatch(addComment(comment));
-    dispatch(resetComment());
+    if (!comments_list || !comment) return;
+    handleUpdateField({
+      comments_list: [...comments_list, comment],
+    });
+    handleUpdateField({
+      comment: reset,
+    });
   };
-
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-
-  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
-    null
-  );
-
-  useEffect(() => {
-    dispatch(resetCommentsList());
-  }, [dispatch]);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -112,7 +173,9 @@ export const PwaCommentsCreate: FC = () => {
       <InputDefault
         label="Название группы"
         input_classes=""
-        onUpdateValue={(e) => dispatch(setCommentGroupName(e.target.value))}
+        onUpdateValue={(e) =>
+          handleUpdateField({ comment_group_name: e.target.value })
+        }
         value={comment_group_name ?? ""}
         container_classes="max-w-128.25"
         placeholder="Введите название группы"
@@ -140,7 +203,7 @@ export const PwaCommentsCreate: FC = () => {
               setModalOpen(true);
               setCurrentModalIndex(null);
             }}
-            onFiledUpdate={(field, value) => handleFieldUpdate(field, value)}
+            onFiledUpdate={(field, value) => updateNewComment(field, value)}
             {...comment}
           />
           <button
@@ -167,6 +230,9 @@ export const PwaCommentsCreate: FC = () => {
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 flex w-screen items-center justify-center">
           <AvatarsCollectionModal
+            handleUpdateField={handleUpdateField}
+            comment={comment}
+            comments_list={comments_list}
             onPopupHandler={() => setModalOpen(false)}
             index={currentModalIndex}
           />

@@ -12,17 +12,17 @@ interface IUserComment {
 }
 
 type CommentResponse = {
-  name?: string;
-  date?: string;
-  review?: string;
-  helpful?: string;
-  helpfulCount?: string;
-  photo?: string;
-  rating?: string;
-  isResponse?: boolean;
-  response?: string;
-  responseDate?: string;
-  _id: { $oid: string };
+  name: string;
+  date: string;
+  review: string;
+  helpful: string;
+  helpfulCount: string;
+  photo: string;
+  rating: string;
+  isResponse: boolean;
+  response: string;
+  responseDate: string;
+  _id: string;
 };
 
 export type { IUserComment, CommentResponse };

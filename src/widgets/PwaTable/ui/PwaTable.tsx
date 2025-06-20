@@ -13,6 +13,7 @@ import { Title } from "src/shared/ui/title";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import link_icon from "src/shared/assets/icons/link_icon.png";
 import play_icon from "src/shared/assets/icons/play_icon.png";
+import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
@@ -51,6 +52,7 @@ export const PwaTable: FC = () => {
       domain: obj.domain,
       tag: obj.marketerTag,
       created: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
+      landingStatus: obj.landingStatus,
     }));
   }, []);
   useEffect(() => {
@@ -165,22 +167,25 @@ export const PwaTable: FC = () => {
 
                             {cell.column.id === "actions" && (
                               <div className="min-w-23 flex justify-around">
-                                <button
-                                  onClick={() =>
-                                    handleCreateRenderService(row.original)
-                                  }
-                                >
-                                  <img
-                                    src={play_icon}
-                                    style={{ height: "16px", width: "16px" }}
-                                  />
-                                </button>
-                                {/* <button onClick={() => onCopyHandler(row.id)}>
-                                  <img
-                                    src={pause_icon}
-                                    style={{ height: "16px", width: "16px" }}
-                                  />
-                                </button> */}
+                                {row.original.landingStatus === "live" ? (
+                                  <button onClick={() => onCopyHandler(row.id)}>
+                                    <img
+                                      src={pause_icon}
+                                      style={{ height: "16px", width: "16px" }}
+                                    />
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() =>
+                                      handleCreateRenderService(row.original)
+                                    }
+                                  >
+                                    <img
+                                      src={play_icon}
+                                      style={{ height: "16px", width: "16px" }}
+                                    />
+                                  </button>
+                                )}
                                 <Menu>
                                   <MenuButton>
                                     <img
