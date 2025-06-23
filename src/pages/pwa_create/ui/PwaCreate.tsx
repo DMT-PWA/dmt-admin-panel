@@ -85,22 +85,25 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const handleCreate = async () => {
     if (!currentCountry || !languageDataStates) return;
 
-    const createPayload = (index: number, appId?: string) => ({
-      payload: {
+    const createPayload = (index: number, appId?: string) => {
+      const basePayload = {
         adminId,
         country: currentCountry.label.toLowerCase(),
-        language: languageDataStates[index].language.label,
+        language: languageDataStates[index].language?.label as string,
         defaultCountry: currentCountry?.label.toLowerCase(),
-        defaultLanguage: languageDataStates[index].language?.label,
+        defaultLanguage: languageDataStates[index].language?.label as string,
         currentCountry: currentCountry?.label,
-        currentLanguage: languageDataStates[index].language?.label,
+        currentLanguage: languageDataStates[index].language?.label as string,
         languageList: languagesList,
-        ...(appId && { appId }),
-      },
-      collectionState: languageDataStates[index].value.collectionState,
-      commentState: languageDataStates[index].value.commentState,
-      descriptionState: languageDataStates[index].value.descriptionState,
-    });
+      };
+
+      return {
+        payload: appId !== undefined ? { ...basePayload, appId } : basePayload,
+        collectionState: languageDataStates[index].value.collectionState,
+        commentState: languageDataStates[index].value.commentState,
+        descriptionState: languageDataStates[index].value.descriptionState,
+      };
+    };
 
     const result = await dispatch(finishCreatePWA(createPayload(0)));
 
@@ -212,9 +215,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             <Route path="*" element={<PwaForm appId={appId} />} />
           </Routes>
 
-          {!loading && showPreview && (
-            <PhonePreview value={currentDataByLanguage.value} />
-          )}
+          {!loading && showPreview && <PhonePreview />}
         </div>
       )}
 

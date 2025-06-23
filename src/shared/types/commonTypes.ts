@@ -4,9 +4,9 @@ type AdminId = { adminId: string };
 
 type Icon = { icon: string };
 
-type ObjectId = {
+/* type ObjectId = {
   $oid: string;
-};
+}; */
 
 type DateField = {
   $date: string;
@@ -85,8 +85,8 @@ type LanguageContent = {
 };
 
 export type AppDataFull = {
-  _id: ObjectId;
-  adminId: ObjectId;
+  _id: string;
+  adminId: string;
   languages?: string[];
   icon?: string;
   logo?: string;
@@ -161,7 +161,7 @@ export type AppDataFull = {
     lithuanian: LanguageContent;
     english: LanguageContent;
   };
-  createdAt: DateField;
+  createdAt: string;
   updatedAt: DateField;
   __v: number;
   oneSignalApiKey?: string;

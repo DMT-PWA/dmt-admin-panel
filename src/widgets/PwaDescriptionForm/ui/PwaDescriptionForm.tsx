@@ -9,14 +9,13 @@ import { FC, useEffect, useState } from "react";
 import { CheckboxList } from "src/shared/ui/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
-import { setGrade, CombinedDescription } from "src/entities/pwa_description";
+import { CombinedDescription } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { ButtonDefault } from "src/shared/ui/button";
 import { CollectionCreate } from "src/features/collection_create";
-import { IAboutGameDescription, ICollection } from "src/shared/types";
-import { createCollection } from "src/features/appData/appDataAPI";
+import { IDescriptionAbout, ICollection } from "src/shared/types";
 import {
   CollectionsList,
   getAllCollections,
@@ -27,6 +26,8 @@ import {
   selectLanguage,
   selectCurrentLanguageValue,
 } from "src/features/languageData";
+import IconCalendar from "src/shared/assets/icons/IconCalendar";
+import { createCollection } from "src/features/collections_list/model/collectionsThunk";
 
 type DescriptionFormProps = {
   adminId: string;
@@ -63,7 +64,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
   } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
-    about_description as IAboutGameDescription;
+    about_description as IDescriptionAbout;
 
   const handleUpdateField = (payload: Partial<CombinedDescription>) => {
     if (language) {
@@ -88,18 +89,14 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
     );
   };
 
-  const collectionCreateHandler = async ({
-    collectionImage,
-    collectionName,
-    images,
-  }: ICollection) => {
-    const { _id, icon, name, screenShots } = await createCollection({
-      adminId,
-      name: collectionName,
-      icon: collectionImage,
-      screenShots: images,
-    });
-    if (language) {
+  const collectionCreateHandler = async (payload: Omit<ICollection, "_id">) => {
+    if (!language) return;
+
+    const response = await dispatch(createCollection({ ...payload, adminId }));
+
+    if (createCollection.fulfilled.match(response)) {
+      const { _id, icon, name, screenShots } = response.payload;
+
       dispatch(
         updateLanguageData({
           state: "collectionState",
@@ -112,8 +109,9 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
           currentLanguage: language,
         })
       );
+
+      dispatch(getAllCollections());
     }
-    dispatch(getAllCollections());
   };
 
   const handleCheckboxes = (val: { id: number; value: boolean }) =>
@@ -181,7 +179,18 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                     value={item.value}
                     rating={item.raiting}
                     onChange={(e) =>
-                      dispatch(setGrade({ index, value: e.target.value }))
+                      handleUpdateField({
+                        grades: grades.map((el, ind) => {
+                          if (index === ind) {
+                            return {
+                              ...el,
+                              value: e.target.value,
+                            };
+                          }
+
+                          return el;
+                        }),
+                      })
                     }
                   />
                 );
@@ -222,17 +231,19 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                       />
                     </div>
                   )}
-                  {collectionState.images.map((el: string | null, index) => {
-                    return el ? (
-                      <div key={index} className="flex  h-full">
-                        <img
-                          src={el}
-                          alt="Uploaded"
-                          className="max-w-28.75 min-h-57 rounded-[11px]"
-                        />
-                      </div>
-                    ) : null;
-                  })}
+                  {collectionState.images.map(
+                    (el: string | null, index: number) => {
+                      return el ? (
+                        <div key={index} className="flex  h-full">
+                          <img
+                            src={el}
+                            alt="Uploaded"
+                            className="max-w-28.75 min-h-57 rounded-[11px]"
+                          />
+                        </div>
+                      ) : null;
+                    }
+                  )}
                 </div>
               </div>
             )}
@@ -287,22 +298,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                       },
                     })
                   }
-                  icon={
-                    <svg
-                      width="15"
-                      height="13"
-                      viewBox="0 0 15 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
-                        fill="#717171"
-                      />
-                    </svg>
-                  }
+                  icon={<IconCalendar />}
                 />
               </Field>
 
@@ -310,7 +306,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                 label="Количество скачиваний"
                 container_classes="flex-1/2"
                 placeholder="10000000"
-                value={number_of_downloads}
+                value={number_of_downloads ?? ""}
                 onUpdateValue={(e) =>
                   handleUpdateField({
                     number_of_downloads: e.target.value,
@@ -323,7 +319,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                 container_classes="flex-1/3 mr-5.75"
                 label="Требуемая версия андройд"
                 type="text"
-                value={android_version}
+                value={android_version ?? ""}
                 onUpdateValue={(e) =>
                   handleUpdateField({
                     about_description: {
@@ -349,22 +345,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                       },
                     })
                   }
-                  icon={
-                    <svg
-                      width="15"
-                      height="13"
-                      viewBox="0 0 15 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
-                        fill="#717171"
-                      />
-                    </svg>
-                  }
+                  icon={<IconCalendar />}
                 />
               </Field>
               <InputDefault

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Settings } from "./types";
-import { SelectValueProp } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
 import { getAllCampaigns } from "./settingsThunk";
 import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
@@ -45,18 +44,20 @@ const settingsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllCampaigns.fulfilled, (state, action) => {
-        state.campaigns = action.payload.map((item, ind) => ({
-          value: ind,
-          label: item?.keitaroCampaignName,
-          keitaroDomain: item?.keitaroDomain,
-          keitaroCampaign: item?.keitaroCampaign,
-          keitaroCampaignId: item?.keitaroCampaignId,
-          keitaroCampaignName: item?.keitaroCampaignName,
-          keitaroState: item?.keitaroState,
+        state.campaigns = action.payload.map((item) => ({
+          value: item.keitaroCampaignName,
+          label: item.keitaroCampaignName,
+          keitaroDomain: item.keitaroDomain,
+          keitaroCampaign: item.keitaroCampaign,
+          keitaroCampaignId: item.keitaroCampaignId,
+          keitaroCampaignName: item.keitaroCampaignName,
+          keitaroState: item.keitaroState,
         }));
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-        state.currentCampaignId = action.payload.keitaroCampaignId;
+        if (action.payload.keitaroCampaignId) {
+          state.currentCampaignId = action.payload.keitaroCampaignId;
+        }
 
         if (state.currentCampaignId) {
           const campaign = state.campaigns?.find(
@@ -84,6 +85,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { updateSettingField, setExistsCampaign } = settingsSlice.actions;
+export const { updateSettingField } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

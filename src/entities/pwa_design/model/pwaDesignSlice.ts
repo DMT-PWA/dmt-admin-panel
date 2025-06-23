@@ -7,7 +7,7 @@ import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const defaultState: IDesign = {
   languages: languages,
-  pwa_title: "",
+  pwa_title: null,
   pwa_tags: "",
   collections: [],
   isChanged: false,

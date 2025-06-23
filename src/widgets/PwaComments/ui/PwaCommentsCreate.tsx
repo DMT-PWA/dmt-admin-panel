@@ -47,7 +47,7 @@ export const PwaCommentsCreate: FC = () => {
   const getPathSegments = pathname.split("/");
 
   const isCommentUpdate = () => getPathSegments.includes("comment_update");
-  const getLastSegment = () => getPathSegments.pop();
+  const getLastSegment = () => getPathSegments.pop() as string;
   useEffect(() => {
     if (isCommentUpdate() && language) {
       dispatch(getCommentById({ id: getLastSegment(), language }));
@@ -127,7 +127,7 @@ export const PwaCommentsCreate: FC = () => {
             updateCommentById({
               adminId,
               commentId: getLastSegment(),
-              reviewId: updatedComment.commentId,
+              reviewId: updatedComment.commentId || "",
               updatedReview: updatedComment,
             })
           ),
@@ -198,14 +198,16 @@ export const PwaCommentsCreate: FC = () => {
                 />
               );
             })}
-          <CommentCreate
-            setModalOpen={() => {
-              setModalOpen(true);
-              setCurrentModalIndex(null);
-            }}
-            onFiledUpdate={(field, value) => updateNewComment(field, value)}
-            {...comment}
-          />
+          {comment && (
+            <CommentCreate
+              setModalOpen={() => {
+                setModalOpen(true);
+                setCurrentModalIndex(null);
+              }}
+              onFiledUpdate={(field, value) => updateNewComment(field, value)}
+              {...comment}
+            />
+          )}
           <button
             onClick={onAddNewComment}
             className="flex items-center gap-6.75 text-view-4 text-gray-6 bg-white py-[13.5px] px-[16.5px] rounded-[8px] mt-5.5"

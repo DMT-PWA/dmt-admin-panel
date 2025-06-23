@@ -6,7 +6,7 @@ import circle_icon from "src/shared/assets/icons/circle_icon.png";
 import shevron from "src/shared/assets/icons/shevron.png";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { ICollection } from "src/entities/collection";
+import { ICollection } from "src/shared/types";
 
 type CollectionCreate = {
   onPopupHandler: () => void;

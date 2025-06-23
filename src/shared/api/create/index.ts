@@ -3,10 +3,6 @@ import { apiInstance } from "../base";
 import { UpdatePwaPayload } from "../../types/createTypes";
 import { AppDataProps } from "src/shared/types/commonTypes";
 
-export const updatePwa = async (url: string, data) => {
-  return await apiInstance.patch(url, data);
-};
-
 export const getPwa = async (url: string) => {
   return await apiInstance.get(url);
 };

@@ -41,7 +41,7 @@ export const PwaMetrics: FC = () => {
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
           <CustomSelect
-            value={install[0]}
+            value={deposit[0]}
             options={deposit}
             placeholder="Введите депозит"
           />

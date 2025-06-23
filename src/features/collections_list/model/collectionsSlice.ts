@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAllCollections } from "./collectionsThunk";
 import { Collections } from "./types";
-import { ICollection } from "src/entities/collection";
+import { ICollection } from "src/shared/types";
 
 type InitialStateType = {
   collectionsList: Collections;

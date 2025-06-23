@@ -1,11 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CombinedDescription } from "./types";
-import { IAboutGameDescription, DescriptionResponse } from "src/shared/types";
-import { createDescriptionById, updateDescription } from "./descriptionThunk";
+import { IDescriptionAbout } from "src/shared/types";
 import { UpdateFieldPayload } from "src/shared/lib/store";
 
 const defaultState: CombinedDescription = {
-  descriptionId: null,
   age: null,
   title: null,
   developer_name: "",
@@ -48,7 +46,7 @@ const pwaDescriptionSlice = createSlice({
     batchUpdate: (state, action) => handleUpdate(state, action),
     updateAboutDescription: (
       state,
-      action: PayloadAction<UpdateFieldPayload<IAboutGameDescription>>
+      action: PayloadAction<UpdateFieldPayload<IDescriptionAbout>>
     ) => {
       const { field, value } = action.payload;
 
@@ -56,12 +54,13 @@ const pwaDescriptionSlice = createSlice({
     },
 
     setGrade: (state, action) => {
+      if (!state.grades) return;
       state.grades[action.payload.index].value = action.payload.value;
     },
 
     resetState: () => defaultState,
   },
-  extraReducers: (builder) => {
+  extraReducers: () => {
     /*  builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
       if (!action.payload) return;
 
@@ -100,17 +99,6 @@ const pwaDescriptionSlice = createSlice({
       state.checkboxes_state[1].value = isInAppPurchases;
       state.checkboxes_state[2].value = isEditorsChoice;
     }); */
-
-    builder.addCase(
-      createDescriptionById.pending,
-      (state, action: PayloadAction<DescriptionResponse>) => {
-        state.descriptionId = action.payload._id;
-      }
-    );
-
-    builder.addCase(updateDescription.fulfilled, (state, action) => {
-      state.descriptionId = action.payload._id;
-    });
   },
 });
 

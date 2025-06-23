@@ -1,22 +1,11 @@
 import { IUserComment } from "src/shared/types";
+import { CommentResponse } from "src/shared/types/commentsTypes";
 
 export type CommentsList = Array<
   IUserComment & { commentId: string | null }
 > | null;
 
-export type ReviewObject = Array<{
-  date: string;
-  helpful: string;
-  helpfulCount: string;
-  isResponse: boolean;
-  name: string;
-  photo: string;
-  rating: string;
-  response: string;
-  responseDate: string;
-  review: string;
-  _id: string;
-}>;
+export type ReviewObject = Array<CommentResponse>;
 
 export type CommentGroup = {
   adminId: string;

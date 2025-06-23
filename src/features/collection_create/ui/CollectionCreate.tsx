@@ -11,7 +11,7 @@ import { handleFileUpload } from "src/features/appData/appDataAPI";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
-  collectionCreateHandler: (collection: ICollection) => void;
+  collectionCreateHandler: (collection: Omit<ICollection, "_id">) => void;
 };
 
 export const CollectionCreate: FC<CollectionCreate> = ({
@@ -73,7 +73,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({
   };
 
   const onSaveBtnHandler = () => {
-    if (!collectionName || !collectionImage) return;
+    if (!collectionName || !collectionImage || !images) return;
 
     if (collectionName.length > 0 && collectionImage !== null) {
       dispatch(

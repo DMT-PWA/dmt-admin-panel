@@ -100,68 +100,6 @@ export const translations = {
     no: "لا",
     contact: "اتصال بالمطور",
     newFeatures: "إصلاحات الأخطاء",
-    screenShots: [
-      "https://res.cloudinary.com/datkh2oxv/image/upload/v1737730187/dmt/melbet-materials/Screenshots/1_zjhes3.png",
-      "https://res.cloudinary.com/datkh2oxv/image/upload/v1737730185/dmt/melbet-materials/Screenshots/2_f2dwbf.png",
-      "https://res.cloudinary.com/datkh2oxv/image/upload/v1737730186/dmt/melbet-materials/Screenshots/3_x7cclp.png",
-      "https://res.cloudinary.com/datkh2oxv/image/upload/v1737730185/dmt/melbet-materials/Screenshots/4_e7rvtb.png",
-    ],
-    reviewObject: [
-      {
-        name: "samurai",
-        date: "22 يناير 2024",
-        review:
-          "يعمل التطبيق بشكل جيد ويسحب الأموال بسرعة. أنصح الجميع بتنزيل هذا التطبيق.",
-        helpful: "13 شخصًا وجدوا هذه المراجعة مفيدة.",
-        helpfulCount: "13",
-        photo:
-          "https://res.cloudinary.com/datkh2oxv/image/upload/v1736868222/dmt/t1_wf6tfp.png",
-        rating: "5",
-        _id: {
-          $oid: "67b47252727e392c776da1b5",
-        },
-      },
-      {
-        name: "Bracken322",
-        date: "21 يناير 2024",
-        review:
-          "انتظرت 10 دقائق لسحب الأموال إلى حسابي، بدأت أقلق، كتبت للدعم ووصلت الأموال فوراً. تطبيق جيد.",
-        helpful: "4 أشخاص وجدوا هذه المراجعة مفيدة.",
-        helpfulCount: "4",
-        photo:
-          "https://res.cloudinary.com/datkh2oxv/image/upload/v1736778551/dmt/t2_etzspb.png",
-        rating: "4",
-        _id: {
-          $oid: "67b47252727e392c776da1b6",
-        },
-      },
-      {
-        name: "Jack Sparrow",
-        date: "18 يناير 2024",
-        review: "1xBet هو تطبيق رائع. أنصح الجميع باستخدامه.",
-        helpful: "شخصان وجدا هذه المراجعة مفيدة.",
-        helpfulCount: "2",
-        photo:
-          "https://res.cloudinary.com/datkh2oxv/image/upload/v1736717062/dmt/t3_bstn3i.png",
-        rating: "5",
-        _id: {
-          $oid: "67b47252727e392c776da1b7",
-        },
-      },
-      {
-        name: "Sheff816",
-        date: "12 يناير 2024",
-        review: "سحبت للتو 1400 دولار، أوصي به بشدة!",
-        helpful: "185 شخصًا وجدوا هذه المراجعة مفيدة.",
-        helpfulCount: "185",
-        photo:
-          "https://res.cloudinary.com/datkh2oxv/image/upload/v1736717116/dmt/t4_glfexi.png",
-        rating: "5",
-        _id: {
-          $oid: "67b47252727e392c776da1b8",
-        },
-      },
-    ],
   },
   arabic: {
     step1ChromeDesktop: {
@@ -1925,7 +1863,7 @@ export const translations = {
   },
 };
 
-export const dataByTrasnslation = {
+export const countryData = {
   egypt: {
     arabic: translations.egyptArabic,
     english: translations.english,
@@ -1934,7 +1872,7 @@ export const dataByTrasnslation = {
     arabic: translations.arabic,
     english: translations.english,
   },
-  saudiArabia: {
+  "saudi arabia": {
     arabic: translations.arabic,
     english: translations.english,
   },
@@ -1946,7 +1884,7 @@ export const dataByTrasnslation = {
     dutch: translations.netherlandsDutch,
     english: translations.english,
   },
-  hongKong: {
+  "hong kong": {
     chinese: translations.chinese,
     english: translations.english,
   },
@@ -1966,7 +1904,7 @@ export const dataByTrasnslation = {
     malay: translations.singaporeMalay,
     english: translations.english,
   },
-  unitedKingdom: {
+  "united kingdom": {
     english: translations.english,
   },
   pakistan: {
@@ -1981,7 +1919,7 @@ export const dataByTrasnslation = {
     french: translations.french,
     english: translations.english,
   },
-  southKorea: {
+  "south korea": {
     korean: translations.korean,
     english: translations.english,
   },
@@ -1998,5 +1936,8 @@ export const dataByTrasnslation = {
     english: translations.english,
   },
 };
-
-export type Countries = keyof typeof dataByTrasnslation;
+export type CountryKeys = keyof typeof countryData;
+export type LanguageKeys = keyof (typeof countryData)[CountryKeys];
+export type LanguageDataTypes =
+  (typeof translations)[keyof typeof translations];
+export const countries_list = Object.keys(countryData) as CountryKeys[];

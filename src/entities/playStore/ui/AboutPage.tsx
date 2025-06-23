@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import { FC } from "react";
-import { Country, IAboutGameDescription, Language } from "src/shared/types";
+import { Country, IDescriptionAbout, Language } from "src/shared/types";
 import { usePhonePreview } from "src/entities/playStore";
 import clsx from "clsx";
-interface IAboutGameProps extends IAboutGameDescription, Language {
+interface IAboutGameProps extends IDescriptionAbout {
   number_of_downloads: string | number | null;
   whats_new: string | null;
-  currentLanguage?: Language;
+  currentLanguage: Language;
   currentCountry: Country;
 }
 

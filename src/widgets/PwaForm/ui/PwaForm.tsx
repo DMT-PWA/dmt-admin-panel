@@ -61,7 +61,7 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   };
 
   useMount(() => {
-    setInitStateCopy(cloneDeep(state));
+    setInitStateCopy(cloneDeep(state) as unknown as IDesign);
   });
 
   useBeforeUnload(!isEqual(state, initStateCopy));
@@ -142,43 +142,47 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
                 input_classes="!border-0"
               />
             )}
-            {languagesList && languagesList.length === 1 && (
-              <button
-                onClick={() =>
-                  dispatch(
-                    updateLanguagesList([
-                      ...languagesList,
-                      { label: "English", value: 1 },
-                    ])
-                  )
-                }
-                className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
-              >
-                <img
-                  src="/pwa_icons/crosshair.png"
-                  width={14}
-                  height={14}
-                  alt=""
-                />
-              </button>
-            )}
-            {languagesList?.some((item) => item.label === "English") && (
-              <>
-                <InputDefault
-                  value={languagesList[1]?.label}
-                  container_classes="flex-[0.5]"
-                  disabled
-                  input_classes="!border-0"
-                />
+            {languagesList &&
+              languagesList.length === 1 &&
+              languagesList[0].label !== "English" && (
                 <button
                   onClick={() =>
-                    dispatch(updateLanguagesList(languagesList.slice(0, 1)))
+                    dispatch(
+                      updateLanguagesList([
+                        ...languagesList,
+                        { label: "English", value: 1 },
+                      ])
+                    )
                   }
+                  className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
                 >
-                  <img src={trash_icon} width={14} height={14} alt="" />
+                  <img
+                    src="/pwa_icons/crosshair.png"
+                    width={14}
+                    height={14}
+                    alt=""
+                  />
                 </button>
-              </>
-            )}
+              )}
+            {languagesList &&
+              languagesList[0].label !== "English" &&
+              languagesList?.some((item) => item.label === "English") && (
+                <>
+                  <InputDefault
+                    value={languagesList[1]?.label}
+                    container_classes="flex-[0.5]"
+                    disabled
+                    input_classes="!border-0"
+                  />
+                  <button
+                    onClick={() =>
+                      dispatch(updateLanguagesList(languagesList.slice(0, 1)))
+                    }
+                  >
+                    <img src={trash_icon} width={14} height={14} alt="" />
+                  </button>
+                </>
+              )}
           </div>
           <InputDefault
             value={pwa_tags}

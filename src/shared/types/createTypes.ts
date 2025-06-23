@@ -10,6 +10,7 @@ export interface UpdatePwaPayload {
   hundredPlus: string | undefined | null;
   about: string | undefined | null;
   collectionId?: string | undefined | null;
+  defaultLanguage: string;
   descriptionId?: string | undefined | null;
   commentId?: string | undefined | null;
   isExist: boolean;

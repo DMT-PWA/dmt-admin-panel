@@ -40,7 +40,7 @@ class ApiInstance {
     return response.data;
   }
 
-  async patch(endpoint: string, options) {
+  async patch<D>(endpoint: string, options: D) {
     const response = await this.axios.patch(endpoint, options);
 
     return response.data;

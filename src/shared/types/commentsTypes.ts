@@ -1,28 +1,32 @@
-interface IUserComment {
-  author_name: string | null;
-  avatar: string | null;
+type UserCommentFields =
+  | "author_name"
+  | "avatar"
+  | "likes_count"
+  | "comments_text";
+
+interface IUserComment extends Record<UserCommentFields, string | null> {
   review_date: Date | null;
   raiting: number | null;
-  likes_count: string | null;
-  comments_text: string | null;
-  developer_name?: string | null;
   answer_text?: string | null;
   answer_date?: Date | null;
+  developer_name?: string | null;
   developer_answer: boolean;
 }
 
-type CommentResponse = {
-  name: string;
-  date: string;
-  review: string;
-  helpful: string;
-  helpfulCount: string;
-  photo: string;
-  rating: string;
+type CommentStringFields =
+  | "name"
+  | "date"
+  | "review"
+  | "helpful"
+  | "helpfulCount"
+  | "photo"
+  | "rating"
+  | "response"
+  | "responseDate"
+  | "_id";
+
+interface CommentResponse extends Record<CommentStringFields, string> {
   isResponse: boolean;
-  response: string;
-  responseDate: string;
-  _id: string;
-};
+}
 
 export type { IUserComment, CommentResponse };

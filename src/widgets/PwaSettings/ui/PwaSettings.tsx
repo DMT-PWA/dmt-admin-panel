@@ -44,10 +44,10 @@ export const PwaSettings: FC = () => {
 
   useDebounce(
     async () => {
-      if (subdomain) {
+      if (subdomain && domainApp) {
         const result = await dispatch(
           verifyCustomDomain({
-            domain: domainApp?.value,
+            domain: domainApp.value,
             subDomain: subdomain,
           })
         );

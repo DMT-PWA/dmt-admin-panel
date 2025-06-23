@@ -1,5 +1,4 @@
 import { FC, useMemo } from "react";
-import { useAppSelector } from "src/shared/lib/store";
 
 import { ICollection } from "src/shared/types";
 
@@ -7,13 +6,13 @@ type CaroselReviewContainerTabletProps = {
   propWidth: number | string;
   propHeight: number | string;
   propFlex: string;
-  currentCollection: ICollection;
+  currentCollection: ICollection | null;
 };
 
 const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
   props
 ) => {
-  const currentCollection = props.currentCollection;
+  const { propWidth, propHeight, propFlex, currentCollection } = props;
 
   const emptyCollections = () => {
     if (!currentCollection) {
@@ -25,7 +24,7 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       ));
     }
 
-    return currentCollection.images.map((photo: string, i: number) => {
+    return currentCollection.images.map((photo: string | null, i: number) => {
       if (photo) {
         return (
           <img
@@ -46,7 +45,6 @@ const CaroselReviewContainerTablet: FC<CaroselReviewContainerTabletProps> = (
       );
     });
   };
-  const { propWidth, propHeight, propFlex } = props;
   const caroselReviewContainerStyle = useMemo(() => {
     return {
       width: propWidth,

@@ -1,33 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
-import { updatePwa } from "src/shared/api/create";
-import {
-  CreateInitPayload,
-  UpdatePwaPayload,
-  UpdatePwaResponse,
-} from "./types";
-import { AxiosRequestConfig } from "axios";
+import { UpdatePwaPayload } from "./types";
 import { CombinedDescription } from "src/entities/pwa_description";
 import { ICommentsState } from "src/entities/comments";
-import {
-  IAboutGameDescription,
-  ICollection,
-  AppDataProps,
-} from "src/shared/types";
-
-export const updatePwaByLang = createAsyncThunk<
-  UpdatePwaResponse,
-  Partial<UpdatePwaPayload>
->("create/updatePwaByLang", async (payload) => {
-  const response = await updatePwa("pwa", payload);
-
-  return response;
-});
+import { IDescriptionAbout, ICollection, AppDataProps } from "src/shared/types";
+import { IAppCommon } from "src/shared/types/app.types";
 
 export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
   "create/getPwaById",
   async (id) => {
-    const response = await apiInstance.get<UpdatePwaPayload>(`pwa/${id}`);
+    const response: UpdatePwaPayload = await apiInstance.get(`pwa/${id}`);
 
     return response;
   }
@@ -35,10 +17,13 @@ export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
 export const finishCreatePWA = createAsyncThunk<
   AppDataProps,
   {
-    payload: CreateInitPayload;
+    payload: IAppCommon | Omit<IAppCommon, "appId">;
     descriptionState: Partial<CombinedDescription>;
     commentState: Partial<ICommentsState>;
     collectionState: ICollection | null;
+  },
+  {
+    state: RootState;
   }
 >(
   "create/createPWA",
@@ -46,7 +31,7 @@ export const finishCreatePWA = createAsyncThunk<
     { payload, collectionState, commentState, descriptionState },
     { getState }
   ) => {
-    const { metrics, pwa_design, settings } = getState() as RootState;
+    const { metrics, pwa_design, settings } = getState();
 
     const { pwa_title, pwa_tags } = pwa_design;
 
@@ -75,7 +60,7 @@ export const finishCreatePWA = createAsyncThunk<
       release_date,
       version,
       whats_new,
-    } = about_description as IAboutGameDescription;
+    } = about_description as IDescriptionAbout;
 
     const fullPayload = {
       ...payload,
@@ -112,19 +97,19 @@ export const finishCreatePWA = createAsyncThunk<
       updatedDate: last_update,
     };
 
-    if (!payload.appId) {
+    if ("appId" in payload && !payload.appId) {
+      return await apiInstance.patch("pwa", fullPayload);
+    } else {
       return await apiInstance.post("pwa", fullPayload);
     }
-
-    return await apiInstance.patch("pwa", fullPayload);
   }
 );
 
 export const createRenderService = createAsyncThunk<
   unknown,
-  AxiosRequestConfig<Partial<UpdatePwaPayload>> & { domain: string }
+  Pick<IAppCommon, "adminId" | "appId"> & { domain?: string }
 >("create/createRenderService", async (payload) => {
-  const response = await apiInstance.post("render", payload);
+  const response = await apiInstance.post("render", { ...payload });
 
   return response;
 });

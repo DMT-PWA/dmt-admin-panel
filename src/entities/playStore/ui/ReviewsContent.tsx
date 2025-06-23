@@ -11,28 +11,6 @@ interface ReviewsContentProps {
 
 const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
   const {
-    className = "",
-    propMinWidth,
-    propMinWidth1,
-    reviewsContentWidth,
-    reviewsContentFlex,
-    reviewsContentHeight,
-    ratingScoreAlignSelf,
-    ratingScoreFlex,
-    scoreValueDisplay,
-    scoreValueMinWidth,
-    scoreValueAlignSelf,
-    scoreValueFlex,
-    emptyBarsMinWidth,
-    emptyBarsWidth,
-    divMinWidth,
-    divWidth,
-    divMinWidth1,
-    divWidth1,
-    divMinWidth2,
-    divWidth2,
-    ratingMinWidth,
-    ratingWidth,
     raitingValue,
     grades,
     isArabic = false,
@@ -53,77 +31,72 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
 
   const ratingVisualsStyle = useMemo(() => {
     return {
-      minWidth: propMinWidth1,
+      minWidth: "144px",
     };
-  }, [propMinWidth1]);
+  }, []);
 
   const reviewsContent2Style = useMemo(() => {
     return {
-      width: reviewsContentWidth,
-      flex: reviewsContentFlex,
+      width: "unset",
+      flex: "1",
     };
-  }, [reviewsContentWidth, reviewsContentFlex]);
+  }, []);
 
   const ratingScoreStyle = useMemo(() => {
     return {
-      alignSelf: ratingScoreAlignSelf,
-      flex: ratingScoreFlex,
+      alignSelf: "stretch",
+      flex: "1",
     };
-  }, [ratingScoreAlignSelf, ratingScoreFlex]);
+  }, []);
 
   const scoreValueStyle = useMemo(() => {
     return {
-      display: scoreValueDisplay,
-      minWidth: scoreValueMinWidth,
-      alignSelf: scoreValueAlignSelf,
-      flex: scoreValueFlex,
+      display: "unset",
+      minWidth: "unset",
+      alignSelf: "stretch",
+      flex: "1",
     };
-  }, [
-    scoreValueDisplay,
-    scoreValueMinWidth,
-    scoreValueAlignSelf,
-    scoreValueFlex,
-  ]);
+  }, []);
 
   const emptyBarsStyle = useMemo(() => {
     return {
-      minWidth: emptyBarsMinWidth,
-      width: emptyBarsWidth,
+      minWidth: "unset",
+      width: "8px",
     };
-  }, [emptyBarsMinWidth, emptyBarsWidth]);
+  }, []);
 
   const div1Style = useMemo(() => {
     return {
-      minWidth: divMinWidth,
-      width: divWidth,
+      minWidth: "unset",
+      width: "8px",
     };
-  }, [divMinWidth, divWidth]);
+  }, []);
 
   const div2Style = useMemo(() => {
     return {
-      minWidth: divMinWidth1,
-      width: divWidth1,
+      minWidth: "unset",
+      width: "8px",
     };
-  }, [divMinWidth1, divWidth1]);
+  }, []);
 
   const div3Style = useMemo(() => {
     return {
-      minWidth: divMinWidth2,
-      width: divWidth2,
+      minWidth: "unset",
+      width: "8px",
     };
-  }, [divMinWidth2, divWidth2]);
+  }, []);
 
   const ratingStyle = useMemo(() => {
     return {
-      minWidth: ratingMinWidth,
-      width: ratingWidth,
+      minWidth: "unset",
+      width: "8px",
     };
-  }, [ratingMinWidth, ratingWidth]);
+  }, []);
 
   return (
     <div
       className={clsx(
-        `w-[327px] flex flex-row items-start justify-start gap-[23px] max-w-full text-left text-37xl text-gray-100 font-roboto mq450:flex-wrap ${className}`,
+        `w-[327px] flex flex-row items-start justify-start gap-[23px] max-w-full text-left text-37xl text-gray-100 font-roboto mq450:flex-wrap `,
         { "flex-row-reverse": isArabic }
       )}
       style={reviewsContent2Style}

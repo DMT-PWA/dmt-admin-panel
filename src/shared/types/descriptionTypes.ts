@@ -1,6 +1,6 @@
 export type checkbox = { id: number; value: boolean };
 
-export interface IAboutGameDescription {
+export interface IDescriptionAbout {
   version: string | null;
   description: string;
   release_date: Date | null;
@@ -9,17 +9,12 @@ export interface IAboutGameDescription {
   whats_new: string | null;
 }
 
-export type DescriptionResponse = {
-  adminId: string;
-  name: string;
-  about: string;
-  language: string;
-  _id: string;
-};
-
-export type DescriptionPayload = {
-  adminId: string;
-  name: string;
-  about: string;
-  language?: string;
-};
+export interface IDescriptionMain {
+  title: string | null;
+  developer_name: string;
+  checkboxes_state: Array<checkbox>;
+  raiting: string | null;
+  review_count: string | null;
+  number_of_downloads: string | number | null;
+  age: number | null;
+}
