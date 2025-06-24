@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Title } from "src/shared/ui/title";
 import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
@@ -33,6 +33,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     () => dispatch(getPwaById(appId)),
     [appId, dispatch]
   );
+
+  const [saved, setSaved] = useState<boolean>(false);
 
   useEffect(() => {
     if (isEdit) fetchAppById();
@@ -117,7 +119,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     goToTable();
   };
 
-  const handleSavePwaGeneral = () => {
+  const handleSavePwaGeneral = async () => {
     if (!currentCountry || !currentDataByLanguage || !language) return;
 
     const createPayload = {
@@ -137,7 +139,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
       descriptionState: currentDataByLanguage.value.descriptionState,
     };
 
-    dispatch(finishCreatePWA(createPayload));
+    const response = await dispatch(finishCreatePWA(createPayload));
+
+    if (finishCreatePWA.fulfilled.match(response)) {
+      setSaved(true);
+
+      setTimeout(() => setSaved(false), 2000);
+    }
   };
 
   const handleTabChange = (index: number) => {
@@ -221,9 +229,15 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
       {showSaveButton && (
         <ButtonDefault
-          btn_text="Сохранить"
-          btn_classes="btn__orange btn__orange-view-1 max-w-62.25 mt-5.5"
-          onClickHandler={handleSavePwaGeneral}
+          btn_text={saved ? "Сохранено" : "Сохранить"}
+          btn_classes={clsx(
+            "btn__orange btn__orange-view-1 max-w-62.25 mt-5.5",
+            saved && "pointer-events-none"
+          )}
+          onClickHandler={() => {
+            if (saved) return;
+            handleSavePwaGeneral();
+          }}
         />
       )}
 

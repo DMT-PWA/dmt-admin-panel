@@ -28,6 +28,8 @@ import {
 } from "src/features/languageData";
 import IconCalendar from "src/shared/assets/icons/IconCalendar";
 import { createCollection } from "src/features/collections_list/model/collectionsThunk";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 type DescriptionFormProps = {
   adminId: string;
@@ -46,9 +48,17 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof value);
+
   useEffect(() => {
     if (!collectionsList.length) dispatch(getAllCollections());
   }, [dispatch, collectionsList]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(value) as unknown as typeof value);
+  });
+
+  useBeforeUnload(!isEqual(value, initStateCopy));
 
   if (!value) return <div>Loading...</div>;
 

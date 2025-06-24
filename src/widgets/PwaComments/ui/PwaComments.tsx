@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   handleComments,
@@ -18,11 +18,15 @@ import {
   selectLanguage,
   updateLanguageData,
 } from "src/features/languageData";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 export const PwaComments: FC = () => {
   const value = useAppSelector(selectCurrentLanguageValue);
 
   const language = useAppSelector(selectLanguage);
+
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof value);
 
   const dispatch = useAppDispatch();
 
@@ -34,6 +38,12 @@ export const PwaComments: FC = () => {
     if (!language) return;
     dispatch(getAllComments(language));
   }, [dispatch, language]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(value) as unknown as typeof value);
+  });
+
+  useBeforeUnload(!isEqual(value, initStateCopy));
 
   if (!value) return <div>Loading...</div>;
 

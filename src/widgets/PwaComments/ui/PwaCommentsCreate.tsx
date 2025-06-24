@@ -24,6 +24,8 @@ import {
   updateCommentById,
 } from "src/entities/comments/model/commentsThunk";
 import { debounce } from "src/shared/lib/helpers";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 export const PwaCommentsCreate: FC = () => {
   const value = useAppSelector(selectCurrentLanguageValue);
@@ -33,6 +35,8 @@ export const PwaCommentsCreate: FC = () => {
   const reset = useAppSelector((state) => state.comments.comment);
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof value);
 
   const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
     null
@@ -53,6 +57,12 @@ export const PwaCommentsCreate: FC = () => {
       dispatch(getCommentById({ id: getLastSegment(), language }));
     }
   }, [pathname, dispatch]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(value) as unknown as typeof value);
+  });
+
+  useBeforeUnload(!isEqual(value, initStateCopy));
 
   if (!value || !language) return <div>Loading...</div>;
 

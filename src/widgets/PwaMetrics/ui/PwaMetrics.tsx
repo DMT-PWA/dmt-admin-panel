@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
@@ -13,9 +13,21 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { InputDefault } from "src/shared/ui/input";
 import trash_orange from "src/shared/assets/icons/trash_icon_orange.png";
 import clsx from "clsx";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 export const PwaMetrics: FC = () => {
-  const { facebookPixelList } = useAppSelector((state) => state.metrics);
+  const state = useAppSelector((state) => state.metrics);
+
+  const { facebookPixelList } = state;
+
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof state);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state) as unknown as typeof state);
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
 
   const dispatch = useAppDispatch();
 
