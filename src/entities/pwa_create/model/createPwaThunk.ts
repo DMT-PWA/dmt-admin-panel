@@ -97,7 +97,7 @@ export const finishCreatePWA = createAsyncThunk<
       updatedDate: last_update,
     };
 
-    if ("appId" in payload && !payload.appId) {
+    if ("appId" in payload) {
       return await apiInstance.patch("pwa", fullPayload);
     } else {
       return await apiInstance.post("pwa", fullPayload);

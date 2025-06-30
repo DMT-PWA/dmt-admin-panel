@@ -305,7 +305,7 @@ export type AppDataProps = {
   reviewCount?: string;
   version?: string;
   _id?: string;
-  domain?: string;
+  domain: string;
   subDomain?: string;
   pixelId?: string;
   accessToken?: string;

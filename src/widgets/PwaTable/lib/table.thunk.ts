@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
-import { RowDefaultType } from "./types";
+import { ClonePwaPayload, RowDefaultType } from "./types";
 
 export const getAllPwa = createAsyncThunk<RowDefaultType[]>(
   "table/getAllPwa",
@@ -12,4 +12,11 @@ export const getAllPwa = createAsyncThunk<RowDefaultType[]>(
 export const deletePwa = createAsyncThunk<unknown, string>(
   "table/deletePwa",
   async (id) => await apiInstance.delete(`pwa/${id}`)
+);
+
+export const clonePwa = createAsyncThunk<RowDefaultType, ClonePwaPayload>(
+  "table/clonePwa",
+  async ({ appId, newAdminId }) => {
+    return await apiInstance.post(`pwa/clonePwa`, { appId, newAdminId });
+  }
 );

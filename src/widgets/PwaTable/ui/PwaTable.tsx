@@ -15,8 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "src/shared/lib/store";
 import { setAppId, createRenderService } from "src/entities/pwa_create";
 import clsx from "clsx";
-import { RowDefaultType } from "../lib/types";
-import { deletePwa, getAllPwa } from "../lib/table.thunk";
+import { ClonePwaPayload, RowDefaultType } from "../lib/types";
+import { clonePwa, deletePwa, getAllPwa } from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
@@ -37,7 +37,9 @@ export const PwaTable: FC = () => {
 
   const navigate = useNavigate();
 
-  const formatTableData = useCallback((data: RowDefaultType[]) => {
+  const formatTableData = useCallback<
+    (data: RowDefaultType[]) => Array<RowDefaultType>
+  >((data) => {
     return data.map((obj) => ({
       _id: obj._id,
       displayId: obj.displayId,
@@ -49,6 +51,7 @@ export const PwaTable: FC = () => {
       tag: obj.marketerTag,
       createdAt: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
       landingStatus: obj.landingStatus,
+      domainLanding: obj.domainLanding,
     }));
   }, []);
   useEffect(() => {
@@ -65,6 +68,16 @@ export const PwaTable: FC = () => {
   }, [formatTableData, dispatch]);
 
   const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
+  const handleClonePwa = async ({ appId, newAdminId }: ClonePwaPayload) => {
+    await dispatch(clonePwa({ appId, newAdminId }));
+
+    const data = await dispatch(getAllPwa());
+
+    if (getAllPwa.fulfilled.match(data)) {
+      const formattedData = formatTableData(data.payload);
+      setPwas(formattedData);
+    }
+  };
 
   const columnHelper = createColumnHelper<
     RowDefaultType & { actions?: string }
@@ -91,7 +104,11 @@ export const PwaTable: FC = () => {
         return (
           <>
             <span>{domain.getValue()}</span>
-            <button onClick={() => onCopyHandler(domain.getValue() || "")}>
+            <button
+              onClick={() =>
+                onCopyHandler(domain.row.original.domainLanding || "")
+              }
+            >
               <img src={link_icon} style={{ height: "12px", width: "12px" }} />
             </button>
           </>
@@ -173,6 +190,24 @@ export const PwaTable: FC = () => {
               <MenuItem>
                 <button
                   onClick={() => {
+                    handleClonePwa({
+                      appId: cell.row.original._id,
+                      newAdminId: cell.row.original.adminId,
+                    });
+                  }}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
+                  <img
+                    src={copy_icon}
+                    style={{ height: "14px", width: "14px" }}
+                  />
+                  Клонировать
+                </button>
+              </MenuItem>
+
+              <MenuItem>
+                <button
+                  onClick={() => {
                     if (!cell.row.original._id) return;
                     onUpdateHandler(cell.row.original._id);
                   }}
@@ -188,6 +223,7 @@ export const PwaTable: FC = () => {
                   Редактировать
                 </button>
               </MenuItem>
+
               <div className="my-1 h-px bg-white/5" />
               <MenuItem>
                 <button

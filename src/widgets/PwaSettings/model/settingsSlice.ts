@@ -55,8 +55,10 @@ const settingsSlice = createSlice({
         }));
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-        if (action.payload.keitaroCampaignId) {
-          state.currentCampaignId = action.payload.keitaroCampaignId;
+        const { keitaroCampaignId, domain, subDomain } = action.payload;
+
+        if (keitaroCampaignId) {
+          state.currentCampaignId = keitaroCampaignId;
         }
 
         if (state.currentCampaignId) {
@@ -67,6 +69,16 @@ const settingsSlice = createSlice({
           if (campaign) {
             state.currentCampaign = campaign;
           }
+        }
+
+        if (subDomain) {
+          state.subdomain = subDomain;
+        }
+
+        const newDomain = domains.find((el) => el.label === domain);
+
+        if (newDomain) {
+          state.domainApp = newDomain;
         }
       })
       .addCase(getPwaById.fulfilled, (state, action) => {

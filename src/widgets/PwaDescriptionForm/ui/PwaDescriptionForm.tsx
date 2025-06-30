@@ -344,7 +344,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                 <DatePicker
                   selected={last_update}
                   isClearable
-                  showIcon={!last_update}
+                  showIcon
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>

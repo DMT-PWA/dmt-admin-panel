@@ -76,7 +76,7 @@ const languageDataSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
       const { language } = action.meta.arg;
-      const payload = action.payload as AppDataProps;
+      const payload: AppDataProps = action.payload;
 
       const {
         about: description = "",
