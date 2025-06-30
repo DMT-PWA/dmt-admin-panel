@@ -1,7 +1,9 @@
 import { SelectValueProp } from "src/shared/types";
 
 const domains: Array<SelectValueProp> = [
-  { label: "plinsters.pro", value: "plinsters.pro" },
+  { label: "1xgamepro.com", value: "1xgamepro.com" },
+  { label: "melgames.com", value: "melgames.com" },
+  { label: "twinb.pro", value: "twinb.pro" },
 ];
 
 const whitePages: Array<SelectValueProp> = [
