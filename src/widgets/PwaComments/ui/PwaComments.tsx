@@ -1,11 +1,15 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   handleComments,
   getAllComments,
   removeCommentById,
 } from "src/entities/comments";
-import type { ReviewObject, ICommentsState } from "src/entities/comments";
+import type {
+  ReviewObject,
+  ICommentsState,
+  CommentGroup,
+} from "src/entities/comments";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
@@ -28,16 +32,25 @@ export const PwaComments: FC = () => {
 
   const [initStateCopy, setInitStateCopy] = useState({} as typeof value);
 
+  const [all_comments, setAllComments] = useState<Array<CommentGroup>>([]);
+
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   const location = useLocation().pathname;
 
+  const fetchAllComments = useCallback(async () => {
+    const response = await dispatch(getAllComments());
+
+    if (getAllComments.fulfilled.match(response)) {
+      setAllComments(response.payload);
+    }
+  }, [dispatch]);
+
   useEffect(() => {
-    if (!language) return;
-    dispatch(getAllComments(language));
-  }, [dispatch, language]);
+    fetchAllComments();
+  }, [fetchAllComments]);
 
   useMount(() => {
     setInitStateCopy(cloneDeep(value) as unknown as typeof value);
@@ -49,7 +62,7 @@ export const PwaComments: FC = () => {
 
   const { commentState } = value;
 
-  const { all_comments, selected_comment } = commentState;
+  const { selected_comment } = commentState;
 
   const handleNavigate = (isUpdate: boolean = false, commentId?: string) => {
     if (!isUpdate) {
@@ -90,7 +103,7 @@ export const PwaComments: FC = () => {
 
     await dispatch(removeCommentById(id));
 
-    await dispatch(getAllComments(language));
+    await dispatch(getAllComments());
   };
 
   return (

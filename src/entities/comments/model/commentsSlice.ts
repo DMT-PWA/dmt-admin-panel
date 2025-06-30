@@ -18,7 +18,6 @@ const initialState: ICommentsState = {
   comment_group_name: null,
   selected_comment: null,
   comments_list: [],
-  all_comments: [],
 };
 
 export const handleComments = (payload: ReviewObject) => {
@@ -50,22 +49,6 @@ export const comments = createSlice({
     resetCommentsList: (state) => {
       state.comments_list = initialState.comments_list;
     },
-  },
-
-  extraReducers: () => {
-    /* builder.addCase(
-      removeCommentById.fulfilled,
-      (state, action: PayloadAction<ICommentsState["comments_list"]>) => {
-        state.comments_list = [...action.payload];
-      }
-    ); */
-    /* builder.addCase(createCommentHandler.fulfilled, (state, action) => {
-      state.comment.commentId = action.payload._id;
-    }); */
-    /*  builder.addCase(getCommentById.fulfilled, (state, action) => {
-      state.comment_group_name = action.payload.name;
-      state.comments_list = handleComments(action.payload.reviewObject);
-    }); */
   },
 });
 

@@ -21,7 +21,6 @@ export interface ICommentsState {
   comments_list: CommentsList;
   comment_group_name?: string | null;
   selected_comment: string | null;
-  all_comments: Array<CommentGroup> | null;
 }
 
 export type CommentUpdatePayload = Record<

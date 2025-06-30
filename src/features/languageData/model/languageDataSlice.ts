@@ -4,7 +4,6 @@ import { getPwaByIdAndLanguage } from "src/shared/api/create";
 import { AppDataProps } from "src/shared/types";
 import {
   createCommentHandler,
-  getAllComments,
   getCommentById,
   handleComments,
 } from "src/entities/comments";
@@ -155,16 +154,6 @@ const languageDataSlice = createSlice({
     });
 
     builder
-      .addCase(getAllComments.fulfilled, (state, action) => {
-        const language = action.meta.arg;
-
-        return updateLanguageHelper(
-          state,
-          "commentState",
-          { all_comments: action.payload },
-          language
-        );
-      })
       .addCase(getCommentById.fulfilled, (state, action) => {
         const { language } = action.meta.arg;
 

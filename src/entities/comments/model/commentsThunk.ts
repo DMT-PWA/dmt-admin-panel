@@ -1,21 +1,16 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import {
-  CommentGroup,
-  CommentsList,
-  CommentUpdatePayload,
-  ICommentsState,
-} from "./types";
+import { CommentGroup, CommentsList, CommentUpdatePayload } from "./types";
 import { apiInstance } from "src/shared/api/base";
 import { IUserComment } from "src/shared/types";
 import { CommentResponse } from "src/shared/types/commentsTypes";
 
-export const getAllComments = createAsyncThunk<
-  ICommentsState["all_comments"],
-  string
->("comments/getAllComments", async () => {
-  return await apiInstance.get("comment");
-});
+export const getAllComments = createAsyncThunk<Array<CommentGroup>>(
+  "comments/getAllComments",
+  async () => {
+    return await apiInstance.get("comment");
+  }
+);
 
 export const getCommentById = createAsyncThunk<
   CommentGroup,
