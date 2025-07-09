@@ -5,6 +5,7 @@ const initialState: ICollection = {
   collectionImage: null,
   images: [null, null, null, null],
   collectionName: "",
+  _id: "",
 };
 
 export const collectionSlice = createSlice({

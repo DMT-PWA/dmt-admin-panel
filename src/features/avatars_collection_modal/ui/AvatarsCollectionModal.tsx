@@ -4,21 +4,24 @@ import close_icon from "src/shared/assets/icons/close_icon.png";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Title } from "src/shared/ui/title";
 import avatar_icon from "src/shared/assets/icons/avatar_icon.png";
-import { updateCommentField, updateCommentInList } from "src/entities/comments";
-import { useAppDispatch } from "src/shared/lib/store";
 import { handleFileUpload } from "src/features/appData/appDataAPI";
+import { ICommentsState } from "src/entities/comments";
 interface IAvatarsCollectionProps {
   onPopupHandler: () => void;
+  comments_list: ICommentsState["comments_list"];
+  comment: ICommentsState["comment"];
+  handleUpdateField: (arg: Partial<ICommentsState>) => void;
   index?: number | null;
 }
 
 export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
   onPopupHandler,
+  handleUpdateField,
+  comments_list,
+  comment,
   index,
 }) => {
   const [avatar, setTempAvatar] = useState<string | null>(null);
-
-  const dispatch = useAppDispatch();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,22 +30,33 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      // const imageUrl = URL.createObjectURL(file);
       const imageUrl = await handleFileUpload(file);
       setTempAvatar(imageUrl);
     }
   };
 
   const handleAvatarChoose = () => {
+    const newList = comments_list?.map((item) => ({
+      ...item,
+      avatar: avatar,
+    }));
+
     if (avatar) {
       if (index) {
-        dispatch(updateCommentInList({ index, changes: { avatar: avatar } }));
+        handleUpdateField({ comments_list: newList });
         onPopupHandler();
         return;
       }
 
-      dispatch(updateCommentField({ field: "avatar", value: avatar }));
-      onPopupHandler();
+      if (comment) {
+        handleUpdateField({
+          comment: {
+            ...comment,
+            avatar: avatar,
+          },
+        });
+        onPopupHandler();
+      }
     }
   };
 

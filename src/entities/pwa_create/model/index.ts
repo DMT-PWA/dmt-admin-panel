@@ -5,10 +5,6 @@ export {
   setCommentId,
   setDescriptionId,
 } from "./pwaCreateSlice";
-export {
-  updatePwaByLang,
-  finishCreatePWA,
-  createRenderService,
-} from "./createPwaThunk";
+export { finishCreatePWA, createRenderService } from "./createPwaThunk";
 
 export type { UpdatePwaPayload, UpdatePwaResponse } from "./types";

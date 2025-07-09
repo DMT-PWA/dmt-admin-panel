@@ -152,3 +152,7 @@ button[role="tab"] {
 button[role="tab"][data-selected] {
   @apply text-orange;
 }
+
+button[disabled] {
+  cursor: default;
+}

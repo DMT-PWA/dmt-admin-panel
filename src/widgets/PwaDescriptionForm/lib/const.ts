@@ -1,4 +1,13 @@
-const TEXT_FIELDS = [
+import { IDescriptionMain } from "src/shared/types";
+
+type FieldSignature = {
+  label: string;
+  name: keyof Pick<IDescriptionMain, "title" | "developer_name">;
+  placeholder: string;
+  flex: number;
+};
+
+const TEXT_FIELDS: Array<FieldSignature> = [
   { label: "Название", name: "title", placeholder: "App Name", flex: 0.5 },
   {
     label: "Разработчик",

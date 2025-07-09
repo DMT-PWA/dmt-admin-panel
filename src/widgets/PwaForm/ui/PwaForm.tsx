@@ -17,7 +17,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Country } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
-import { useDebounce } from "react-use";
+import { useBeforeUnload, useDebounce, useMount } from "react-use";
+import { cloneDeep, isEqual } from "lodash";
+import { IDesign } from "src/shared/api/design";
+
 type PwaFormProps = {
   appId: string | null;
   isEdit?: boolean;
@@ -27,9 +30,12 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const [valid, setValid] = useState<boolean>(true);
 
   const navigate = useNavigate();
-  const { languagesList, pwa_title, pwa_tags, currentCountry } = useAppSelector(
-    (state) => state.pwa_design
-  );
+  const state = useAppSelector((state) => state.pwa_design);
+
+  const { languagesList, pwa_title, pwa_tags, currentCountry } = state;
+
+  const [initStateCopy, setInitStateCopy] = useState<IDesign | null>(null);
+
   const dispatch = useAppDispatch();
 
   const selectedLanguages = useAppSelector(selectLanguagesList);
@@ -53,6 +59,12 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
   const handleNavigate = () => {
     return navigate("/pwa");
   };
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state) as unknown as IDesign);
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
 
   useDebounce(
     async () => {
@@ -130,49 +142,53 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
                 input_classes="!border-0"
               />
             )}
-            {languagesList && languagesList.length === 1 && (
-              <button
-                onClick={() =>
-                  dispatch(
-                    updateLanguagesList([
-                      ...languagesList,
-                      { label: "English", value: 1 },
-                    ])
-                  )
-                }
-                className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
-              >
-                <img
-                  src="/pwa_icons/crosshair.png"
-                  width={14}
-                  height={14}
-                  alt=""
-                />
-              </button>
-            )}
-            {languagesList?.some((item) => item.label === "English") && (
-              <>
-                <InputDefault
-                  value={languagesList[1]?.label}
-                  container_classes="flex-[0.5]"
-                  disabled
-                  input_classes="!border-0"
-                />
+            {languagesList &&
+              languagesList.length === 1 &&
+              languagesList[0].label !== "English" && (
                 <button
                   onClick={() =>
-                    dispatch(updateLanguagesList(languagesList.slice(0, 1)))
+                    dispatch(
+                      updateLanguagesList([
+                        ...languagesList,
+                        { label: "English", value: 1 },
+                      ])
+                    )
                   }
+                  className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
                 >
-                  <img src={trash_icon} width={14} height={14} alt="" />
+                  <img
+                    src="/pwa_icons/crosshair.png"
+                    width={14}
+                    height={14}
+                    alt=""
+                  />
                 </button>
-              </>
-            )}
+              )}
+            {languagesList &&
+              languagesList[0].label !== "English" &&
+              languagesList?.some((item) => item.label === "English") && (
+                <>
+                  <InputDefault
+                    value={languagesList[1]?.label}
+                    container_classes="flex-[0.5]"
+                    disabled
+                    input_classes="!border-0"
+                  />
+                  <button
+                    onClick={() =>
+                      dispatch(updateLanguagesList(languagesList.slice(0, 1)))
+                    }
+                  >
+                    <img src={trash_icon} width={14} height={14} alt="" />
+                  </button>
+                </>
+              )}
           </div>
           <InputDefault
             value={pwa_tags}
-            label="Теги PWA"
+            label="Тег PWA"
             input_classes="!border-0"
-            placeholder="Выберите теги"
+            placeholder="Введите тег"
             onUpdateValue={(val) => dispatch(setMarketerTag(val.target.value))}
             isRequired={true}
           />

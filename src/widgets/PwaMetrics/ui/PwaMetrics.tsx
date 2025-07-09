@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { CustomSelect } from "src/shared/ui/select";
 import { Title } from "src/shared/ui/title";
 import {
@@ -13,9 +13,21 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { InputDefault } from "src/shared/ui/input";
 import trash_orange from "src/shared/assets/icons/trash_icon_orange.png";
 import clsx from "clsx";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 export const PwaMetrics: FC = () => {
-  const { facebookPixelList } = useAppSelector((state) => state.metrics);
+  const state = useAppSelector((state) => state.metrics);
+
+  const { facebookPixelList } = state;
+
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof state);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state) as unknown as typeof state);
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
 
   const dispatch = useAppDispatch();
 
@@ -28,21 +40,35 @@ export const PwaMetrics: FC = () => {
             Регистрация
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={registration} placeholder="" classes="mb-2" />
+          <CustomSelect
+            value={registration[0]}
+            options={registration}
+            placeholder=""
+            classes="mb-2"
+          />
         </div>
         <div className="flex flex-col flex-1/3">
           <label className="title__view-1 mb-2">
             Депозит
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={deposit} placeholder="Введите депозит" />
+          <CustomSelect
+            value={deposit[0]}
+            options={deposit}
+            placeholder="Введите депозит"
+          />
         </div>
         <div className="flex flex-col flex-1/3">
           <label className="title__view-1 mb-2">
             Скачивание
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
-          <CustomSelect options={install} placeholder="" classes="mb-2" />
+          <CustomSelect
+            value={install[0]}
+            options={install}
+            placeholder=""
+            classes="mb-2"
+          />
         </div>
       </div>
       <div className="flex flex-col gap-3.25">

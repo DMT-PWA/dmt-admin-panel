@@ -10,28 +10,25 @@ import {
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Title } from "src/shared/ui/title";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "src/shared/lib/store";
+import { setAppId, createRenderService } from "src/entities/pwa_create";
+import clsx from "clsx";
+import { ClonePwaPayload, RowDefaultType } from "../lib/types";
+import { clonePwa, deletePwa, getAllPwa } from "../lib/table.thunk";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import link_icon from "src/shared/assets/icons/link_icon.png";
 import play_icon from "src/shared/assets/icons/play_icon.png";
+import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
-import { columns } from "../lib";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { getAllPwa } from "src/features/appData/appDataAPI";
-import { format } from "date-fns";
-import { deletePwa } from "src/features/appData/appDataAPI";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "src/shared/lib/store";
-import {
-  setAppId,
-  createRenderService,
-  UpdatePwaPayload,
-} from "src/entities/pwa_create";
-import clsx from "clsx";
 
 export const PwaTable: FC = () => {
-  const [pwas, setPwas] = useState(null);
+  const [pwas, setPwas] = useState<Array<RowDefaultType>>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -40,28 +37,215 @@ export const PwaTable: FC = () => {
 
   const navigate = useNavigate();
 
-  const formatTableData = useCallback((data) => {
+  const formatTableData = useCallback<
+    (data: RowDefaultType[]) => Array<RowDefaultType>
+  >((data) => {
     return data.map((obj) => ({
       _id: obj._id,
-      id: obj.displayId,
+      displayId: obj.displayId,
       adminId: obj.adminId,
       marketerTag: obj.marketerTag,
-      name: obj.displayName,
+      displayName: obj.displayName,
       defaultNaming: "Rqd - NL OLZ learning",
       domain: obj.domain,
       tag: obj.marketerTag,
-      created: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
+      createdAt: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
+      landingStatus: obj.landingStatus,
+      domainLanding: obj.domainLanding,
     }));
   }, []);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAllPwa();
-      const formattedData = formatTableData(data);
-      setPwas(formattedData);
+      const data = await dispatch(getAllPwa());
+
+      if (getAllPwa.fulfilled.match(data)) {
+        const formattedData = formatTableData(data.payload);
+        setPwas(formattedData);
+      }
     };
 
     fetchData();
-  }, [formatTableData]);
+  }, [formatTableData, dispatch]);
+
+  const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
+  const handleClonePwa = async ({ appId, newAdminId }: ClonePwaPayload) => {
+    await dispatch(clonePwa({ appId, newAdminId }));
+
+    const data = await dispatch(getAllPwa());
+
+    if (getAllPwa.fulfilled.match(data)) {
+      const formattedData = formatTableData(data.payload);
+      setPwas(formattedData);
+    }
+  };
+
+  const columnHelper = createColumnHelper<
+    RowDefaultType & { actions?: string }
+  >();
+  const columns = [
+    columnHelper.accessor("displayId", {
+      header: "ID",
+      cell: (displayId) => (
+        <>
+          <span>{displayId.getValue()}</span>
+          <button onClick={() => onCopyHandler(displayId.getValue())}>
+            <img src={copy_icon} style={{ height: "12px", width: "12px" }} />
+          </button>
+        </>
+      ),
+    }),
+    columnHelper.accessor("displayName", {
+      header: "Название",
+    }),
+    columnHelper.accessor("domain", {
+      header: "Домен",
+
+      cell: (domain) => {
+        return (
+          <>
+            <span>{domain.getValue()}</span>
+            <button
+              onClick={() =>
+                onCopyHandler(domain.row.original.domainLanding || "")
+              }
+            >
+              <img src={link_icon} style={{ height: "12px", width: "12px" }} />
+            </button>
+          </>
+        );
+      },
+    }),
+    columnHelper.accessor("marketerTag", {
+      header: "Тег",
+      cell: (marketerTag) => (
+        <>
+          <span>{marketerTag.getValue()}</span>
+          <button onClick={() => onCopyHandler(marketerTag.getValue() || "")}>
+            <img src={copy_icon} style={{ height: "12px", width: "12px" }} />
+          </button>
+        </>
+      ),
+    }),
+    columnHelper.accessor("createdAt", {
+      header: "Создано",
+      cell: (created) => <span>{created.getValue()}</span>,
+    }),
+    columnHelper.accessor("defaultNaming", {
+      header: "Нейминг по умолчанию",
+    }),
+    columnHelper.accessor("actions", {
+      header: () => (
+        <div className="flex items-center gap-2 min-w-23">
+          <button>
+            <img
+              src="/pwa_icons/refresh.png"
+              alt="refresh"
+              width={20}
+              height={20}
+            />
+          </button>
+          <button>
+            <img
+              src="/pwa_icons/switch_vertical.png"
+              alt="sort"
+              width={20}
+              height={20}
+            />
+          </button>
+          <button>
+            <img
+              src="/pwa_icons/cog.png"
+              alt="settings"
+              width={20}
+              height={20}
+            />
+          </button>
+        </div>
+      ),
+      cell: (cell) => (
+        <div className="min-w-23 flex justify-around">
+          {cell.row.original.landingStatus === "live" ? (
+            <button onClick={() => onCopyHandler(cell.cell.id)}>
+              <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
+            </button>
+          ) : (
+            <button
+              onClick={() => handleCreateRenderService(cell.row.original)}
+            >
+              <img src={play_icon} style={{ height: "16px", width: "16px" }} />
+            </button>
+          )}
+          <Menu>
+            <MenuButton>
+              <img
+                src={options_icon}
+                style={{ height: "4px", width: "16px" }}
+              />
+            </MenuButton>
+            <MenuItems
+              transition
+              anchor="bottom end"
+              className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+            >
+              <MenuItem>
+                <button
+                  onClick={() => {
+                    handleClonePwa({
+                      appId: cell.row.original._id,
+                      newAdminId: cell.row.original.adminId,
+                    });
+                  }}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
+                  <img
+                    src={copy_icon}
+                    style={{ height: "14px", width: "14px" }}
+                  />
+                  Клонировать
+                </button>
+              </MenuItem>
+
+              <MenuItem>
+                <button
+                  onClick={() => {
+                    if (!cell.row.original._id) return;
+                    onUpdateHandler(cell.row.original._id);
+                  }}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
+                  <img
+                    src={pencil}
+                    style={{
+                      height: "14px",
+                      width: "14px",
+                    }}
+                  />
+                  Редактировать
+                </button>
+              </MenuItem>
+
+              <div className="my-1 h-px bg-white/5" />
+              <MenuItem>
+                <button
+                  onClick={() => deletePwaHandler(cell.row.original)}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
+                >
+                  <img
+                    src={trash}
+                    style={{
+                      height: "16px",
+                      width: "14px",
+                    }}
+                  />
+                  Удалить
+                </button>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        </div>
+      ),
+    }),
+  ];
 
   const table = useReactTable({
     data: pwas || [],
@@ -74,11 +258,10 @@ export const PwaTable: FC = () => {
     state: { pagination },
   });
 
-  const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
-
-  const deletePwaHandler = async (row) => {
-    await deletePwa(row.original._id);
-    setPwas((prev) => prev.filter((item) => item._id !== row.original._id));
+  const deletePwaHandler = async (row: Partial<RowDefaultType>) => {
+    if (!row._id) return;
+    dispatch(deletePwa(row._id));
+    setPwas((prev) => prev.filter((item) => item._id !== row._id));
   };
 
   const onUpdateHandler = (value: string) => {
@@ -86,10 +269,8 @@ export const PwaTable: FC = () => {
     navigate(`/pwa_edit/${value}/design`);
   };
 
-  const handleCreateRenderService = (
-    payload: Partial<UpdatePwaPayload> & { domain: string }
-  ) => {
-    console.log(payload);
+  const handleCreateRenderService = (payload: Partial<RowDefaultType>) => {
+    if (!payload._id || !payload.adminId) return;
 
     dispatch(
       createRenderService({
@@ -132,8 +313,6 @@ export const PwaTable: FC = () => {
                 return (
                   <tr key={row.id} className="bg-white">
                     {row.getVisibleCells().map((cell) => {
-                      const isIdOrTag = ["id", "tag"].includes(cell.column.id);
-
                       return (
                         <td
                           key={cell.id}
@@ -143,92 +322,6 @@ export const PwaTable: FC = () => {
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
-                            )}
-                            {isIdOrTag && (
-                              <button
-                                onClick={() => onCopyHandler(cell.getValue())}
-                              >
-                                <img
-                                  src={copy_icon}
-                                  style={{ height: "12px", width: "12px" }}
-                                />
-                              </button>
-                            )}
-                            {cell.column.id === "domain" && (
-                              <button onClick={() => onCopyHandler(row.id)}>
-                                <img
-                                  src={link_icon}
-                                  style={{ height: "12px", width: "12px" }}
-                                />
-                              </button>
-                            )}
-
-                            {cell.column.id === "actions" && (
-                              <div className="min-w-23 flex justify-around">
-                                <button
-                                  onClick={() =>
-                                    handleCreateRenderService(row.original)
-                                  }
-                                >
-                                  <img
-                                    src={play_icon}
-                                    style={{ height: "16px", width: "16px" }}
-                                  />
-                                </button>
-                                {/* <button onClick={() => onCopyHandler(row.id)}>
-                                  <img
-                                    src={pause_icon}
-                                    style={{ height: "16px", width: "16px" }}
-                                  />
-                                </button> */}
-                                <Menu>
-                                  <MenuButton>
-                                    <img
-                                      src={options_icon}
-                                      style={{ height: "4px", width: "16px" }}
-                                    />
-                                  </MenuButton>
-                                  <MenuItems
-                                    transition
-                                    anchor="bottom end"
-                                    className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
-                                  >
-                                    <MenuItem>
-                                      <button
-                                        onClick={() =>
-                                          onUpdateHandler(row.original._id)
-                                        }
-                                        className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
-                                      >
-                                        <img
-                                          src={pencil}
-                                          style={{
-                                            height: "14px",
-                                            width: "14px",
-                                          }}
-                                        />
-                                        Редактировать
-                                      </button>
-                                    </MenuItem>
-                                    <div className="my-1 h-px bg-white/5" />
-                                    <MenuItem>
-                                      <button
-                                        onClick={() => deletePwaHandler(row)}
-                                        className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
-                                      >
-                                        <img
-                                          src={trash}
-                                          style={{
-                                            height: "16px",
-                                            width: "14px",
-                                          }}
-                                        />
-                                        Удалить
-                                      </button>
-                                    </MenuItem>
-                                  </MenuItems>
-                                </Menu>
-                              </div>
                             )}
                           </div>
                         </td>

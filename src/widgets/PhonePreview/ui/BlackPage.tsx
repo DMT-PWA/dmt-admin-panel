@@ -2,24 +2,25 @@ import { FC, useEffect, useState } from "react";
 import { Tablet } from "src/widgets/tablet";
 import { AboutPage } from "src/entities/playStore";
 import { useAppSelector } from "src/shared/lib/store";
-import { CombinedDescription } from "src/entities/pwa_description";
-import { ICommentsState } from "src/entities/comments";
-import { ICollection } from "src/shared/types";
+import { selectCurrentLanguageValue } from "src/features/languageData";
 
-type PropsValue = {
-  value: {
-    descriptionState: CombinedDescription;
-    commentState: ICommentsState;
-    collectionState: ICollection | null;
-  };
-};
-
-const BlackPage: FC<PropsValue> = (props) => {
-  const { descriptionState } = props.value;
+const BlackPage: FC = () => {
+  const states = useAppSelector(selectCurrentLanguageValue);
 
   const [stage, setStage] = useState<{ id: number; stage: string } | null>(
     null
   );
+
+  const { currentLanguage, currentCountry } = useAppSelector(
+    (state) => state.pwa_design
+  );
+
+  useEffect(() => {
+    setStage({ id: 0, stage: "Main" });
+  }, []);
+  if (!states || !currentLanguage) return <div>Loading...</div>;
+
+  const { descriptionState } = states;
   const { about_description } = descriptionState;
 
   const {
@@ -33,22 +34,9 @@ const BlackPage: FC<PropsValue> = (props) => {
 
   const { number_of_downloads } = descriptionState;
 
-  const { currentLanguage, currentCountry } = useAppSelector(
-    (state) => state.pwa_design
-  );
-
-  useEffect(() => {
-    setStage({ id: 0, stage: "Main" });
-  }, []);
-
   const handleCurrentStage = () => {
     if (stage?.stage === "Main") {
-      return (
-        <Tablet
-          toAbout={() => setStage({ id: 1, stage: "About" })}
-          value={props.value}
-        />
-      );
+      return <Tablet toAbout={() => setStage({ id: 1, stage: "About" })} />;
     }
 
     if (stage?.stage === "About") {

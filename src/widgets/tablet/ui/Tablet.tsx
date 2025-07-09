@@ -8,23 +8,16 @@ import {
 import { Reviewer } from "src/entities/reviewer";
 import { useAppSelector } from "src/shared/lib/store";
 import clsx from "clsx";
-import { CombinedDescription } from "src/entities/pwa_description";
-import { ICommentsState } from "src/entities/comments";
-import { ICollection } from "src/shared/types";
+import { selectCurrentLanguageValue } from "src/features/languageData";
 
 interface ITabletProps {
   toAbout: () => void;
-  value: {
-    descriptionState: CombinedDescription;
-    commentState: ICommentsState;
-    collectionState: ICollection | null;
-  };
 }
 
 const Tablet: FC<ITabletProps> = (props) => {
-  const { toAbout, value } = props;
+  const { toAbout } = props;
 
-  const { descriptionState, commentState, collectionState } = value;
+  const states = useAppSelector(selectCurrentLanguageValue);
 
   const [isAppSupport] = useState(false);
   const { currentCountry, currentLanguage } = useAppSelector(
@@ -35,6 +28,9 @@ const Tablet: FC<ITabletProps> = (props) => {
     currentLanguage,
     currentCountry
   );
+  if (!states) return <div>Loading...</div>;
+
+  const { descriptionState, collectionState, commentState } = states;
 
   const {
     title,
@@ -46,8 +42,6 @@ const Tablet: FC<ITabletProps> = (props) => {
     about_description,
     review_count,
   } = descriptionState;
-
-  const { comments_list } = commentState;
 
   const { description } = about_description;
 
@@ -67,7 +61,6 @@ const Tablet: FC<ITabletProps> = (props) => {
     install,
     aboutThisGame,
     ratingsAndReviews,
-    reviewObject,
     findHelpful,
     yes,
     no,
@@ -356,41 +349,6 @@ const Tablet: FC<ITabletProps> = (props) => {
             </div>
             <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-7 box-border max-w-full shrink-0">
               <ReviewsContent
-                propMinWidth="82px"
-                propMinWidth1="144px"
-                reviewsContentWidth="unset"
-                reviewsContentFlex="1"
-                reviewsContentHeight="112px"
-                ratingScoreAlignSelf="stretch"
-                ratingScoreFlex="1"
-                scoreValueDisplay="unset"
-                scoreValueMinWidth="unset"
-                scoreValueAlignSelf="stretch"
-                scoreValueFlex="1"
-                reviewsInfoAlignSelf="stretch"
-                reviewsInfoHeight="16px"
-                reviewsCountAlignSelf="stretch"
-                reviewsCountWidth="33px"
-                mDisplay="unset"
-                mMinWidth="unset"
-                mAlignSelf="stretch"
-                mFlex="1"
-                reviewsTextAlignSelf="stretch"
-                reviewsTextFlex="1"
-                reviewsDisplay="unset"
-                reviewsMinWidth="unset"
-                reviewsAlignSelf="stretch"
-                reviewsFlex="1"
-                emptyBarsMinWidth="unset"
-                emptyBarsWidth="8px"
-                divMinWidth="unset"
-                divWidth="8px"
-                divMinWidth1="unset"
-                divWidth1="8px"
-                divMinWidth2="unset"
-                divWidth2="8px"
-                ratingMinWidth="unset"
-                ratingWidth="8px"
                 raitingValue={raiting || 4.8}
                 grades={grades}
                 isArabic={isArabic}
@@ -399,57 +357,15 @@ const Tablet: FC<ITabletProps> = (props) => {
               />
             </section>
             {/* =========+{Section: Reviews result }======================== */}
-            {reviewObject && (
-              <Reviewer
-                commentsList={comments_list}
-                reviewData={reviewObject}
-                findHelpful={findHelpful}
-                yes={yes}
-                no={no}
-                isArabic={isArabic}
-              />
-            )}
-            {/* <ReviewContent1 /> */}
-            {/* <section className="self-stretch flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[30px] box-border max-w-full shrink-0 text-left text-sm text-dimgray font-roboto">
-            <div className="h-fit flex-1 relative tracking-[0.2px] leading-[20px] inline-block shrink-0 max-w-full">
-              {newFeatures}
-            </div>
-          </section>
-          <footer className="self-stretch h-11 shrink-0 flex flex-row items-start justify-start pt-0 pb-5 pl-5 pr-[29px] box-border max-w-full text-left text-lg text-gray-100 font-roboto">
-            <div className="self-stretch flex-1 flex flex-row items-start justify-start relative shrink-0 max-w-full">
-              <div className="self-stretch w-fit relative leading-[24px] inline-block">
-                {contact}
-              </div>
-              {isAppSupport ? (
-                <div
-                  className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[9px] px-[5px] box-border w-6"
-                  onClick={() => setIsAppSupport(false)}
-                >
-                  <img
-                    className="w-3.5 h-1.5 relative"
-                    alt=""
-                    src="/pwa_icons/vector-191.svg"
-                  />
-                </div>
-              ) : (
-                <div
-                  className="!m-[0] absolute h-6 top-[0px] right-[0px] bottom-[0px] overflow-hidden flex flex-col items-start justify-start py-[9px] px-[5px] box-border w-6"
-                  onClick={() => setIsAppSupport(true)}
-                >
-                  <img
-                    className="w-3.5 h-1.5 relative"
-                    alt=""
-                    src="/pwa_icons/vector-19.svg"
-                  />
-                </div>
-              )}
-            </div>
-          </footer> */}
-            {isAppSupport && <></>}
+            <Reviewer
+              findHelpful={findHelpful}
+              yes={yes}
+              no={no}
+              isArabic={isArabic}
+              commentsList={commentState.comments_list}
+            />
 
-            {/*  <div className="self-stretch h-px shrink-0 flex flex-row items-start justify-start py-0 px-5 box-border max-w-full mb-[80px] mt-[20px]">
-            <div className="self-stretch flex-1 relative bg-whitesmoke-200 shrink-0 max-w-full z-[1]" />
-          </div> */}
+            {isAppSupport && <></>}
           </main>
         </div>
       )}

@@ -1,22 +1,13 @@
 import { IUserComment } from "src/shared/types";
+import { CommentResponse } from "src/shared/types/commentsTypes";
 
-export type CommentsList = Array<IUserComment> | null;
+export type CommentsList = Array<
+  IUserComment & { commentId: string | null }
+> | null;
 
-export type ReviewObject = Array<{
-  date: string;
-  helpful: string;
-  helpfulCount: string;
-  isResponse: boolean;
-  name: string;
-  photo: string;
-  rating: string;
-  response: string;
-  responseDate: string;
-  review: string;
-  _id: string;
-}>;
+export type ReviewObject = Array<CommentResponse>;
 
-export type AllComments = {
+export type CommentGroup = {
   adminId: string;
   createdAt: string;
   name: string;
@@ -30,5 +21,9 @@ export interface ICommentsState {
   comments_list: CommentsList;
   comment_group_name?: string | null;
   selected_comment: string | null;
-  all_comments: Array<AllComments> | null;
 }
+
+export type CommentUpdatePayload = Record<
+  "commentId" | "adminId" | "reviewId" | "name",
+  string
+>;

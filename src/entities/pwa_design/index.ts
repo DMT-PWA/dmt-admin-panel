@@ -3,7 +3,6 @@ export { selectLanguagesList, modifiedCountryList } from "./model/selectors";
 export {
   resetState,
   addCollection,
-  removeCollection,
   setCountry,
   setChanged,
   setMarketerTag,

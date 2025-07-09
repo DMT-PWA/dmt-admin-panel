@@ -7,7 +7,7 @@ import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 
 const defaultState: IDesign = {
   languages: languages,
-  pwa_title: "",
+  pwa_title: null,
   pwa_tags: "",
   collections: [],
   isChanged: false,
@@ -32,9 +32,7 @@ export const pwaDesignSlice = createSlice({
     addCollection: (state, action) => {
       state.collections.push(action.payload);
     },
-    removeCollection: (state, action: PayloadAction<number>) => {
-      state.collections.splice(action.payload, 1);
-    },
+
     setChanged: (state, action: PayloadAction<boolean>) => {
       state.isChanged = action.payload;
     },
@@ -89,7 +87,6 @@ export const pwaDesignSlice = createSlice({
 export const {
   setPwaTitle,
   addCollection,
-  removeCollection,
   setChanged,
   setLanguage,
   setCountry,

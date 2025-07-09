@@ -1,10 +1,12 @@
-import { Settings } from "../model/types";
+import { SelectValueProp } from "src/shared/types";
 
-const domains: Array<Settings["domainApp"]> = [
-  { label: "plinsters.pro", value: "plinsters.pro" },
+const domains: Array<SelectValueProp> = [
+  { label: "1xgamepro.com", value: "1xgamepro.com" },
+  { label: "melgames.com", value: "melgames.com" },
+  { label: "twinb.pro", value: "twinb.pro" },
 ];
 
-const whitePages: Array<Settings["whitePage"]> = [
+const whitePages: Array<SelectValueProp> = [
   {
     label: "404 page",
     value: "404 page",

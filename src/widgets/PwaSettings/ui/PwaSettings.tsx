@@ -9,16 +9,20 @@ import {
   verifyCustomDomain,
 } from "src/widgets/PwaSettings";
 import { InputDefault } from "src/shared/ui/input";
-import { useDebounce } from "react-use";
+import { useDebounce, useMount, useBeforeUnload } from "react-use";
 import clsx from "clsx";
+import { cloneDeep, isEqual } from "lodash";
+
 export const PwaSettings: FC = () => {
   const dispatch = useAppDispatch();
 
   const [valid, setValid] = useState<boolean>(true);
 
-  const { domainApp, whitePage, currentCampaign, campaigns, subdomain } =
-    useAppSelector((state) => state.settings);
+  const state = useAppSelector((state) => state.settings);
 
+  const { domainApp, whitePage, currentCampaign, campaigns, subdomain } = state;
+
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof state);
   /* const handleCampaign = useCallback(async () => {
     const data = await dispatch(getAllCampaigns());
 
@@ -44,10 +48,10 @@ export const PwaSettings: FC = () => {
 
   useDebounce(
     async () => {
-      if (subdomain) {
+      if (subdomain && domainApp) {
         const result = await dispatch(
           verifyCustomDomain({
-            domain: domainApp?.value,
+            domain: domainApp.value,
             subDomain: subdomain,
           })
         );
@@ -63,6 +67,12 @@ export const PwaSettings: FC = () => {
   useEffect(() => {
     dispatch(getAllCampaigns());
   }, [dispatch]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state) as unknown as typeof state);
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">

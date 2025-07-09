@@ -6,80 +6,122 @@ import {
   Textarea,
 } from "@headlessui/react";
 import { FC, useEffect, useState } from "react";
-import { CheckboxList } from "src/entities/checkbox_list";
+import { CheckboxList } from "src/shared/ui/checkbox_list";
 import { InputDefault, InputRange } from "src/shared/ui/input";
 import { Title } from "src/shared/ui/title";
-import { setGrade, CombinedDescription } from "src/entities/pwa_description";
+import { CombinedDescription } from "src/entities/pwa_description";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { ButtonDefault } from "src/shared/ui/button";
 import { CollectionCreate } from "src/features/collection_create";
-import { IAboutGameDescription, ICollection } from "src/shared/types";
-import { createCollection } from "src/features/appData/appDataAPI";
+import { IDescriptionAbout, ICollection } from "src/shared/types";
 import {
   CollectionsList,
   getAllCollections,
 } from "src/features/collections_list";
-import { NUMBER_FIELDS, TEXT_FIELDS } from "../lib/const";
+import { TEXT_FIELDS } from "../lib/const";
+import {
+  updateLanguageData,
+  selectLanguage,
+  selectCurrentLanguageValue,
+} from "src/features/languageData";
+import IconCalendar from "src/shared/assets/icons/IconCalendar";
+import { createCollection } from "src/features/collections_list/model/collectionsThunk";
+import { cloneDeep, isEqual } from "lodash";
+import { useBeforeUnload, useMount } from "react-use";
 
 type DescriptionFormProps = {
   adminId: string;
-  descriptionState: Partial<CombinedDescription>;
-  collectionState: ICollection | null;
-  handleUpdateField: (payload: Partial<CombinedDescription>) => void;
-  handleCollectionUpdate: (payload: Partial<ICollection> | null) => void;
 };
 
-export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
-  adminId,
-  descriptionState,
-  collectionState,
-  handleUpdateField,
-  handleCollectionUpdate,
-}) => {
+export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
   const dispatch = useAppDispatch();
+
+  const language = useAppSelector(selectLanguage);
+
+  const value = useAppSelector(selectCurrentLanguageValue);
+
+  const { collectionsList } = useAppSelector((state) => state.collections);
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   const [isCollectionsOpen, setCollectionsOpen] = useState<boolean>(false);
 
+  const [initStateCopy, setInitStateCopy] = useState({} as typeof value);
+
+  useEffect(() => {
+    if (!collectionsList.length) dispatch(getAllCollections());
+  }, [dispatch, collectionsList]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(value) as unknown as typeof value);
+  });
+
+  useBeforeUnload(!isEqual(value, initStateCopy));
+
+  if (!value) return <div>Loading...</div>;
+
+  const { descriptionState, collectionState } = value;
+
   const {
     grades,
     checkboxes_state,
-    title,
     about_description,
     raiting,
     review_count,
-    developer_name,
     number_of_downloads,
   } = descriptionState;
 
   const { release_date, last_update, version, android_version, whats_new } =
-    about_description as IAboutGameDescription;
+    about_description as IDescriptionAbout;
 
-  const { collectionsList } = useAppSelector((state) => state.collections);
+  const handleUpdateField = (payload: Partial<CombinedDescription>) => {
+    if (language) {
+      dispatch(
+        updateLanguageData({
+          state: "descriptionState",
+          payload,
+          currentLanguage: language,
+        })
+      );
+    }
+  };
 
-  const collectionCreateHandler = async ({
-    collectionImage,
-    collectionName,
-    images,
-  }: ICollection) => {
-    const { _id, icon, name, screenShots } = await createCollection({
-      adminId,
-      name: collectionName,
-      icon: collectionImage,
-      screenShots: images,
-    });
+  const handleCollectionUpdate = (payload: Partial<ICollection> | null) => {
+    if (!language) return;
+    dispatch(
+      updateLanguageData({
+        state: "collectionState",
+        payload,
+        currentLanguage: language,
+      })
+    );
+  };
 
-    handleCollectionUpdate({
-      _id,
-      collectionImage: icon,
-      collectionName: name,
-      images: screenShots,
-    });
+  const collectionCreateHandler = async (payload: Omit<ICollection, "_id">) => {
+    if (!language) return;
 
-    dispatch(getAllCollections());
+    const response = await dispatch(createCollection({ ...payload, adminId }));
+
+    if (createCollection.fulfilled.match(response)) {
+      const { _id, icon, name, screenShots } = response.payload;
+
+      dispatch(
+        updateLanguageData({
+          state: "collectionState",
+          payload: {
+            _id,
+            collectionImage: icon,
+            collectionName: name,
+            images: screenShots,
+          },
+          currentLanguage: language,
+        })
+      );
+
+      dispatch(getAllCollections());
+    }
   };
 
   const handleCheckboxes = (val: { id: number; value: boolean }) =>
@@ -88,10 +130,6 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         checkbox.id === val.id ? { ...checkbox, value: val.value } : checkbox
       ),
     });
-
-  useEffect(() => {
-    if (!collectionsList.length) dispatch(getAllCollections());
-  }, [dispatch, collectionsList]);
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px]">
@@ -151,7 +189,18 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                     value={item.value}
                     rating={item.raiting}
                     onChange={(e) =>
-                      dispatch(setGrade({ index, value: e.target.value }))
+                      handleUpdateField({
+                        grades: grades.map((el, ind) => {
+                          if (index === ind) {
+                            return {
+                              ...el,
+                              value: e.target.value,
+                            };
+                          }
+
+                          return el;
+                        }),
+                      })
                     }
                   />
                 );
@@ -192,17 +241,19 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                       />
                     </div>
                   )}
-                  {collectionState.images.map((el: string | null, index) => {
-                    return el ? (
-                      <div key={index} className="flex  h-full">
-                        <img
-                          src={el}
-                          alt="Uploaded"
-                          className="max-w-28.75 min-h-57 rounded-[11px]"
-                        />
-                      </div>
-                    ) : null;
-                  })}
+                  {collectionState.images.map(
+                    (el: string | null, index: number) => {
+                      return el ? (
+                        <div key={index} className="flex  h-full">
+                          <img
+                            src={el}
+                            alt="Uploaded"
+                            className="max-w-28.75 min-h-57 rounded-[11px]"
+                          />
+                        </div>
+                      ) : null;
+                    }
+                  )}
                 </div>
               </div>
             )}
@@ -257,22 +308,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                       },
                     })
                   }
-                  icon={
-                    <svg
-                      width="15"
-                      height="13"
-                      viewBox="0 0 15 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
-                        fill="#717171"
-                      />
-                    </svg>
-                  }
+                  icon={<IconCalendar />}
                 />
               </Field>
 
@@ -280,7 +316,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 label="Количество скачиваний"
                 container_classes="flex-1/2"
                 placeholder="10000000"
-                value={number_of_downloads}
+                value={number_of_downloads ?? ""}
                 onUpdateValue={(e) =>
                   handleUpdateField({
                     number_of_downloads: e.target.value,
@@ -293,7 +329,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 container_classes="flex-1/3 mr-5.75"
                 label="Требуемая версия андройд"
                 type="text"
-                value={android_version}
+                value={android_version ?? ""}
                 onUpdateValue={(e) =>
                   handleUpdateField({
                     about_description: {
@@ -308,7 +344,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                 <DatePicker
                   selected={last_update}
                   isClearable
-                  showIcon={!last_update}
+                  showIcon
                   dateFormat="dd.MM.yyyy"
                   placeholderText={format(new Date(), "dd.MM.yyyy")}
                   onChange={(date) =>
@@ -319,22 +355,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
                       },
                     })
                   }
-                  icon={
-                    <svg
-                      width="15"
-                      height="13"
-                      viewBox="0 0 15 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4.09995 0.502441C3.63051 0.502441 3.24995 0.838787 3.24995 1.25369V2.00494H2.39995C1.46107 2.00494 0.699951 2.67763 0.699951 3.50744V11.0199C0.699951 11.8497 1.46107 12.5224 2.39995 12.5224H12.6C13.5388 12.5224 14.3 11.8497 14.3 11.0199V3.50744C14.3 2.67763 13.5388 2.00494 12.6 2.00494H11.75V1.25369C11.75 0.838787 11.3694 0.502441 10.9 0.502441C10.4305 0.502441 10.05 0.838787 10.05 1.25369V2.00494H4.94995V1.25369C4.94995 0.838787 4.56939 0.502441 4.09995 0.502441ZM4.09995 4.25869C3.63051 4.25869 3.24995 4.59504 3.24995 5.00994C3.24995 5.42485 3.63051 5.76119 4.09995 5.76119H10.9C11.3694 5.76119 11.75 5.42485 11.75 5.00994C11.75 4.59504 11.3694 4.25869 10.9 4.25869H4.09995Z"
-                        fill="#717171"
-                      />
-                    </svg>
-                  }
+                  icon={<IconCalendar />}
                 />
               </Field>
               <InputDefault
@@ -373,7 +394,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         <div className="fixed inset-0 flex w-screen items-center justify-center">
           <CollectionCreate
             onPopupHandler={() => setModalOpen(false)}
-            collectionCreateHandler={(val) => collectionCreateHandler(val)}
+            collectionCreateHandler={collectionCreateHandler}
           />
         </div>
       </Dialog>
@@ -383,7 +404,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({
         className="relative z-50"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center">
+        <div className="fixed inset-0 flex w-screen items-center justify-center overflow-y-scroll">
           <CollectionsList
             onPopupHandler={() => setCollectionsOpen(false)}
             handleCollectionUpdate={handleCollectionUpdate}

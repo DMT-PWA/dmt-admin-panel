@@ -1,3 +1,5 @@
+import { Language } from "src/shared/types";
+
 const countryList = [
   "Algeria",
   "Egypt",
@@ -82,7 +84,7 @@ const languages = [
   },
 ];
 
-const countryToLanguageMap: Record<string, { label: string; value: number }> = {
+const countryToLanguageMap: Record<string, Language> = {
   algeria: { label: "Arabic", value: 0 },
   egypt: { label: "Arabic", value: 0 },
   iraq: { label: "Arabic", value: 0 },
@@ -94,7 +96,7 @@ const countryToLanguageMap: Record<string, { label: string; value: number }> = {
   indonesia: { label: "Arabic", value: 0 },
   malaysia: { label: "Malay", value: 0 },
   singapore: { label: "Malay", value: 0 },
-  unitedKingdom: { label: "English", value: 0 },
+  "united kingdom": { label: "English", value: 0 },
   pakistan: { label: "Urdu", value: 0 },
   russia: { label: "Russian", value: 0 },
   senegal: { label: "French", value: 0 },

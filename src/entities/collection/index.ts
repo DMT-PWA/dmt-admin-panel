@@ -8,4 +8,4 @@ export {
   resetState,
 } from "./model";
 
-export type { CollectionResponse, ICollection } from "./model/types"
+export type { CollectionResponse } from "./model/types";

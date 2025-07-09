@@ -19,7 +19,7 @@ const metricsSlice = createSlice({
 
     removeFacebookPixelField: (state, action: PayloadAction<number>) => {
       state.facebookPixelList = state.facebookPixelList.filter(
-        (item, index) => index !== action.payload
+        (_, index) => index !== action.payload
       );
     },
 
@@ -36,8 +36,6 @@ const metricsSlice = createSlice({
     ) => {
       state.facebookPixelList[action.payload.id].token = action.payload.value;
     },
-
-    setRegistration: (state, action) => {},
   },
 
   extraReducers: (builder) => {

@@ -18,8 +18,6 @@ const LayoutWithSidebar = () => {
   const dispatch = useAppDispatch();
   const appId = matchCreate?.params.appId || matchEdit?.params.appId;
 
-  const isEdit = matchEdit?.pathname.startsWith("/pwa_edit");
-
   useEffect(() => {
     if (!appId) return;
     dispatch(setAppId(appId));

@@ -1,3 +1,3 @@
-import { ICollection } from "src/entities/collection";
+import { ICollection } from "src/shared/types";
 
 export type Collections = Array<ICollection>;

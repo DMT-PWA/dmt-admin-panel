@@ -2,19 +2,21 @@ import clsx from "clsx";
 import { format } from "date-fns";
 import { FC } from "react";
 import { IUserComment } from "src/shared/types";
+import { CommentsList } from "src/entities/comments/@x/reviewer";
+type ReviewerFields = "findHelpful" | "yes" | "no";
 
-type ReviewerProps = {};
+type ReviewerProps = Record<ReviewerFields, string> & {
+  isArabic: boolean;
+  commentsList: CommentsList;
+};
 
-const Reviewer: FC = (props) => {
+const Reviewer: FC<ReviewerProps> = (props) => {
   const {
-    reviewData,
-    helpful = "people found this review helpful",
     findHelpful = "Did you find this helpful?",
     yes = "Yes",
     no = "No",
-    onClick,
-    commentsList,
     isArabic,
+    commentsList,
   } = props;
 
   const anyStars = (review_date: Date | string, review_raiting: number) => {
@@ -93,10 +95,7 @@ const Reviewer: FC = (props) => {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="overflow-hidden flex flex-row items-center justify-start py-1 px-2.5 box-border w-6 h-6"
-                  onClick={onClick}
-                >
+                <div className="overflow-hidden flex flex-row items-center justify-start py-1 px-2.5 box-border w-6 h-6">
                   <img
                     className="h-4 w-1 relative"
                     alt=""

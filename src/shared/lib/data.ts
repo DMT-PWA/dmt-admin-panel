@@ -1,4 +1,4 @@
-import { dataByTrasnslation } from "./translations";
+import { countryData } from "./translations";
 
 export const appData = {
   _id: {
@@ -16,7 +16,7 @@ export const appData = {
     "https://res.cloudinary.com/datkh2oxv/image/upload/v1737554792/dmt/1xbet-materials/bg-desktop_y4c8zy.svg",
   appTitle: "1xBet",
   appSubTitle: "1xBet",
-  ...dataByTrasnslation,
+  ...countryData,
   createdAt: {
     $date: "2025-01-21T15:41:46.020Z",
   },
