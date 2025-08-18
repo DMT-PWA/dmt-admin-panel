@@ -236,7 +236,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                       />
                       <ButtonDefault
                         btn_text="Удалить"
-                        btn_classes="btn__orange btn__orange-view-4"
+                        btn_classes="btn__orange btn__orange-view-4 py-2 px-4 !rounded-[6px]"
                         onClickHandler={() => handleCollectionUpdate(null)}
                       />
                     </div>
@@ -279,7 +279,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
             </Field>
             <div className="flex gap-[23px] pt-[22px]">
               <InputDefault
-                container_classes="flex-1/4"
+                container_classes="md:flex-1/4 flex-1/3"
                 label="Версия"
                 type="number"
                 value={version ?? ""}
@@ -292,7 +292,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                   })
                 }
               />
-              <Field className="flex flex-1/4 flex-col gap-1.5">
+              <Field className="flex md:flex-1/4 flex-1/3 flex-col gap-1.5">
                 <Label className={"title__view-1"}>Дата выхода</Label>
                 <DatePicker
                   selected={release_date}
@@ -314,7 +314,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
 
               <InputDefault
                 label="Количество скачиваний"
-                container_classes="flex-1/2"
+                container_classes="md:flex-1/2 flex-1/3"
                 placeholder="10000000"
                 value={number_of_downloads ?? ""}
                 onUpdateValue={(e) =>
@@ -359,7 +359,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
                 />
               </Field>
               <InputDefault
-                container_classes="flex-2/3"
+                container_classes="md:flex-2/3 flex-1/3"
                 label="Возрастные ограничения"
               />
             </div>

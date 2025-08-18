@@ -1,5 +1,10 @@
 import { FC } from "react";
-import Select, { ActionMeta, SingleValue } from "react-select";
+import Select, {
+  ActionMeta,
+  GroupBase,
+  SelectComponentsConfig,
+  SingleValue,
+} from "react-select";
 
 type Option = {
   readonly value: string;
@@ -16,6 +21,9 @@ interface ISelectProps {
     actionMeta: ActionMeta<{ value: string; label: string }>
   ) => void;
   isDisabled: boolean;
+  components:
+    | Partial<SelectComponentsConfig<Option, false, GroupBase<Option>>>
+    | undefined;
 }
 
 export const CustomSelect: FC<Partial<ISelectProps>> = ({
@@ -25,6 +33,7 @@ export const CustomSelect: FC<Partial<ISelectProps>> = ({
   value = null,
   onChange,
   isDisabled = false,
+  components,
 }) => {
   return (
     <Select
@@ -32,6 +41,7 @@ export const CustomSelect: FC<Partial<ISelectProps>> = ({
       placeholder={placeholder}
       value={value}
       openMenuOnFocus
+      components={components}
       isDisabled={isDisabled}
       onChange={onChange}
       className={`custom-select ${classes}`}

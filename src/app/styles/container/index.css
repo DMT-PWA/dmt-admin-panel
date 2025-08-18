@@ -12,6 +12,17 @@
   @apply pt-[51px];
 }
 
+@media (width <= 1920px) {
+  /* .container__default {
+    padding: 0;
+    padding-left: 10px;
+  } */
+
+  .container__sidebar {
+    display: none;
+  }
+}
+
 .container__view-1 {
   display: flex;
   gap: 13px;
@@ -27,6 +38,16 @@
   background: var(--color-bg);
   border-radius: 37px;
 }
+
+.container__view-3 {
+  display: flex;
+  gap: 21px;
+  padding-top: 27px;
+  background: var(--color-white);
+  border-radius: 37px;
+  box-shadow: 0px 1px 3px 0px #0000001a;
+}
+
 .container__sidebar .container__logo {
   margin-left: 30px;
   margin-right: 34px;

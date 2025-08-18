@@ -15,6 +15,7 @@ const defaultState: IDesign = {
   languagesList: null,
   currentCountry: null,
   currentLanguage: null,
+  displayId: "",
 };
 
 export const pwaDesignSlice = createSlice({
@@ -73,13 +74,15 @@ export const pwaDesignSlice = createSlice({
         state.languagesList = languageList;
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-        const { displayName, marketerTag } = action.payload;
+        const { displayName, marketerTag, displayId } = action.payload;
 
         if (!displayName) return;
 
         state.pwa_title = displayName;
 
         if (marketerTag) state.pwa_tags = marketerTag;
+
+        if (displayId) state.displayId = displayId;
       });
   },
 });

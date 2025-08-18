@@ -49,6 +49,7 @@ const MainPage = () => {
         <ButtonDefault
           btn_text="Статистика PUSH"
           btn_classes="btn__white text-view-5 !min-h-13.25 px-12 py-3"
+          onClickHandler={() => navigate("/push_notification")}
         />
       </div>
       <div className="container__view-1 justify-between mt-5.5 px-9.5 pb-9">

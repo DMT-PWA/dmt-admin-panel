@@ -5,6 +5,7 @@ import clsx from "clsx";
 import shevron from "src/shared/assets/icons/shevron.png";
 import dots from "src/shared/assets/icons/dots.png";
 import logo from "src/shared/assets/images/logo.png";
+import paperAirplane from "src/shared/assets/icons/paper-airplane.svg";
 type listItem = {
   id: number;
   title: string;
@@ -86,6 +87,21 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
             ))}
           </ul>
         ) : null}
+        <div className="flex items-center pl-6 h-[50px]">
+          <img
+            src={paperAirplane}
+            className="mr-[17px]"
+            style={{ maxHeight: "22px" }}
+            width={22}
+            alt="dots"
+          />
+          <span
+            className="text__default cursor-pointer text__bold mr-[79px]"
+            onClick={() => navigate("/push_notification/list")}
+          >
+            PUSH
+          </span>
+        </div>
       </nav>
     </div>
   );

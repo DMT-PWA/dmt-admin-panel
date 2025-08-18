@@ -11,4 +11,5 @@ export interface IDesign {
   languagesList: LanguagesList;
   currentCountry: Country;
   currentLanguage: Language | null;
+  displayId: string;
 }

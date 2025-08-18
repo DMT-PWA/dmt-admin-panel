@@ -62,6 +62,7 @@ export default {
         poppins: "Poppins",
         inter: "Inter",
         product_sans: "'Product Sans'",
+        onest: "'Onest', serif",
       },
       borderRadius: {
         "9980xl": "9999px",
