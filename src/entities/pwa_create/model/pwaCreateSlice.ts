@@ -12,12 +12,6 @@ const pwaCreateSlice = createSlice({
   name: "create",
   initialState,
   reducers: {
-    setCurrentStage(state, action: PayloadAction<string>) {
-      state.currentStage = action.payload;
-    },
-    setChanged: (state, action: PayloadAction<boolean>) => {
-      state.isChanged = action.payload;
-    },
     setAppId: (state, action: PayloadAction<string>) => {
       state.appId = action.payload;
     },
@@ -30,11 +24,6 @@ const pwaCreateSlice = createSlice({
   },
 });
 
-export const {
-  setCurrentStage,
-  setChanged,
-  setAppId,
-  setCommentId,
-  setDescriptionId,
-} = pwaCreateSlice.actions;
+export const { setAppId, setCommentId, setDescriptionId } =
+  pwaCreateSlice.actions;
 export default pwaCreateSlice.reducer;

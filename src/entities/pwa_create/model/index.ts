@@ -1,6 +1,5 @@
 export {
   default as pwaCreateReducer,
-  setCurrentStage,
   setAppId,
   setCommentId,
   setDescriptionId,

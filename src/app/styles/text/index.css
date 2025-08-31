@@ -83,6 +83,14 @@
   line-height: 150%;
 }
 
+.text-view-13 {
+  font-size: 14px;
+  font-family: "Onest", serif;
+  font-weight: 500;
+  line-height: 100%;
+  color: var(--color-gray-1);
+}
+
 .text__default.text__bold {
   font-weight: 700;
 }

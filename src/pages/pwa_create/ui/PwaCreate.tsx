@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { selectLanguage } from "src/features/languageData";
 
 type PwaCreateProps = {
-  appId: string;
+  appId?: string;
   isEdit: boolean;
 };
 
@@ -29,10 +29,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const language = useAppSelector(selectLanguage);
 
-  const fetchAppById = useCallback(
-    () => dispatch(getPwaById(appId)),
-    [appId, dispatch]
-  );
+  const fetchAppById = useCallback(() => {
+    if (appId) dispatch(getPwaById(appId));
+  }, [appId, dispatch]);
 
   const [saved, setSaved] = useState<boolean>(false);
 
@@ -64,6 +63,8 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
 
   const fetchDataByCountry = useCallback(
     (country: string, lang: string) => {
+      if (!appId) return;
+
       setLoading(true);
 
       loadDescriptionData(appId, lang, country);
@@ -167,11 +168,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           <Routes>
             <Route
               path="design"
-              element={
-                !loading && (
-                  <PwaForm appId={isEdit ? appId : null} isEdit={isEdit} />
-                )
-              }
+              element={!loading && <PwaForm isEdit={isEdit} />}
             />
             {["description", "comments"].map((path) => (
               <Route
@@ -220,7 +217,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             <Route path="comment_update/:id" element={<PwaCommentsCreate />} />
             <Route path="settings" element={<PwaSettings />} />
             <Route path="metrics" element={<PwaMetrics />} />
-            <Route path="*" element={<PwaForm appId={appId} />} />
+            <Route path="*" element={<PwaForm />} />
           </Routes>
 
           {!loading && showPreview && <PhonePreview />}

@@ -20,9 +20,12 @@
   --color-gray-5: #bbbbbb;
   --color-gray-6: #5f6368;
   --color-gray-7: #e5e7eb;
+  --color-gray-bg: #f9fafb;
   --color-gray-100: #202124;
 
   --color-red-1: #d74040;
 
   --color-black-1: #111827;
+
+  --breakpoint-md: 1500px;
 }

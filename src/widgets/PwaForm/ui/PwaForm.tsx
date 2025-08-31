@@ -22,17 +22,17 @@ import { cloneDeep, isEqual } from "lodash";
 import { IDesign } from "src/shared/api/design";
 
 type PwaFormProps = {
-  appId: string | null;
   isEdit?: boolean;
 };
 
-const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
+const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
   const [valid, setValid] = useState<boolean>(true);
 
   const navigate = useNavigate();
   const state = useAppSelector((state) => state.pwa_design);
 
-  const { languagesList, pwa_title, pwa_tags, currentCountry } = state;
+  const { languagesList, pwa_title, pwa_tags, currentCountry, displayId } =
+    state;
 
   const [initStateCopy, setInitStateCopy] = useState<IDesign | null>(null);
 
@@ -90,11 +90,11 @@ const PwaFormComponent: FC<PwaFormProps> = ({ appId, isEdit = false }) => {
           <div className="flex gap-37.5">
             <div>
               <strong className="text-view-12">iD:</strong>
-              <span className="text-view-12 text-orange"> {appId}</span>
+              <span className="text-view-12 text-orange"> {displayId}</span>
             </div>
             <div>
               <strong className="text-view-12">Название:</strong>
-              <span className="text-view-12 text-orange"> Plinko OLZ NL</span>
+              <span className="text-view-12 text-orange">{pwa_title}</span>
             </div>
           </div>
           <ButtonDefault
