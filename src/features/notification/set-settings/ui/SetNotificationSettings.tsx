@@ -2,13 +2,13 @@ import { FC, useEffect, useState } from "react";
 import { InputDefault } from "src/shared/ui/input";
 import { CustomSelect } from "src/shared/ui/select";
 import Select from "react-select";
+import { SelectValueProp } from "src/shared/types";
 import { NotificationSettings } from "src/shared/types/notification.types";
-import { languages } from "src/entities/pwa_design/lib/const";
 
 type Props = {
   pwas: NotificationSettings["pwas"];
-  settings: NotificationSettings;
-  setSettings: (arg: NotificationSettings) => void;
+  pwa: NotificationSettings["pwa"] | null;
+  setPwa: (arg: NotificationSettings["pwa"] | null) => void;
 };
 const defaultLanguageMessage = (
   <span className="text-view-7 text-xs">
@@ -17,24 +17,16 @@ const defaultLanguageMessage = (
   </span>
 );
 
-const STATUSES = [
-  { value: "on", label: "Включить" },
-  { value: "off", label: "Выключить" },
-];
-
-export const SetNotificationSettings: FC<Props> = ({
-  pwas,
-  settings,
-  setSettings,
-}) => {
-  const [pwasList, setPwasList] = useState<NotificationSettings["pwas"]>([]);
+export const SetNotificationSettings: FC<Props> = ({ pwas, setPwa, pwa }) => {
+  const [pwasList, setPwasList] = useState<
+    Array<SelectValueProp & { defaultLanguage: string }>
+  >([]);
 
   useEffect(() => {
     setPwasList(
       pwas.map((el) => ({
-        ...el,
         value: el._id || "",
-        label: `${el.displayId} - ${el.displayName}`,
+        label: el.displayName || "",
         defaultLanguage: el.defaultLanguage || "",
       }))
     );
@@ -50,51 +42,45 @@ export const SetNotificationSettings: FC<Props> = ({
           className="mb-2.25 custom-select"
           placeholder="Выберите pwa"
           options={pwasList}
-          isMulti
           components={{ IndicatorSeparator: null }}
-          classNames={{
-            clearIndicator: () => "!p-0",
-            multiValue: () => "!my-0",
-            multiValueLabel: () => "!py-0",
+          classNames={{ clearIndicator: () => "!p-0" }}
+          onChange={(e) => {
+            if (e) {
+              return setPwa({
+                defaultLanguage: e.defaultLanguage,
+                displayName: e.label,
+                _id: e.value,
+              });
+            }
+
+            return setPwa(null);
           }}
           backspaceRemovesValue
-          onChange={(val) => setSettings({ ...settings, pwas: [...val] })}
         />
         <span className="title__view-1 mb-1">Status</span>
-        <Select
-          options={STATUSES}
-          classNamePrefix="react-select"
-          className="mb-2.25 custom-select"
-          placeholder="Введите статус"
-        />
+        <CustomSelect classes="mb-2.25" placeholder="Введите статус" />
         <span className="title__view-1 mb-1">Название</span>
         <InputDefault
           placeholder="Введите название"
           input_classes="!border-none"
           container_classes="relative mb-2.25"
-          value={settings.title}
           children={
             <button className="absolute w-2.75 h-2.75 bottom-3.75 right-4">
               <img src="/pwa_icons/clear-icon.png" />
             </button>
           }
-          onUpdateValue={(e) =>
-            setSettings({ ...settings, title: e.target.value })
-          }
         />
         <span className="title__view-1 mb-1">Default Languague</span>
         <div>
-          <Select
+          <CustomSelect
             placeholder="Выберите язык"
+            isDisabled={true}
             components={{ DropdownIndicator: null }}
-            classNamePrefix="react-select"
-            className="custom-select"
-            options={languages}
-            onChange={(e) => {
-              if (!e) return;
-
-              setSettings({ ...settings, defaultLanguage: e.label });
-            }}
+            value={
+              pwa
+                ? { label: pwa.defaultLanguage, value: pwa.defaultLanguage }
+                : undefined
+            }
           />
 
           {defaultLanguageMessage}

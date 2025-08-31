@@ -4,5 +4,7 @@ import { Notification } from "src/shared/types/notification.types";
 
 export const getAllNotifications = createAsyncThunk<Notification[]>(
   "notification/getAllNotifications",
-  async () => await apiInstance.get("/notifications")
+  async () => {
+    return await apiInstance.get("/notifications");
+  }
 );
