@@ -9,7 +9,9 @@ type NotificationStringFields =
   | "recurrence"
   | "cronExpression"
   | "adminId"
-  | "appId";
+  | "appId"
+  | "heading"
+  | "message";
 
 export interface Notification extends Record<NotificationStringFields, string> {
   targetUsers: [];
@@ -21,18 +23,24 @@ export interface Notification extends Record<NotificationStringFields, string> {
 
 export interface NotificationTime {
   isRecurring: boolean;
-  daysOfWeek: number[];
-  scheduleTime: string;
+  days: string[];
+  time: Date;
 }
 
 export type NotificationMessage = Pick<
   Notification,
-  "language" | "title" | "body" | "image" | "icon"
->;
+  "language" | "heading" | "message" | "icon"
+> & { image: { url: string; name: string } | string };
 
-type Pwa = { displayName: string; defaultLanguage: string; _id: string };
+type Pwa = {
+  displayName: string;
+  defaultLanguage: string;
+  _id: string;
+  displayId: string;
+};
 
 export type NotificationSettings = {
   pwas: Array<Pwa>;
-  pwa: Pwa;
+  title: Notification["title"];
+  defaultLanguage: string;
 };

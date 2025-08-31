@@ -7,12 +7,14 @@ import { Checkbox, Field, Label } from "@headlessui/react";
 import Select from "react-select";
 import { ButtonDefault } from "src/shared/ui/button";
 import {
+  NotificationMessage,
   NotificationSettings,
   NotificationTime,
 } from "src/shared/types/notification.types";
-import { getAllPwa } from "../lib/notificationForm.thunk";
+import { createNotification, getAllPwa } from "../lib/notificationForm.thunk";
 import { useAppDispatch } from "src/shared/lib/store";
 import { SelectValueProp } from "src/shared/types";
+import { format } from "date-fns";
 
 const events = [
   { value: "Everyone", label: "Все" },
@@ -22,26 +24,42 @@ const events = [
 ];
 
 const DAYS = [
-  { id: 1, label: "Пн" },
-  { id: 2, label: "Вт" },
-  { id: 3, label: "Ср" },
-  { id: 4, label: "Чт" },
-  { id: 5, label: "Пт" },
-  { id: 6, label: "Сб" },
-  { id: 7, label: "Вс" },
+  { id: "Monday", label: "Пн" },
+  { id: "Tuesday", label: "Вт" },
+  { id: "Wednesday", label: "Ср" },
+  { id: "Thursday", label: "Чт" },
+  { id: "Friday", label: "Пт" },
+  { id: "Saturday", label: "Сб" },
+  { id: "Sunday", label: "Вс" },
 ];
 
-export const NotificationForm: FC = () => {
-  const dispatch = useAppDispatch();
+type NotificationFormProps = {
+  navigateToList: () => void;
+};
 
-  const [, setSelectedTime] = useState<Date | null>(new Date());
+export const NotificationForm: FC<NotificationFormProps> = ({
+  navigateToList,
+}) => {
+  const dispatch = useAppDispatch();
 
   const [notificationTimes, handleNotificationTimes] = useState<
     NotificationTime[]
   >([]);
 
   const [pwas, setPwas] = useState<NotificationSettings["pwas"]>([]);
-  const [pwa, setPwa] = useState<NotificationSettings["pwa"] | null>(null);
+
+  const [settings, setSettings] = useState({
+    defaultLanguage: "",
+    pwa: null,
+    pwas: [],
+    title: "",
+  } as NotificationSettings);
+
+  const [notificationMessages, handleNotificationMessages] = useState<
+    NotificationMessage[]
+  >([]);
+
+  const [event, setEvent] = useState<SelectValueProp | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +73,28 @@ export const NotificationForm: FC = () => {
     fetchData();
   }, [dispatch]);
 
+  const saveNotifications = () => {
+    dispatch(
+      createNotification({
+        messages: notificationMessages.map((el) => ({
+          ...el,
+          image: el.image.url,
+        })),
+        defaultLanguage: settings.defaultLanguage,
+        title: settings.title,
+        category: event?.value || "",
+        adminId: "67210571554f552165ee9b65",
+        appIds: pwas.map((el) => el._id),
+        schedules: notificationTimes.map((el) => ({
+          ...el,
+          time: format(el.time, "HH:mm"),
+        })),
+      })
+    );
+
+    navigateToList();
+  };
+
   return (
     <div>
       <div className="container__view-2 flex-col px-7 pb-17.5 h-max mt-12.5">
@@ -63,11 +103,18 @@ export const NotificationForm: FC = () => {
           withContainer={false}
           classes="title__view-2"
         />
-        <SetNotificationSettings pwas={pwas} setPwa={setPwa} pwa={pwa} />
+        <SetNotificationSettings
+          pwas={pwas}
+          settings={settings}
+          setSettings={setSettings}
+        />
       </div>
 
       <div className="container__view-2 flex-col pb-17.5 h-max mt-8.5">
-        <CreateNotificationMessage />
+        <CreateNotificationMessage
+          notificationMessages={notificationMessages}
+          setMessage={handleNotificationMessages}
+        />
       </div>
 
       <div className="flex justify-between">
@@ -98,16 +145,20 @@ export const NotificationForm: FC = () => {
                 handleNotificationTimes(updatedTimes);
               };
 
-              const handleDayToggle = (day: number) => {
+              const handleDayToggle = (day: string) => {
                 handleNotificationTimes(
-                  notificationTimes.map((time) => ({
-                    ...time,
-                    daysOfWeek: time.daysOfWeek.includes(day)
-                      ? time.daysOfWeek
-                          .filter((d) => d !== day)
-                          .sort((a, b) => a - b)
-                      : [...time.daysOfWeek, day].sort((a, b) => a - b),
-                  }))
+                  notificationTimes.map((time, i) => {
+                    if (i === ind) {
+                      return {
+                        ...time,
+                        days: time.days.includes(day)
+                          ? time.days.filter((d) => d !== day)
+                          : [...time.days, day],
+                      };
+                    }
+
+                    return time;
+                  })
                 );
               };
 
@@ -119,13 +170,21 @@ export const NotificationForm: FC = () => {
                   <DatePicker
                     wrapperClassName="ml-7.75 mr-5.25 max-w-31.5"
                     className="max-w-19.5"
-                    selected={new Date()}
-                    onChange={(time) => setSelectedTime(time)}
+                    selected={time.time}
+                    onChange={(e) => {
+                      if (!e) return;
+                      handleNotificationTimes(
+                        notificationTimes.map((el, i) =>
+                          i === ind ? { ...el, time: e } : el
+                        )
+                      );
+                    }}
                     showTimeSelect
                     showTimeSelectOnly
                     timeIntervals={15}
                     timeCaption="Время"
-                    dateFormat="hh:mm"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
                     icon={
                       <svg
                         width="16"
@@ -140,7 +199,6 @@ export const NotificationForm: FC = () => {
                         />
                       </svg>
                     }
-                    timeFormat="hh:mm"
                   />
 
                   <Field className="px-10.5 flex gap-[7px] max-w-[243px] border-x-[1px] border-[#E5E7EB]">
@@ -152,7 +210,7 @@ export const NotificationForm: FC = () => {
                         <Label className="text-view-13">{day.label}</Label>
                         <Checkbox
                           className="group block size-4 rounded border data-[checked]:border-0 bg-white data-[checked]:bg-orange"
-                          checked={time.daysOfWeek.includes(day.id)}
+                          checked={time.days.includes(day.id)}
                           onChange={() => handleDayToggle(day.id)}
                         />
                       </div>
@@ -160,6 +218,7 @@ export const NotificationForm: FC = () => {
                   </Field>
 
                   <Select
+                    classNamePrefix="react-select"
                     className="mx-6.5 min-w-32 custom-select"
                     components={{ DropdownIndicator: null }}
                     options={[
@@ -195,7 +254,11 @@ export const NotificationForm: FC = () => {
               onClickHandler={() =>
                 handleNotificationTimes([
                   ...notificationTimes,
-                  { daysOfWeek: [], isRecurring: true, scheduleTime: "13:00" },
+                  {
+                    days: [],
+                    isRecurring: true,
+                    time: new Date(),
+                  },
                 ])
               }
             />
@@ -208,9 +271,10 @@ export const NotificationForm: FC = () => {
             classes="title__view-2 mb-2"
           />
 
-          <span className="title__view-1">Событие</span>
+          <span className="text__default title__view-1">Событие</span>
           <Select
-            className="mb-2.25 min-w-168.5 custom-select"
+            classNamePrefix="react-select"
+            className="mb-2.25 mt-1.5 min-w-168.5 custom-select"
             components={{ IndicatorSeparator: null }}
             classNames={{
               control: () => "!border-none",
@@ -219,6 +283,8 @@ export const NotificationForm: FC = () => {
             }}
             placeholder="Введите событие"
             options={events}
+            value={event}
+            onChange={setEvent}
           />
 
           <div className="bg-[#F9FAFB] flex justify-between px-8 py-4 rounded-t-[10px] mt-2">
@@ -234,6 +300,12 @@ export const NotificationForm: FC = () => {
           </div>
         </div>
       </div>
+
+      <ButtonDefault
+        btn_text="Сохранить "
+        btn_classes="btn__orange btn__orange-view-7 h-10.5 w-48.5 mt-7"
+        onClickHandler={saveNotifications}
+      />
     </div>
   );
 };
