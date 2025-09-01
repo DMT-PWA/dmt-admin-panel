@@ -45,6 +45,12 @@ class ApiInstance {
 
     return response.data;
   }
+
+  async put<D>(endpoint: string, options: D) {
+    const response = await this.axios.put(endpoint, options);
+
+    return response.data;
+  }
 }
 
 export const apiInstance = new ApiInstance();

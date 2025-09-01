@@ -57,6 +57,10 @@ export const SetNotificationSettings: FC<Props> = ({
             multiValue: () => "!my-0",
             multiValueLabel: () => "!py-0",
           }}
+          value={settings.pwas.map(
+            (selected) =>
+              pwasList.find((option) => option._id === selected._id) || selected
+          )}
           backspaceRemovesValue
           onChange={(val) => setSettings({ ...settings, pwas: [...val] })}
         />
@@ -89,11 +93,15 @@ export const SetNotificationSettings: FC<Props> = ({
             components={{ DropdownIndicator: null }}
             classNamePrefix="react-select"
             className="custom-select"
+            value={settings.defaultLanguage}
             options={languages}
             onChange={(e) => {
               if (!e) return;
 
-              setSettings({ ...settings, defaultLanguage: e.label });
+              setSettings({
+                ...settings,
+                defaultLanguage: e,
+              });
             }}
           />
 

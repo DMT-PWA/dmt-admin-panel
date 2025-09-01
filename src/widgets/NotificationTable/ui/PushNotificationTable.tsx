@@ -50,7 +50,7 @@ export const PushNotificationTable: FC = () => {
     RowDefaultType & { actions?: string }
   >();
   const columns = [
-    columnHelper.accessor("adminId", {
+    columnHelper.accessor("_id", {
       header: "PWA",
       cell: (adminId) => (
         <>
@@ -66,8 +66,11 @@ export const PushNotificationTable: FC = () => {
       header: "Status",
       size: 100,
     }),
-    columnHelper.accessor("language", {
+    columnHelper.accessor("defaultLanguage", {
       header: "Default language",
+      cell: (lang) => {
+        return <>{lang.getValue()}</>;
+      },
       size: 100,
     }),
     columnHelper.accessor("title", {
@@ -105,6 +108,18 @@ export const PushNotificationTable: FC = () => {
                     style={{ height: "14px", width: "14px" }}
                   />
                   Клонировать
+                </button>
+              </MenuItem>
+
+              <MenuItem>
+                <button
+                  onClick={() =>
+                    navigate(`/push_notification/form/${cell.row.original._id}`)
+                  }
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
+                  <img src={pencil} style={{ height: "14px", width: "14px" }} />
+                  Редактировать
                 </button>
               </MenuItem>
 

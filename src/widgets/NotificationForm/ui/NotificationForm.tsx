@@ -11,10 +11,17 @@ import {
   NotificationSettings,
   NotificationTime,
 } from "src/shared/types/notification.types";
-import { createNotification, getAllPwa } from "../lib/notificationForm.thunk";
+import {
+  createNotification,
+  getAllPwa,
+  getNotificationsById,
+  updateNotification,
+} from "../lib/notificationForm.thunk";
 import { useAppDispatch } from "src/shared/lib/store";
 import { SelectValueProp } from "src/shared/types";
 import { format } from "date-fns";
+import { useLocation } from "react-router-dom";
+import { languages } from "src/entities/pwa_design/lib/const";
 
 const events = [
   { value: "Everyone", label: "Все" },
@@ -41,6 +48,8 @@ export const NotificationForm: FC<NotificationFormProps> = ({
   navigateToList,
 }) => {
   const dispatch = useAppDispatch();
+
+  const location = useLocation();
 
   const [notificationTimes, handleNotificationTimes] = useState<
     NotificationTime[]
@@ -73,24 +82,60 @@ export const NotificationForm: FC<NotificationFormProps> = ({
     fetchData();
   }, [dispatch]);
 
+  useEffect(() => {
+    const fetch = async () => {
+      if (location.pathname.split("/").pop() !== "form") {
+        const response = await dispatch(
+          getNotificationsById(location.pathname.split("/").pop() || "")
+        );
+
+        if (getNotificationsById.fulfilled.match(response)) {
+          const { title, defaultLanguage, appIds, messages, schedules } =
+            response.payload;
+
+          setSettings({
+            title,
+            defaultLanguage:
+              languages.find((el) => el.label === defaultLanguage) || "",
+            pwas: appIds,
+          });
+
+          handleNotificationMessages(messages);
+
+          /* handleNotificationTimes(
+            schedules.map((el) => ({ ...el, time: new Date(el.time) }))
+          ); */
+        }
+      }
+    };
+
+    fetch();
+  }, [dispatch, location.pathname]);
+
   const saveNotifications = () => {
-    dispatch(
-      createNotification({
-        messages: notificationMessages.map((el) => ({
-          ...el,
-          image: el.image.url,
-        })),
-        defaultLanguage: settings.defaultLanguage,
-        title: settings.title,
-        category: event?.value || "",
-        adminId: "67210571554f552165ee9b65",
-        appIds: pwas.map((el) => el._id),
-        schedules: notificationTimes.map((el) => ({
-          ...el,
-          time: format(el.time, "HH:mm"),
-        })),
-      })
-    );
+    const payload = {
+      messages: notificationMessages.map((el) => ({
+        ...el,
+        image: el.image.url,
+      })),
+      defaultLanguage: settings.defaultLanguage.label,
+      title: settings.title,
+      category: event?.value || "",
+      adminId: "67210571554f552165ee9b65",
+      appIds: pwas.map((el) => el._id),
+      schedules: notificationTimes.map((el) => ({
+        ...el,
+        time: format(el.time, "HH:mm"),
+      })),
+    };
+
+    if (location.pathname.endsWith("form")) {
+      dispatch(createNotification(payload));
+    } else {
+      dispatch(
+        updateNotification({ id: location.pathname.split("/").pop(), payload })
+      );
+    }
 
     navigateToList();
   };

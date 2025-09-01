@@ -27,9 +27,40 @@ type CreateNotificationPayload = {
   }[];
 };
 
+type UpdateNotificationResponse = {
+  messages: NotificationMessage[];
+  adminId: string;
+  appIds: NotificationSettings["pwas"];
+  title: NotificationSettings["title"];
+  defaultLanguage: NotificationSettings["defaultLanguage"];
+  category: string;
+  schedules: {
+    days: NotificationTime["days"];
+    isRecurring: NotificationTime["isRecurring"];
+    time: string;
+  }[];
+};
+
 export const createNotification = createAsyncThunk<
   unknown,
   CreateNotificationPayload
 >("notification/createNotification", async (payload) => {
   return await apiInstance.post("/notifications", payload);
 });
+
+export const updateNotification = createAsyncThunk<
+  unknown,
+  { payload: CreateNotificationPayload; id: string }
+>(
+  "notification/updateNotification",
+  async ({ id, payload }) =>
+    await apiInstance.put(`/notifications/${id}`, payload)
+);
+
+export const getNotificationsById = createAsyncThunk<
+  UpdateNotificationResponse,
+  string
+>(
+  "notification/getNotificationsById",
+  async (id: string) => await apiInstance.get(`/notifications/${id}`)
+);

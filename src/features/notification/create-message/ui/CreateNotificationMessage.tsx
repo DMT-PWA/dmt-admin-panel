@@ -68,6 +68,9 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
                     className="min-w-63.5 custom-select"
                     placeholder="Выберите язык"
                     classNames={{ control: () => "!border-none" }}
+                    value={languages.find(
+                      (el) => el.label === message.language
+                    )}
                     options={languages}
                     onChange={(e) => {
                       if (!e) return;

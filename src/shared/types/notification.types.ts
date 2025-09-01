@@ -11,7 +11,8 @@ type NotificationStringFields =
   | "adminId"
   | "appId"
   | "heading"
-  | "message";
+  | "message"
+  | "defaultLanguage";
 
 export interface Notification extends Record<NotificationStringFields, string> {
   targetUsers: [];
@@ -42,5 +43,5 @@ type Pwa = {
 export type NotificationSettings = {
   pwas: Array<Pwa>;
   title: Notification["title"];
-  defaultLanguage: string;
+  defaultLanguage: { label: string; value: string } | string;
 };
