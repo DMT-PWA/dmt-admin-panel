@@ -54,7 +54,7 @@ export const updateNotification = createAsyncThunk<
 >(
   "notification/updateNotification",
   async ({ id, payload }) =>
-    await apiInstance.put(`/notifications/${id}`, payload)
+    await apiInstance.patch(`/notifications/${id}`, payload)
 );
 
 export const getNotificationsById = createAsyncThunk<
