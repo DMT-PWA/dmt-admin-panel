@@ -7,7 +7,7 @@ import {
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Title } from "src/shared/ui/title";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "src/shared/lib/store";
@@ -19,7 +19,10 @@ import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
-import { getAllNotifications } from "src/entities/notification/model/notification.thunk";
+import {
+  deleteNotification,
+  getAllNotifications,
+} from "src/entities/notification/model/notification.thunk";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 
 export const PushNotificationTable: FC = () => {
@@ -32,19 +35,25 @@ export const PushNotificationTable: FC = () => {
 
   const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
 
+  const fetchData = useCallback(async () => {
+    const data = await dispatch(getAllNotifications());
+
+    if (getAllNotifications.fulfilled.match(data)) {
+      setNotifications(data.payload);
+    }
+  }, [dispatch]);
+
+  const handleNotificationDelete = async (id: string) => {
+    await dispatch(deleteNotification(id));
+
+    await fetchData();
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await dispatch(getAllNotifications());
-
-      if (getAllNotifications.fulfilled.match(data)) {
-        setNotifications(data.payload);
-      }
-    };
-
     fetchData();
-  }, [dispatch]);
+  }, [fetchData]);
 
   const columnHelper = createColumnHelper<
     RowDefaultType & { actions?: string }
@@ -125,7 +134,12 @@ export const PushNotificationTable: FC = () => {
 
               <div className="my-1 h-px bg-white/5" />
               <MenuItem>
-                <button className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7">
+                <button
+                  onClick={() =>
+                    handleNotificationDelete(cell.row.original._id)
+                  }
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
+                >
                   <img
                     src={trash}
                     style={{

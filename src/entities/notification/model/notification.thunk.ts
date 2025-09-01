@@ -6,3 +6,8 @@ export const getAllNotifications = createAsyncThunk<Notification[]>(
   "notification/getAllNotifications",
   async () => await apiInstance.get("/notifications")
 );
+
+export const deleteNotification = createAsyncThunk<unknown, string>(
+  "notification/deleteNotification",
+  async (id) => await apiInstance.delete(`/notifications/${id}`)
+);

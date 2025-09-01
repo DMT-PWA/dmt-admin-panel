@@ -90,8 +90,14 @@ export const NotificationForm: FC<NotificationFormProps> = ({
         );
 
         if (getNotificationsById.fulfilled.match(response)) {
-          const { title, defaultLanguage, appIds, messages, schedules } =
-            response.payload;
+          const {
+            title,
+            defaultLanguage,
+            appIds,
+            messages,
+            schedules,
+            category,
+          } = response.payload;
 
           setSettings({
             title,
@@ -102,9 +108,20 @@ export const NotificationForm: FC<NotificationFormProps> = ({
 
           handleNotificationMessages(messages);
 
-          /* handleNotificationTimes(
-            schedules.map((el) => ({ ...el, time: new Date(el.time) }))
-          ); */
+          handleNotificationTimes(
+            schedules.map((el) => {
+              const [hours, minutes] = el.time.split(":").map(Number);
+              const date = new Date();
+              date.setHours(hours, minutes, 0, 0);
+
+              return {
+                ...el,
+                time: date,
+              };
+            })
+          );
+
+          setEvent(() => events.find((el) => el.value === category) || null);
         }
       }
     };
@@ -112,7 +129,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
     fetch();
   }, [dispatch, location.pathname]);
 
-  const saveNotifications = () => {
+  const saveNotifications = async () => {
     const payload = {
       messages: notificationMessages.map((el) => ({
         ...el,
@@ -122,7 +139,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
       title: settings.title,
       category: event?.value || "",
       adminId: "67210571554f552165ee9b65",
-      appIds: pwas.map((el) => el._id),
+      appIds: settings.pwas.map((el) => el._id),
       schedules: notificationTimes.map((el) => ({
         ...el,
         time: format(el.time, "HH:mm"),
@@ -130,10 +147,13 @@ export const NotificationForm: FC<NotificationFormProps> = ({
     };
 
     if (location.pathname.endsWith("form")) {
-      dispatch(createNotification(payload));
+      await dispatch(createNotification(payload));
     } else {
-      dispatch(
-        updateNotification({ id: location.pathname.split("/").pop(), payload })
+      await dispatch(
+        updateNotification({
+          id: location.pathname.split("/").pop(),
+          payload,
+        })
       );
     }
 

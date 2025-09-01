@@ -5,6 +5,7 @@ import { NotificationMessage } from "src/shared/types/notification.types";
 import Select from "react-select";
 import { Textarea } from "@headlessui/react";
 import { languages } from "src/entities/pwa_design/lib/const";
+import { handleFileUpload } from "src/features/appData/appDataAPI";
 
 type NotificationMessageProps = {
   notificationMessages: NotificationMessage[];
@@ -64,6 +65,7 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
               <tr key={ind} className="border-y-[1px] border-[#E5E7EB] ">
                 <td className="py-4.5 px-7.75 align-top">
                   <Select
+                    classNamePrefix="react-select"
                     components={{ IndicatorSeparator: null }}
                     className="min-w-63.5 custom-select"
                     placeholder="Выберите язык"
@@ -128,13 +130,11 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
 
                           fileInputRef.current[ind] = el;
                         }}
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
 
                           if (file) {
-                            const fileURL = URL.createObjectURL(file);
-
-                            console.log(fileURL);
+                            const fileURL = await handleFileUpload(file);
 
                             handleMessage(
                               { url: fileURL, name: file.name },
@@ -150,7 +150,7 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
                         {message.image.name
                           ? message.image.name
                           : "Выберите файл"}
-                        {message.image.name && (
+                        {message.image && (
                           <button
                             onClick={() =>
                               handleMessage({ url: "", name: "" }, "image")

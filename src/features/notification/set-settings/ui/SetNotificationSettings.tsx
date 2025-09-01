@@ -57,9 +57,8 @@ export const SetNotificationSettings: FC<Props> = ({
             multiValue: () => "!my-0",
             multiValueLabel: () => "!py-0",
           }}
-          value={settings.pwas.map(
-            (selected) =>
-              pwasList.find((option) => option._id === selected._id) || selected
+          value={settings.pwas.map((selected) =>
+            pwasList.find((option) => option._id === selected._id)
           )}
           backspaceRemovesValue
           onChange={(val) => setSettings({ ...settings, pwas: [...val] })}
