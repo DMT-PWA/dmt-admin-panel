@@ -9,6 +9,7 @@ export type RowDefaultType = Pick<
   displayName: string;
   landingStatus: string;
   defaultNaming: string;
+  domainApp: string;
 };
 
 export type ClonePwaPayload = {

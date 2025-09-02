@@ -52,6 +52,7 @@ export const PwaTable: FC = () => {
       createdAt: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
       landingStatus: obj.landingStatus,
       domainLanding: obj.domainLanding,
+      domainApp: obj.domainApp,
     }));
   }, []);
   useEffect(() => {
@@ -105,9 +106,7 @@ export const PwaTable: FC = () => {
           <>
             <span>{domain.getValue()}</span>
             <button
-              onClick={() =>
-                onCopyHandler(domain.row.original.domainLanding || "")
-              }
+              onClick={() => onCopyHandler(domain.row.original.domainApp || "")}
             >
               <img src={link_icon} style={{ height: "12px", width: "12px" }} />
             </button>

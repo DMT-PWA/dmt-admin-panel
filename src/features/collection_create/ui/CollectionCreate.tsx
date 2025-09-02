@@ -8,6 +8,8 @@ import { useAppDispatch } from "src/shared/lib/store";
 import { addCollection } from "src/entities/pwa_design";
 import { ICollection } from "src/shared/types";
 import { handleFileUpload } from "src/features/appData/appDataAPI";
+import { useDebounce } from "react-use";
+import { validateCollectionName } from "src/entities/pwa_design/model/pwaDesignThunk";
 
 type CollectionCreate = {
   onPopupHandler: () => void;
@@ -18,6 +20,8 @@ export const CollectionCreate: FC<CollectionCreate> = ({
   onPopupHandler,
   collectionCreateHandler,
 }) => {
+  const [valid, setValid] = useState<boolean>(true);
+
   const [collectionState, setCollectionState] = useState<Partial<ICollection>>({
     _id: "",
     collectionImage: null,
@@ -94,6 +98,20 @@ export const CollectionCreate: FC<CollectionCreate> = ({
     }
   };
 
+  useDebounce(
+    async () => {
+      if (collectionName) {
+        const result = await dispatch(validateCollectionName(collectionName));
+
+        if (validateCollectionName.fulfilled.match(result)) {
+          setValid(result.payload.status);
+        }
+      }
+    },
+    500,
+    [collectionName]
+  );
+
   return (
     <div className="relative bg-white pt-[89px] pb-11 px-6.5">
       <button
@@ -135,6 +153,7 @@ export const CollectionCreate: FC<CollectionCreate> = ({
         <InputDefault
           label="Название коллекции"
           placeholder="Добавьте название коллекции"
+          valid={valid}
           value={collectionName ?? ""}
           onUpdateValue={(e) =>
             setCollectionState((prevVal) => ({

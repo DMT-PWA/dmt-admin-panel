@@ -19,6 +19,7 @@ type CreateNotificationPayload = {
   appIds: Array<string>;
   title: NotificationSettings["title"];
   defaultLanguage: NotificationSettings["defaultLanguage"];
+  isActive: NotificationSettings["isActive"];
   category: string;
   schedules: {
     days: NotificationTime["days"];
@@ -33,6 +34,7 @@ type UpdateNotificationResponse = {
   appIds: NotificationSettings["pwas"];
   title: NotificationSettings["title"];
   defaultLanguage: NotificationSettings["defaultLanguage"];
+  isActive: NotificationSettings["isActive"];
   category: string;
   schedules: {
     days: NotificationTime["days"];

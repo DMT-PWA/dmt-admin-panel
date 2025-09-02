@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { InputDefault } from "src/shared/ui/input";
-import { CustomSelect } from "src/shared/ui/select";
 import Select from "react-select";
 import { NotificationSettings } from "src/shared/types/notification.types";
 import { languages } from "src/entities/pwa_design/lib/const";
@@ -69,6 +68,13 @@ export const SetNotificationSettings: FC<Props> = ({
           classNamePrefix="react-select"
           className="mb-2.25 custom-select"
           placeholder="Введите статус"
+          value={settings.isActive ? STATUSES[0] : STATUSES[1]}
+          onChange={(val) =>
+            setSettings({
+              ...settings,
+              isActive: val?.value === "on" ? true : false,
+            })
+          }
         />
         <span className="title__view-1 mb-1">Название</span>
         <InputDefault

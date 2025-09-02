@@ -37,9 +37,21 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
     return pathname.endsWith(item);
   };
 
-  /* useEffect(() => {
-    setCurrentTab('')
-  }, [currentTab]) */
+  useEffect(() => {
+    if (pathname.startsWith("/push_notification")) {
+      setCurrentTab("PUSH");
+    } else {
+      setCurrentTab("PWA");
+    }
+  }, [pathname]);
+
+  /*  useEffect(() => {
+    if (isOpen && pathname.startsWith("/push_notification")) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [pathname, isOpen]); */
 
   return (
     <div className="container__sidebar">
@@ -57,9 +69,11 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
               alt="dots"
             />
             <span
-              className="text__default cursor-pointer text__bold mr-[79px]"
+              className={clsx(
+                "text__default cursor-pointer text__bold mr-[79px]",
+                { "!text-orange": currentTab === "PWA" }
+              )}
               onClick={() => {
-                setCurrentTab("PWA");
                 navigate("/pwa");
               }}
             >
@@ -126,7 +140,6 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
               { "!text-orange": currentTab === "PUSH" }
             )}
             onClick={() => {
-              setCurrentTab("PUSH");
               navigate("/push_notification/list");
             }}
           >

@@ -62,6 +62,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
     pwa: null,
     pwas: [],
     title: "",
+    isActive: true,
   } as NotificationSettings);
 
   const [notificationMessages, handleNotificationMessages] = useState<
@@ -97,6 +98,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
             messages,
             schedules,
             category,
+            isActive,
           } = response.payload;
 
           setSettings({
@@ -104,6 +106,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
             defaultLanguage:
               languages.find((el) => el.label === defaultLanguage) || "",
             pwas: appIds,
+            isActive: isActive,
           });
 
           handleNotificationMessages(messages);
@@ -136,6 +139,7 @@ export const NotificationForm: FC<NotificationFormProps> = ({
         image: el.image.url,
       })),
       defaultLanguage: settings.defaultLanguage.label,
+      isActive: settings.isActive,
       title: settings.title,
       category: event?.value || "",
       adminId: "67210571554f552165ee9b65",

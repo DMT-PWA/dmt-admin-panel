@@ -20,6 +20,7 @@ import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
 import {
+  cloneNotification,
   deleteNotification,
   getAllNotifications,
 } from "src/entities/notification/model/notification.thunk";
@@ -49,6 +50,12 @@ export const PushNotificationTable: FC = () => {
     await fetchData();
   };
 
+  const handleNotificationClone = async (id: string) => {
+    await dispatch(cloneNotification(id));
+
+    await fetchData();
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,12 +66,12 @@ export const PushNotificationTable: FC = () => {
     RowDefaultType & { actions?: string }
   >();
   const columns = [
-    columnHelper.accessor("_id", {
+    columnHelper.accessor("appIds", {
       header: "PWA",
       cell: (adminId) => (
         <>
-          <span>{adminId.getValue()}</span>
-          <button onClick={() => onCopyHandler(adminId.getValue())}>
+          <span>{adminId.getValue()[0]._id}</span>
+          <button onClick={() => onCopyHandler(adminId.getValue()[0]._id)}>
             <img src={copy_icon} style={{ height: "12px", width: "12px" }} />
           </button>
         </>
@@ -111,7 +118,10 @@ export const PushNotificationTable: FC = () => {
               className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
             >
               <MenuItem>
-                <button className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4">
+                <button
+                  onClick={() => handleNotificationClone(cell.row.original._id)}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
                   <img
                     src={copy_icon}
                     style={{ height: "14px", width: "14px" }}

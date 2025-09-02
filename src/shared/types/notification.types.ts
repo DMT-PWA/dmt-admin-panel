@@ -20,6 +20,8 @@ export interface Notification extends Record<NotificationStringFields, string> {
   sentAt: Date;
   isRecurring: boolean;
   daysOfWeek: number[];
+  appIds: Pwa[];
+  _id: string;
 }
 
 export interface NotificationTime {
@@ -44,4 +46,5 @@ export type NotificationSettings = {
   pwas: Array<Pwa>;
   title: Notification["title"];
   defaultLanguage: { label: string; value: string } | string;
+  isActive: boolean;
 };
