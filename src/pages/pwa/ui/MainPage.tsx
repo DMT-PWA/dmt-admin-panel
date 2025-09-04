@@ -24,6 +24,8 @@ const MainPage = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  const [idSearch, setIdSearch] = useState("");
+
   const handleDateChange: DatePickerProps["onChange"] = (
     dates: [Date | null, Date | null] | null
   ) => {
@@ -58,6 +60,8 @@ const MainPage = () => {
             label="iD"
             input_classes="w-[352px]"
             placeholder="Поиск по iD"
+            value={idSearch}
+            onUpdateValue={(e) => setIdSearch(e.target.value)}
           />
           <InputDefault
             label="Название PWA"
@@ -83,7 +87,7 @@ const MainPage = () => {
           icon={<IconCalendar />}
         />
       </div>
-      <PwaTable />
+      <PwaTable idSearch={idSearch} />
     </div>
   );
 };

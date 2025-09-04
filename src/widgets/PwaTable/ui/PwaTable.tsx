@@ -16,7 +16,12 @@ import { useAppDispatch } from "src/shared/lib/store";
 import { setAppId, createRenderService } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { ClonePwaPayload, RowDefaultType } from "../lib/types";
-import { clonePwa, deletePwa, getAllPwa } from "../lib/table.thunk";
+import {
+  clonePwa,
+  deletePwa,
+  getAllPwa,
+  getPwaByDisplayId,
+} from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
@@ -26,8 +31,13 @@ import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
+import { useDebounce } from "react-use";
 
-export const PwaTable: FC = () => {
+type PwaTableProps = {
+  idSearch: string;
+};
+
+export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
   const [pwas, setPwas] = useState<Array<RowDefaultType>>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -67,6 +77,29 @@ export const PwaTable: FC = () => {
 
     fetchData();
   }, [formatTableData, dispatch]);
+
+  //TO DO
+  /* useDebounce(
+    async () => {
+      if (!idSearch.length) {
+        const data = await dispatch(getAllPwa());
+
+        if (getAllPwa.fulfilled.match(data)) {
+          const formattedData = formatTableData(data.payload);
+          setPwas(formattedData);
+        }
+        return;
+      }
+
+      const response = await dispatch(getPwaByDisplayId(idSearch));
+
+      if (getPwaByDisplayId.fulfilled.match(response)) {
+        setPwas([response.payload]);
+      }
+    },
+    500,
+    [idSearch]
+  ); */
 
   const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
   const handleClonePwa = async ({ appId, newAdminId }: ClonePwaPayload) => {

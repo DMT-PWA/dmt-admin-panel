@@ -68,14 +68,62 @@ export const PushNotificationTable: FC = () => {
   const columns = [
     columnHelper.accessor("appIds", {
       header: "PWA",
-      cell: (adminId) => (
-        <>
-          <span>{adminId.getValue()[0]._id}</span>
-          <button onClick={() => onCopyHandler(adminId.getValue()[0]._id)}>
-            <img src={copy_icon} style={{ height: "12px", width: "12px" }} />
-          </button>
-        </>
-      ),
+      cell: (appIds) => {
+        const appIdsArray = appIds.getValue();
+        const firstAppId = appIdsArray[0]?.displayId || "";
+
+        return (
+          <div className="flex items-center gap-2">
+            <span>{firstAppId}</span>
+            <button
+              onClick={() => onCopyHandler(appIdsArray[0]?._id)}
+              className="p-1 "
+            >
+              <img src={copy_icon} alt="Copy" className="h-3 w-3" />
+            </button>
+
+            {appIdsArray.length > 1 && (
+              <Menu as="div" className="relative">
+                <MenuButton className="p-1 ">
+                  <img
+                    src="/pwa_icons/vector-19.svg"
+                    alt="More options"
+                    className="h-3 w-3"
+                  />
+                </MenuButton>
+
+                <MenuItems
+                  transition
+                  anchor="bottom end"
+                  className="absolute z-10 mt-2 origin-top-right rounded-xl border border-gray-7 bg-white py-2.25 px-4.5 shadow-lg"
+                >
+                  {appIdsArray.map((el, ind) => (
+                    <MenuItem key={ind}>
+                      {() => (
+                        <div
+                          className={`flex items-center gap-2 py-1 px-2 rounded`}
+                        >
+                          <span className="text-sm">{el.displayId}</span>
+                          <button
+                            onClick={() => onCopyHandler(el._id)}
+                            className="p-1"
+                          >
+                            <img
+                              src={copy_icon}
+                              alt="Copy"
+                              className="h-3 w-3"
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </Menu>
+            )}
+          </div>
+        );
+      },
       size: 100,
     }),
     columnHelper.accessor("status", {
