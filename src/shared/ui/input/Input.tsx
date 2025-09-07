@@ -15,6 +15,7 @@ type InputProps = {
   children: ReactNode;
   isRequired: boolean;
   valid: boolean;
+  error_message: string;
 };
 
 export const InputDefault: FC<Partial<InputProps>> = ({
@@ -31,6 +32,7 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   children,
   isRequired = false,
   valid = true,
+  error_message = "Это имя уже используется",
 }) => {
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "+" || e.key === "-") {
@@ -77,6 +79,9 @@ export const InputDefault: FC<Partial<InputProps>> = ({
         onKeyDown={onKeyDown}
       />
       {children}
+      {!valid && (
+        <span className="text-view-1 text-red-1">{error_message}</span>
+      )}
     </div>
   );
 };

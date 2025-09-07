@@ -20,3 +20,8 @@ export const clonePwa = createAsyncThunk<RowDefaultType, ClonePwaPayload>(
     return await apiInstance.post(`pwa/clonePwa`, { appId, newAdminId });
   }
 );
+
+export const getPwaByDisplayId = createAsyncThunk<RowDefaultType, string>(
+  "pwa/getPwaById",
+  async (id: string) => await apiInstance.get(`pwa/getPwaByDisplayId/${id}`)
+);

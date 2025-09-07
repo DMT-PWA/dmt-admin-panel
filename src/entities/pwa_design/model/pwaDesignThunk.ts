@@ -50,3 +50,11 @@ export const validatePwaDisplayName = createAsyncThunk<
     });
   }
 });
+
+export const validateCollectionName = createAsyncThunk<
+  ValidationResponse,
+  string
+>(
+  "collection/validateCollectionName",
+  async (name) => await apiInstance.post("collection/validate-name", { name })
+);

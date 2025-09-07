@@ -68,7 +68,7 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
 
   useDebounce(
     async () => {
-      if (pwa_title && !isEdit) {
+      if (pwa_title) {
         const result = await dispatch(validatePwaDisplayName(pwa_title));
 
         if (validatePwaDisplayName.fulfilled.match(result)) {

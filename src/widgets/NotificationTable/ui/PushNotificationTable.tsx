@@ -7,7 +7,7 @@ import {
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Title } from "src/shared/ui/title";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "src/shared/lib/store";
@@ -19,7 +19,11 @@ import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
-import { getAllNotifications } from "src/entities/notification/model/notification.thunk";
+import {
+  cloneNotification,
+  deleteNotification,
+  getAllNotifications,
+} from "src/entities/notification/model/notification.thunk";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 
 export const PushNotificationTable: FC = () => {
@@ -32,42 +36,105 @@ export const PushNotificationTable: FC = () => {
 
   const onCopyHandler = (value: string) => navigator.clipboard.writeText(value);
 
+  const fetchData = useCallback(async () => {
+    const data = await dispatch(getAllNotifications());
+
+    if (getAllNotifications.fulfilled.match(data)) {
+      setNotifications(data.payload);
+    }
+  }, [dispatch]);
+
+  const handleNotificationDelete = async (id: string) => {
+    await dispatch(deleteNotification(id));
+
+    await fetchData();
+  };
+
+  const handleNotificationClone = async (id: string) => {
+    await dispatch(cloneNotification(id));
+
+    await fetchData();
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await dispatch(getAllNotifications());
-
-      if (getAllNotifications.fulfilled.match(data)) {
-        setNotifications(data.payload);
-      }
-    };
-
     fetchData();
-  }, [dispatch]);
+  }, [fetchData]);
 
   const columnHelper = createColumnHelper<
     RowDefaultType & { actions?: string }
   >();
   const columns = [
-    columnHelper.accessor("adminId", {
+    columnHelper.accessor("appIds", {
       header: "PWA",
-      cell: (adminId) => (
-        <>
-          <span>{adminId.getValue()}</span>
-          <button onClick={() => onCopyHandler(adminId.getValue())}>
-            <img src={copy_icon} style={{ height: "12px", width: "12px" }} />
-          </button>
-        </>
-      ),
+      cell: (appIds) => {
+        const appIdsArray = appIds.getValue();
+        const firstAppId = appIdsArray[0]?.displayId || "";
+
+        return (
+          <div className="flex items-center gap-2">
+            <span>{firstAppId}</span>
+            <button
+              onClick={() => onCopyHandler(appIdsArray[0]?._id)}
+              className="p-1 "
+            >
+              <img src={copy_icon} alt="Copy" className="h-3 w-3" />
+            </button>
+
+            {appIdsArray.length > 1 && (
+              <Menu as="div" className="relative">
+                <MenuButton className="p-1 ">
+                  <img
+                    src="/pwa_icons/vector-19.svg"
+                    alt="More options"
+                    className="h-3 w-3"
+                  />
+                </MenuButton>
+
+                <MenuItems
+                  transition
+                  anchor="bottom end"
+                  className="absolute z-10 mt-2 origin-top-right rounded-xl border border-gray-7 bg-white py-2.25 px-4.5 shadow-lg"
+                >
+                  {appIdsArray.map((el, ind) => (
+                    <MenuItem key={ind}>
+                      {() => (
+                        <div
+                          className={`flex items-center gap-2 py-1 px-2 rounded`}
+                        >
+                          <span className="text-sm">{el.displayId}</span>
+                          <button
+                            onClick={() => onCopyHandler(el._id)}
+                            className="p-1"
+                          >
+                            <img
+                              src={copy_icon}
+                              alt="Copy"
+                              className="h-3 w-3"
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </Menu>
+            )}
+          </div>
+        );
+      },
       size: 100,
     }),
     columnHelper.accessor("status", {
       header: "Status",
       size: 100,
     }),
-    columnHelper.accessor("language", {
+    columnHelper.accessor("defaultLanguage", {
       header: "Default language",
+      cell: (lang) => {
+        return <>{lang.getValue()}</>;
+      },
       size: 100,
     }),
     columnHelper.accessor("title", {
@@ -99,7 +166,10 @@ export const PushNotificationTable: FC = () => {
               className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
             >
               <MenuItem>
-                <button className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4">
+                <button
+                  onClick={() => handleNotificationClone(cell.row.original._id)}
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
                   <img
                     src={copy_icon}
                     style={{ height: "14px", width: "14px" }}
@@ -108,9 +178,26 @@ export const PushNotificationTable: FC = () => {
                 </button>
               </MenuItem>
 
+              <MenuItem>
+                <button
+                  onClick={() =>
+                    navigate(`/push_notification/form/${cell.row.original._id}`)
+                  }
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                >
+                  <img src={pencil} style={{ height: "14px", width: "14px" }} />
+                  Редактировать
+                </button>
+              </MenuItem>
+
               <div className="my-1 h-px bg-white/5" />
               <MenuItem>
-                <button className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7">
+                <button
+                  onClick={() =>
+                    handleNotificationDelete(cell.row.original._id)
+                  }
+                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
+                >
                   <img
                     src={trash}
                     style={{

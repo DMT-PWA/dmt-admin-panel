@@ -11,7 +11,8 @@ type NotificationStringFields =
   | "adminId"
   | "appId"
   | "heading"
-  | "message";
+  | "message"
+  | "defaultLanguage";
 
 export interface Notification extends Record<NotificationStringFields, string> {
   targetUsers: [];
@@ -19,6 +20,8 @@ export interface Notification extends Record<NotificationStringFields, string> {
   sentAt: Date;
   isRecurring: boolean;
   daysOfWeek: number[];
+  appIds: Pwa[];
+  _id: string;
 }
 
 export interface NotificationTime {
@@ -42,5 +45,6 @@ type Pwa = {
 export type NotificationSettings = {
   pwas: Array<Pwa>;
   title: Notification["title"];
-  defaultLanguage: string;
+  defaultLanguage: { label: string; value: string } | string;
+  isActive: boolean;
 };
