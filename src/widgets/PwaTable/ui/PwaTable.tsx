@@ -65,18 +65,19 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       domainApp: obj.domainApp,
     }));
   }, []);
+
+  const getTableData = useCallback(async () => {
+    const data = await dispatch(getAllPwa());
+
+    if (getAllPwa.fulfilled.match(data)) {
+      const formattedData = formatTableData(data.payload);
+      setPwas(formattedData);
+    }
+  }, [dispatch, formatTableData]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await dispatch(getAllPwa());
-
-      if (getAllPwa.fulfilled.match(data)) {
-        const formattedData = formatTableData(data.payload);
-        setPwas(formattedData);
-      }
-    };
-
-    fetchData();
-  }, [formatTableData, dispatch]);
+    getTableData();
+  }, [getTableData]);
 
   //TO DO
   /* useDebounce(
@@ -105,12 +106,7 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
   const handleClonePwa = async ({ appId, newAdminId }: ClonePwaPayload) => {
     await dispatch(clonePwa({ appId, newAdminId }));
 
-    const data = await dispatch(getAllPwa());
-
-    if (getAllPwa.fulfilled.match(data)) {
-      const formattedData = formatTableData(data.payload);
-      setPwas(formattedData);
-    }
+    await getTableData();
   };
 
   const columnHelper = createColumnHelper<
@@ -162,12 +158,10 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       header: "Создано",
       cell: (created) => <span>{created.getValue()}</span>,
     }),
-    columnHelper.accessor("defaultNaming", {
-      header: "Нейминг по умолчанию",
-    }),
+
     columnHelper.accessor("actions", {
       header: () => (
-        <div className="flex items-center gap-2 min-w-23">
+        <div className="flex items-center justify-end gap-2 min-w-23">
           <button>
             <img
               src="/pwa_icons/refresh.png"
@@ -292,8 +286,8 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
 
   const deletePwaHandler = async (row: Partial<RowDefaultType>) => {
     if (!row._id) return;
-    dispatch(deletePwa(row._id));
-    setPwas((prev) => prev.filter((item) => item._id !== row._id));
+    await dispatch(deletePwa(row._id));
+    await getTableData();
   };
 
   const onUpdateHandler = (value: string) => {
@@ -301,16 +295,20 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
     navigate(`/pwa_edit/${value}/design`);
   };
 
-  const handleCreateRenderService = (payload: Partial<RowDefaultType>) => {
+  const handleCreateRenderService = async (
+    payload: Partial<RowDefaultType>
+  ) => {
     if (!payload._id || !payload.adminId) return;
 
-    dispatch(
+    await dispatch(
       createRenderService({
         appId: payload._id,
         adminId: payload.adminId,
         domain: payload.domain,
       })
     );
+
+    await getTableData();
   };
 
   return (
@@ -326,10 +324,13 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
             <thead className="bg-white">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="h-[53px]">
-                  {headerGroup.headers.map((header) => (
+                  {headerGroup.headers.map((header, ind) => (
                     <th
                       key={header.id}
-                      className="pl-6 text-left text-sm font-medium text-gray-700 border-b border-b-gray-7"
+                      className={clsx(
+                        "pl-6 text-left text-sm font-medium text-gray-700 border-b border-b-gray-7",
+                        { "pr-6": ind === headerGroup.headers.length - 1 }
+                      )}
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -344,13 +345,18 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
               {table.getRowModel().rows.map((row) => {
                 return (
                   <tr key={row.id} className="bg-white">
-                    {row.getVisibleCells().map((cell) => {
+                    {row.getVisibleCells().map((cell, ind) => {
                       return (
                         <td
                           key={cell.id}
                           className="px-6 py-4 text-view-1 text-black-1 border-b border-b-gray-7"
                         >
-                          <div className="flex gap-1.25 items-center">
+                          <div
+                            className={clsx("flex gap-1.25 items-center", {
+                              "justify-end":
+                                ind === row.getVisibleCells().length - 1,
+                            })}
+                          >
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
