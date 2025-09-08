@@ -35,7 +35,7 @@ export const InputDefault: FC<Partial<InputProps>> = ({
   error_message = "Это имя уже используется",
 }) => {
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "+" || e.key === "-") {
+    if ((type !== "text" && e.key === "+") || e.key === "-") {
       e.preventDefault();
       return;
     }

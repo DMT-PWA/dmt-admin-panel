@@ -13,6 +13,7 @@ interface CommentCreateProps extends IUserComment {
     value: IUserComment[K]
   ) => void;
   setModalOpen: (arg: boolean) => void;
+  index?: number;
 }
 
 export const CommentCreate: FC<CommentCreateProps> = ({
@@ -28,6 +29,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
   answer_date,
   answer_text,
   developer_name,
+  index,
 }) => {
   const label = (text: string) => (
     <Label
@@ -40,7 +42,7 @@ export const CommentCreate: FC<CommentCreateProps> = ({
   );
 
   return (
-    <>
+    <div className={clsx({ "mb-6.5": index !== null })}>
       <div className="flex">
         <h2 className="text__default flex-[0.5]">Коментарий пользователя</h2>
         <div className="flex flex-[0.5] justify-between">
@@ -205,6 +207,6 @@ export const CommentCreate: FC<CommentCreateProps> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

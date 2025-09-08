@@ -197,6 +197,7 @@ export const PwaCommentsCreate: FC = () => {
               return (
                 <CommentCreate
                   key={ind}
+                  index={ind}
                   setModalOpen={() => {
                     setModalOpen(true);
                     setCurrentModalIndex(ind);
