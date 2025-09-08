@@ -7,7 +7,7 @@ export type RowDefaultType = Pick<
 > & {
   displayId: string;
   displayName: string;
-  landingStatus: string;
+  appStatus: string;
   defaultNaming: string;
   domainApp: string;
 };

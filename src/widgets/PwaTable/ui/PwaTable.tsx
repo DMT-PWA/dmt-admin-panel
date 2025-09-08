@@ -60,7 +60,7 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       domain: obj.domain,
       tag: obj.marketerTag,
       createdAt: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
-      landingStatus: obj.landingStatus,
+      appStatus: obj.appStatus,
       domainLanding: obj.domainLanding,
       domainApp: obj.domainApp,
     }));
@@ -190,7 +190,7 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       ),
       cell: (cell) => (
         <div className="min-w-23 flex justify-around">
-          {cell.row.original.landingStatus === "live" ? (
+          {cell.row.original.appStatus === "live" ? (
             <button onClick={() => onCopyHandler(cell.cell.id)}>
               <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
             </button>
