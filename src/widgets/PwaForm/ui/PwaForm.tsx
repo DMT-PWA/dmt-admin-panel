@@ -19,7 +19,7 @@ import { Country } from "src/shared/types";
 import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 import { useBeforeUnload, useDebounce, useMount } from "react-use";
 import { cloneDeep, isEqual } from "lodash";
-import { IDesign } from "src/shared/api/design";
+import { IDesign } from "src/entities/pwa_design/model/types";
 
 type PwaFormProps = {
   isEdit?: boolean;
@@ -31,7 +31,7 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
   const navigate = useNavigate();
   const state = useAppSelector((state) => state.pwa_design);
 
-  const { languagesList, pwa_title, pwa_tags, currentCountry, displayId } =
+  const { languagesList, pwa_tags, pwa_title, currentCountry, displayId } =
     state;
 
   const [initStateCopy, setInitStateCopy] = useState<IDesign | null>(null);
@@ -54,7 +54,7 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
 
   useEffect(() => {
     if (languagesList) dispatch(setLanguage(languagesList[0]));
-  }, [languagesList, dispatch]);
+  }, [languagesList, dispatch, state]);
 
   const handleNavigate = () => {
     return navigate("/pwa");
@@ -68,15 +68,16 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
 
   useDebounce(
     async () => {
+      if (isEdit && pwa_title === initStateCopy?.pwa_title) return;
+
       if (pwa_title) {
         const result = await dispatch(validatePwaDisplayName(pwa_title));
-
         if (validatePwaDisplayName.fulfilled.match(result)) {
           setValid(result.payload.status);
         }
       }
     },
-    500,
+    300,
     [pwa_title]
   );
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) => {

@@ -13,7 +13,7 @@ import { useDebounce, useMount, useBeforeUnload } from "react-use";
 import clsx from "clsx";
 import { cloneDeep, isEqual } from "lodash";
 
-export const PwaSettings: FC = () => {
+export const PwaSettings: FC<{ isEdit: boolean }> = ({ isEdit = false }) => {
   const dispatch = useAppDispatch();
 
   const [valid, setValid] = useState<boolean>(true);
@@ -46,8 +46,20 @@ export const PwaSettings: FC = () => {
     );
   };
 
+  useEffect(() => {
+    dispatch(getAllCampaigns());
+  }, [dispatch]);
+
+  useMount(() => {
+    setInitStateCopy(cloneDeep(state) as unknown as typeof state);
+  });
+
+  useBeforeUnload(!isEqual(state, initStateCopy));
+
   useDebounce(
     async () => {
+      if (isEdit && initStateCopy.subdomain === subdomain) return;
+
       if (subdomain && domainApp) {
         const result = await dispatch(
           verifyCustomDomain({
@@ -61,18 +73,9 @@ export const PwaSettings: FC = () => {
         }
       }
     },
-    500,
+    300,
     [subdomain]
   );
-  useEffect(() => {
-    dispatch(getAllCampaigns());
-  }, [dispatch]);
-
-  useMount(() => {
-    setInitStateCopy(cloneDeep(state) as unknown as typeof state);
-  });
-
-  useBeforeUnload(!isEqual(state, initStateCopy));
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">

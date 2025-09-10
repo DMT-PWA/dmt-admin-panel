@@ -12,17 +12,6 @@
   @apply pt-[51px];
 }
 
-@media (width <= 1920px) {
-  /* .container__default {
-    padding: 0;
-    padding-left: 10px;
-  } */
-
-  .container__sidebar {
-    display: none;
-  }
-}
-
 .container__view-1 {
   display: flex;
   gap: 13px;
