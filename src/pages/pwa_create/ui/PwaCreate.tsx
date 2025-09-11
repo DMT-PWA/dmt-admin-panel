@@ -33,7 +33,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     if (appId) dispatch(getPwaById(appId));
   }, [appId, dispatch]);
 
-  const [saved, setSaved] = useState<boolean>(false);
+  const [saved, setSaved] = useState(false);
+
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     if (isEdit) fetchAppById();
@@ -62,12 +64,12 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   } = usePwaCreateNavigation(isEdit);
 
   const fetchDataByCountry = useCallback(
-    (country: string, lang: string) => {
+    async (country: string, lang: string) => {
       if (!appId) return;
 
       setLoading(true);
 
-      loadDescriptionData(appId, lang, country);
+      await loadDescriptionData(appId, lang, country);
 
       setLoading(false);
     },
@@ -123,29 +125,34 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const handleSavePwaGeneral = async () => {
     if (!currentCountry || !currentDataByLanguage || !language) return;
 
-    const createPayload = {
-      payload: {
-        adminId,
-        country: currentCountry.label.toLowerCase(),
-        language,
-        defaultCountry: currentCountry?.label.toLowerCase(),
-        defaultLanguage: language,
-        currentCountry: currentCountry?.label,
-        currentLanguage: language,
-        languageList: languagesList,
-        appId,
-      },
-      collectionState: currentDataByLanguage.value.collectionState,
-      commentState: currentDataByLanguage.value.commentState,
-      descriptionState: currentDataByLanguage.value.descriptionState,
-    };
+    setIsDisabled(true);
 
-    const response = await dispatch(finishCreatePWA(createPayload));
+    try {
+      const createPayload = {
+        payload: {
+          adminId,
+          country: currentCountry.label.toLowerCase(),
+          language,
+          defaultCountry: currentCountry?.label.toLowerCase(),
+          defaultLanguage: language,
+          currentCountry: currentCountry?.label,
+          currentLanguage: language,
+          languageList: languagesList,
+          appId,
+        },
+        collectionState: currentDataByLanguage.value.collectionState,
+        commentState: currentDataByLanguage.value.commentState,
+        descriptionState: currentDataByLanguage.value.descriptionState,
+      };
 
-    if (finishCreatePWA.fulfilled.match(response)) {
-      setSaved(true);
+      const response = await dispatch(finishCreatePWA(createPayload));
 
-      setTimeout(() => setSaved(false), 2000);
+      if (finishCreatePWA.fulfilled.match(response)) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
+    } finally {
+      setIsDisabled(false);
     }
   };
 
@@ -215,7 +222,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             ))}
             <Route path="comments_create" element={<PwaCommentsCreate />} />
             <Route path="comment_update/:id" element={<PwaCommentsCreate />} />
-            <Route path="settings" element={<PwaSettings />} />
+            <Route path="settings" element={<PwaSettings isEdit={isEdit} />} />
             <Route path="metrics" element={<PwaMetrics />} />
             <Route path="*" element={<PwaForm />} />
           </Routes>
@@ -229,10 +236,10 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           btn_text={saved ? "Сохранено" : "Сохранить"}
           btn_classes={clsx(
             "btn__orange btn__orange-view-1 max-w-62.25 mt-5.5",
-            saved && "pointer-events-none"
+            (saved || isDisabled) && "pointer-events-none opacity-50"
           )}
           onClickHandler={() => {
-            if (saved) return;
+            if (saved || isDisabled) return;
             handleSavePwaGeneral();
           }}
         />

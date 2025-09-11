@@ -68,12 +68,12 @@ export const usePwaCreate = (isEdit: boolean) => {
     });
   }, [dispatch, languageDataStates, currentLanguage?.label]);
 
-  const loadDescriptionData = (
+  const loadDescriptionData = async (
     appId: string,
     lang: string,
     country: string
   ) => {
-    dispatch(
+    await dispatch(
       getPwaByIdAndLanguage({
         appId,
         language: lang,
