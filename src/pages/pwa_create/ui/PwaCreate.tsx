@@ -90,34 +90,32 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const handleCreate = async () => {
     if (!currentCountry || !languageDataStates) return;
 
-    const createPayload = (index: number, appId?: string) => {
+    const createPayload = () => {
       const basePayload = {
         adminId,
         country: currentCountry.label.toLowerCase(),
-        language: languageDataStates[index].language?.label as string,
+        language: languageDataStates[0].language?.label as string,
         defaultCountry: currentCountry?.label.toLowerCase(),
-        defaultLanguage: languageDataStates[index].language?.label as string,
+        defaultLanguage: languageDataStates[0].language?.label as string,
         currentCountry: currentCountry?.label,
-        currentLanguage: languageDataStates[index].language?.label as string,
+        currentLanguage: languageDataStates[0].language?.label as string,
         languageList: languagesList,
       };
 
       return {
-        payload: appId !== undefined ? { ...basePayload, appId } : basePayload,
-        collectionState: languageDataStates[index].value.collectionState,
-        commentState: languageDataStates[index].value.commentState,
-        descriptionState: languageDataStates[index].value.descriptionState,
+        payload: basePayload,
+        languagesData: languageDataStates,
       };
     };
 
-    const result = await dispatch(finishCreatePWA(createPayload(0)));
+    await dispatch(finishCreatePWA(createPayload()));
 
-    if (
+    /*  if (
       finishCreatePWA.fulfilled.match(result) &&
       languageDataStates.length === 2
     ) {
-      dispatch(finishCreatePWA(createPayload(1, result.payload._id)));
-    }
+      dispatch(finishCreatePWA(createPayload(1)));
+    } */
 
     goToTable();
   };

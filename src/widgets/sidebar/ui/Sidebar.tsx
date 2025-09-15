@@ -79,7 +79,8 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
             >
               PWA
             </span>
-            {pathname !== "/pwa" && (
+            {(pathname.startsWith("/pwa_edit") ||
+              pathname.startsWith("/pwa_create")) && (
               <button onClick={() => setOpen(!isOpen)}>
                 <img
                   src={shevron}

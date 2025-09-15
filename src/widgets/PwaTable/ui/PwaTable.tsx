@@ -16,12 +16,7 @@ import { useAppDispatch } from "src/shared/lib/store";
 import { setAppId, createRenderService } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { ClonePwaPayload, RowDefaultType } from "../lib/types";
-import {
-  clonePwa,
-  deletePwa,
-  getAllPwa,
-  getPwaByDisplayId,
-} from "../lib/table.thunk";
+import { clonePwa, deletePwa, getAllPwa } from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
@@ -31,13 +26,12 @@ import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
-import { useDebounce } from "react-use";
 
 type PwaTableProps = {
   idSearch: string;
 };
 
-export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
+export const PwaTable: FC<PwaTableProps> = () => {
   const [pwas, setPwas] = useState<Array<RowDefaultType>>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
