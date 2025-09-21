@@ -1,102 +1,190 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import {
-  setLanguage,
-  setCountry,
   updateLanguagesList,
   resetState,
+  setLanguage,
 } from "src/entities/pwa_design";
-import { getPwaByIdAndLanguage } from "src/shared/api/create";
 import { shallowEqual } from "react-redux";
 import {
+  selectCurrentLanguageValue,
   setLanguageData,
-  updateCurrentLanguageData,
 } from "src/features/languageData";
+import {
+  fetchCountries,
+  fetchLanguages,
+  fetchPreviewContent,
+} from "src/entities/pwa_design/model/pwaDesignThunk";
+import { adminId } from "src/shared/lib/data";
+import { finishCreatePWA } from "src/entities/pwa_create";
+import { fetchPwaUpdate } from "src/entities/pwa_create/model/createPwaThunk";
+import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
+import { LanguagesListValue } from "src/shared/types";
 
 export const usePwaCreate = (isEdit: boolean) => {
   const dispatch = useAppDispatch();
 
-  const { languagesList, currentLanguage, currentCountry, pwa_title } =
-    useAppSelector((state) => state.pwa_design, shallowEqual);
+  const { languagesList, currentCountry, languages } = useAppSelector(
+    (state) => state.pwa_design,
+    shallowEqual
+  );
   const descriptionState = useAppSelector((state) => state.pwa_description);
 
   const commentState = useAppSelector((state) => state.comments);
 
-  const {
-    currentLanguageData: currentDataByLanguage,
-    languagesData: languageDataStates,
-  } = useAppSelector((state) => state.language_data);
+  const currentLanguageValue = useAppSelector(selectCurrentLanguageValue);
 
-  const collectionState = useAppSelector((state) => state.collection);
+  const { languagesData: languageDataStates } = useAppSelector(
+    (state) => state.language_data
+  );
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const [saved, setSaved] = useState(false);
+
+  const fetchLanguagesData = useCallback(
+    async (appId?: string) => {
+      setLoading(true);
+
+      await dispatch(fetchCountries());
+
+      await dispatch(fetchLanguages(isEdit));
+
+      if (appId && isEdit) {
+        const { currentCountry, currentLanguage } = await dispatch(
+          getPwaById(appId)
+        ).unwrap();
+
+        await dispatch(
+          getPwaByIdAndLanguage({
+            appId,
+            language: currentLanguage,
+            country: currentCountry,
+          })
+        );
+
+        // setInitLanguages(languageList?.length);
+      }
+
+      setLoading(false);
+    },
+    [dispatch, isEdit]
+  );
+
+  const setInitLanguageData = useCallback(() => {
+    if (languagesList) {
+      dispatch(
+        setLanguageData(
+          languagesList.map((item) => {
+            return {
+              language: item,
+              value: {
+                descriptionState,
+                commentState,
+                collectionState: null,
+              },
+            };
+          })
+        )
+      );
+    }
+  }, [languagesList, commentState, descriptionState, dispatch]);
 
   useEffect(() => {
     if (!isEdit) {
       dispatch(resetState());
-      dispatch(setCountry({ label: "Egypt", value: "egypt" }));
-      dispatch(setLanguage({ label: "Arabic", value: 0 }));
-      dispatch(updateLanguagesList([{ label: "Arabic", value: 0 }]));
     }
   }, [isEdit, dispatch]);
 
-  useEffect(() => {
-    if (languagesList) {
-      dispatch(
-        setLanguageData(
-          languagesList.map((item) => ({
-            language: item,
-            value: { descriptionState, commentState, collectionState: null },
-          }))
-        )
-      );
+  const updateLanguagesListHandler = (lang: string) => {
+    const selectedLang = languages.find((el) => el.value === lang);
+
+    if (Array.isArray(languagesList)) {
+      dispatch(updateLanguagesList([...languagesList, { ...selectedLang }]));
     }
-  }, [
-    languagesList,
-    commentState,
-    descriptionState,
-    collectionState,
-    dispatch,
-  ]);
+  };
 
-  useEffect(() => {
-    if (!languageDataStates) return;
-    languageDataStates.forEach((item) => {
-      if (item.language && item.language.label === currentLanguage?.label) {
-        dispatch(updateCurrentLanguageData(item));
-      }
-    });
-  }, [dispatch, languageDataStates, currentLanguage?.label]);
+  const handleCreate = async (callback: () => void) => {
+    if (!currentCountry || !languageDataStates) return;
 
-  const loadDescriptionData = async (
-    appId: string,
-    lang: string,
-    country: string
+    const createPayload = () => {
+      const basePayload = {
+        adminId,
+        country: currentCountry.label.toLowerCase(),
+        language: languageDataStates[0].language?.value || "",
+        defaultCountry: currentCountry?.label.toLowerCase(),
+        defaultLanguage: languageDataStates[0].language?.value || "",
+        currentCountry: currentCountry?.label,
+        currentLanguage: languageDataStates[0].language?.value || "",
+        languageList: languagesList,
+      };
+
+      return {
+        payload: basePayload,
+        languagesData: languageDataStates,
+      };
+    };
+
+    await dispatch(finishCreatePWA(createPayload()));
+
+    callback();
+  };
+
+  const handleSavePwaGeneral = async (appId: string) => {
+    if (!currentCountry || !languagesList) return;
+
+    setIsDisabled(true);
+
+    try {
+      if (!currentLanguageValue) return;
+
+      await dispatch(
+        fetchPwaUpdate({ id: appId, currentState: currentLanguageValue })
+      );
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } finally {
+      setIsDisabled(false);
+    }
+  };
+
+  const handleTabSwitch = async (
+    language: LanguagesListValue,
+    appId?: string
   ) => {
-    await dispatch(
-      getPwaByIdAndLanguage({
-        appId,
-        language: lang,
-        country,
-      })
-    );
+    setLoading(true);
+
+    dispatch(setLanguage(language));
+
+    try {
+      if (isEdit) {
+        dispatch(
+          getPwaByIdAndLanguage({
+            appId,
+            language: language.en,
+            country: currentCountry?.value,
+          })
+        );
+      } else {
+        dispatch(fetchPreviewContent(language.value));
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
     languageDataStates,
-    languagesList,
-    descriptionState,
-    commentState,
-    currentDataByLanguage,
-    currentCountry,
-    currentLanguage,
-    pwa_title,
     loading,
-    useAppSelector,
-    useEffect,
-    useState,
-    dispatch,
-    loadDescriptionData,
-    setLoading,
+    isDisabled,
+    saved,
+    updateLanguagesListHandler,
+    handleCreate,
+    handleSavePwaGeneral,
+    fetchLanguagesData,
+    setInitLanguageData,
+    handleTabSwitch,
   };
 };

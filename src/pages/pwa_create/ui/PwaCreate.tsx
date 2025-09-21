@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Title } from "src/shared/ui/title";
 import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
@@ -10,14 +10,10 @@ import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
 import { adminId } from "src/shared/lib/data";
-import { setLanguage } from "src/entities/pwa_design";
-import { finishCreatePWA } from "src/entities/pwa_create";
 import clsx from "clsx";
-import { getPwaById } from "src/shared/api/create";
 import { usePwaCreate } from "../lib/usePwaCreate";
 import { usePwaCreateNavigation } from "../lib/usePwaCreateNavigation";
-import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
-import { selectLanguage } from "src/features/languageData";
+import { LanguagesModal } from "src/widgets/LanguagesModal";
 
 type PwaCreateProps = {
   appId?: string;
@@ -25,31 +21,17 @@ type PwaCreateProps = {
 };
 
 export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
-  const dispatch = useAppDispatch();
-
-  const language = useAppSelector(selectLanguage);
-
-  const fetchAppById = useCallback(() => {
-    if (appId) dispatch(getPwaById(appId));
-  }, [appId, dispatch]);
-
-  const [saved, setSaved] = useState(false);
-
-  const [isDisabled, setIsDisabled] = useState(false);
-
-  useEffect(() => {
-    if (isEdit) fetchAppById();
-  }, [fetchAppById, isEdit]);
-
   const {
     languageDataStates,
-    currentDataByLanguage,
-    languagesList,
-    currentLanguage,
-    currentCountry,
     loading,
-    setLoading,
-    loadDescriptionData,
+    isDisabled,
+    saved,
+    updateLanguagesListHandler,
+    handleCreate,
+    handleSavePwaGeneral,
+    fetchLanguagesData,
+    setInitLanguageData,
+    handleTabSwitch,
   } = usePwaCreate(isEdit);
 
   const {
@@ -63,102 +45,13 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     finishCreateButton,
   } = usePwaCreateNavigation(isEdit);
 
-  const fetchDataByCountry = useCallback(
-    async (country: string, lang: string) => {
-      if (!appId) return;
-
-      setLoading(true);
-
-      await loadDescriptionData(appId, lang, country);
-
-      setLoading(false);
-    },
-    [appId, dispatch, setLoading]
-  );
+  const [isModalOpen, setModal] = useState(false);
 
   useEffect(() => {
-    if (isEdit && currentCountry?.label && currentLanguage?.label) {
-      fetchDataByCountry(currentCountry.label, currentLanguage.label);
-    }
-  }, [
-    isEdit,
-    currentCountry?.label,
-    currentLanguage?.label,
-    fetchDataByCountry,
-  ]);
+    fetchLanguagesData(appId);
+  }, [fetchLanguagesData, appId]);
 
-  const handleCreate = async () => {
-    if (!currentCountry || !languageDataStates) return;
-
-    const createPayload = () => {
-      const basePayload = {
-        adminId,
-        country: currentCountry.label.toLowerCase(),
-        language: languageDataStates[0].language?.label as string,
-        defaultCountry: currentCountry?.label.toLowerCase(),
-        defaultLanguage: languageDataStates[0].language?.label as string,
-        currentCountry: currentCountry?.label,
-        currentLanguage: languageDataStates[0].language?.label as string,
-        languageList: languagesList,
-      };
-
-      return {
-        payload: basePayload,
-        languagesData: languageDataStates,
-      };
-    };
-
-    await dispatch(finishCreatePWA(createPayload()));
-
-    /*  if (
-      finishCreatePWA.fulfilled.match(result) &&
-      languageDataStates.length === 2
-    ) {
-      dispatch(finishCreatePWA(createPayload(1)));
-    } */
-
-    goToTable();
-  };
-
-  const handleSavePwaGeneral = async () => {
-    if (!currentCountry || !currentDataByLanguage || !language) return;
-
-    setIsDisabled(true);
-
-    try {
-      const createPayload = {
-        payload: {
-          adminId,
-          country: currentCountry.label.toLowerCase(),
-          language,
-          defaultCountry: currentCountry?.label.toLowerCase(),
-          defaultLanguage: language,
-          currentCountry: currentCountry?.label,
-          currentLanguage: language,
-          languageList: languagesList,
-          appId,
-        },
-        collectionState: currentDataByLanguage.value.collectionState,
-        commentState: currentDataByLanguage.value.commentState,
-        descriptionState: currentDataByLanguage.value.descriptionState,
-      };
-
-      const response = await dispatch(finishCreatePWA(createPayload));
-
-      if (finishCreatePWA.fulfilled.match(response)) {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-      }
-    } finally {
-      setIsDisabled(false);
-    }
-  };
-
-  const handleTabChange = (index: number) => {
-    if (!languagesList) return;
-
-    dispatch(setLanguage(languagesList[index]));
-  };
+  useEffect(setInitLanguageData, [setInitLanguageData]);
 
   return (
     <div className="container__default">
@@ -167,14 +60,10 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
         classes="title__default"
         withContainer={!isEdit}
       />
-
-      {currentDataByLanguage && (
+      {!loading && (
         <div className="flex gap-[54px]">
           <Routes>
-            <Route
-              path="design"
-              element={!loading && <PwaForm isEdit={isEdit} />}
-            />
+            <Route path="design" element={<PwaForm isEdit={isEdit} />} />
             {["description", "comments"].map((path) => (
               <Route
                 key={path}
@@ -184,17 +73,34 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                     className={
                       path === "comments" ? "flex-1 mt-[78px]" : "flex-1"
                     }
-                    onChange={handleTabChange}
                   >
-                    <TabList className={"pl-6.5"}>
+                    <TabList className={"pl-6.5 flex"}>
                       {languageDataStates?.map((item, ind) => (
                         <Tab
                           key={ind}
-                          className={clsx({ "ml-6.25": ind === 1 })}
+                          className={clsx("ml-6.25")}
+                          onClick={() => {
+                            if (item.language) {
+                              handleTabSwitch(item.language, appId);
+                            }
+                          }}
                         >
-                          {item.language?.label}
+                          {item.language?.short}
                         </Tab>
                       ))}
+                      {languageDataStates && languageDataStates.length < 5 && (
+                        <Tab
+                          datatype="tab-plus"
+                          className={clsx("ml-3.5")}
+                          onClick={(e) => {
+                            e.preventDefault();
+
+                            setModal(true);
+                          }}
+                        >
+                          <img src="/pwa_icons/crosshair-s.png" alt="" />
+                        </Tab>
+                      )}
                     </TabList>
                     <TabPanels>
                       {languageDataStates?.map((item, ind) => {
@@ -228,7 +134,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           {!loading && showPreview && <PhonePreview />}
         </div>
       )}
-
       {showSaveButton && (
         <ButtonDefault
           btn_text={saved ? "Сохранено" : "Сохранить"}
@@ -237,12 +142,11 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
             (saved || isDisabled) && "pointer-events-none opacity-50"
           )}
           onClickHandler={() => {
-            if (saved || isDisabled) return;
-            handleSavePwaGeneral();
+            if (saved || isDisabled || !appId) return;
+            handleSavePwaGeneral(appId);
           }}
         />
       )}
-
       {!showSaveButton && (
         <div className="max-w-87.25 flex mt-5.5">
           {showBackButton && (
@@ -273,13 +177,18 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
           )}
           {finishCreateButton && (
             <ButtonDefault
-              onClickHandler={handleCreate}
+              onClickHandler={() => handleCreate(goToTable)}
               btn_text="Завершить создание"
               btn_classes="btn__orange btn__orange-view-1 ml-3.25"
             />
           )}
         </div>
       )}
+      <LanguagesModal
+        isModalOpen={isModalOpen}
+        onClose={() => setModal(false)}
+        updateLanguagesList={updateLanguagesListHandler}
+      />
     </div>
   );
 };

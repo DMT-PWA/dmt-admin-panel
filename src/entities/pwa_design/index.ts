@@ -1,4 +1,4 @@
-export { selectLanguagesList, modifiedCountryList } from "./model/selectors";
+export { modifiedCountryList } from "./model/selectors";
 
 export {
   resetState,

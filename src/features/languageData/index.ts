@@ -1,7 +1,6 @@
 export {
   default as languageDataReducer,
   setLanguageData,
-  updateCurrentLanguageData,
   updateLanguageData,
 } from "./model/languageDataSlice";
 

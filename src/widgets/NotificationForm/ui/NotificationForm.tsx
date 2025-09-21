@@ -73,11 +73,9 @@ export const NotificationForm: FC<NotificationFormProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await dispatch(getAllPwa());
+      const data = await dispatch(getAllPwa()).unwrap();
 
-      if (getAllPwa.fulfilled.match(data)) {
-        setPwas(data.payload);
-      }
+      setPwas(data);
     };
 
     fetchData();

@@ -7,7 +7,9 @@ import {
   IPwaInfo,
 } from "src/shared/api/design";
 import {
+  AppDataProps,
   ErrorType,
+  LanguagesListValue,
   RejectedDataType,
   ValidationResponse,
 } from "src/shared/types";
@@ -57,4 +59,36 @@ export const validateCollectionName = createAsyncThunk<
 >(
   "collection/validateCollectionName",
   async (name) => await apiInstance.post("collection/validate-name", { name })
+);
+
+export const fetchCountries = createAsyncThunk<
+  Array<Omit<LanguagesListValue, "short">>
+>("design/allCountries", async () => await apiInstance.get("pwa/allCountries"));
+
+export const fetchLanguages = createAsyncThunk(
+  "pwa/allLanguages",
+  async (isEdit: boolean) => {
+    const languagesResponse: Array<LanguagesListValue> = await apiInstance.get(
+      "pwa/allLanguages"
+    );
+
+    const currentLang = languagesResponse.find((el) => el.value === "english");
+
+    if (currentLang && !isEdit) {
+      const data: AppDataProps = await apiInstance.get(
+        "pwa/fetchPWAContent/:language".replace(":language", currentLang.value)
+      );
+      return { languagesResponse, data };
+    }
+
+    return { languagesResponse };
+  }
+);
+
+export const fetchPreviewContent = createAsyncThunk<AppDataProps, string>(
+  "pwa/previewContent",
+  async (lang) =>
+    await apiInstance.get(
+      "pwa/fetchPWAContent/:language".replace(":language", lang)
+    )
 );

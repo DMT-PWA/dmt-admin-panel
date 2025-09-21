@@ -48,16 +48,6 @@ export const collectionsSlice = createSlice({
         });
       });
     });
-    /* .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-        const { _id, icon, screenShots, name } = action.payload.collectionId;
-
-        state.currentCollection = {
-          _id,
-          collectionImage: icon,
-          images: screenShots,
-          collectionName: name,
-        };
-      }); */
   },
 });
 

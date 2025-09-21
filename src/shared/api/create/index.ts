@@ -10,7 +10,8 @@ export const getPwa = async (url: string) => {
 export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
   "create/getPwaById",
   async (id) => {
-    return await apiInstance.get(`pwa/${id}`);
+    const response: UpdatePwaPayload = await apiInstance.get(`pwa/${id}`);
+    return response;
   }
 );
 

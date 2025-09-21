@@ -1,30 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiInstance } from "src/shared/api/base";
-import { UpdatePwaPayload } from "./types";
 import { CombinedDescription } from "src/entities/pwa_description";
 import { ICommentsState } from "src/entities/comments";
 import {
   IDescriptionAbout,
   ICollection,
   AppDataProps,
-  Language,
+  LanguagesListValue,
 } from "src/shared/types";
 import { IAppCommon } from "src/shared/types/app.types";
+import { adminId } from "src/shared/lib/data";
 
-export const getPwaById = createAsyncThunk<UpdatePwaPayload, string>(
-  "create/getPwaById",
-  async (id) => {
-    const response: UpdatePwaPayload = await apiInstance.get(`pwa/${id}`);
-
-    return response;
-  }
-);
 export const finishCreatePWA = createAsyncThunk<
   AppDataProps,
   {
     payload: IAppCommon | Omit<IAppCommon, "appId">;
     languagesData: {
-      language: Language | null;
+      language: LanguagesListValue | null;
       value: {
         descriptionState: Partial<CombinedDescription>;
         commentState: Partial<ICommentsState>;
@@ -87,7 +79,7 @@ export const finishCreatePWA = createAsyncThunk<
       const { selected_comment } = el.value.commentState;
 
       return {
-        label: el.language?.label,
+        label: el.language?.en,
         value: el.language?.value,
         isDefault: ind === 0 ? true : false,
         info: {
@@ -112,11 +104,45 @@ export const finishCreatePWA = createAsyncThunk<
     }),
   };
 
-  if ("appId" in payload) {
-    return await apiInstance.patch("pwa", fullPayload);
-  } else {
-    return await apiInstance.post("pwa", fullPayload);
-  }
+  return await apiInstance.post("pwa", fullPayload);
+});
+
+export const fetchPwaUpdate = createAsyncThunk<
+  AppDataProps,
+  {
+    id: string;
+    currentState: {
+      descriptionState: Partial<CombinedDescription>;
+      commentState: Partial<ICommentsState>;
+      collectionState: ICollection | null;
+    };
+  },
+  { state: RootState }
+>("pwa/updatePwa", async (payload, { getState }) => {
+  const { pwa_design, settings } = getState();
+
+  const { descriptionState, commentState } = payload.currentState;
+
+  const { domainApp, subdomain } = settings;
+
+  const { title, developer_name, about_description } = descriptionState;
+
+  const { selected_comment } = commentState;
+
+  const { currentLanguage } = pwa_design;
+  const modifiedPayload = {
+    appId: payload.id,
+    adminId,
+    appTitle: title,
+    appSubTitle: developer_name,
+    domain: domainApp?.value,
+    subDomain: subdomain,
+    language: currentLanguage?.en,
+    about: about_description?.description,
+    commentId: selected_comment,
+  };
+
+  return await apiInstance.patch("pwa", modifiedPayload);
 });
 
 export const createRenderService = createAsyncThunk<

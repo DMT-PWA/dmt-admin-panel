@@ -2,11 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UpdateFieldPayload, StateType } from "./types";
 import { getPwaByIdAndLanguage } from "src/shared/api/create";
 import { AppDataProps } from "src/shared/types";
-import {
-  createCommentHandler,
-  getCommentById,
-  handleComments,
-} from "src/entities/comments";
+import { getCommentById, handleComments } from "src/entities/comments";
 
 const updateLanguageHelper = (
   state: StateType,
@@ -17,7 +13,7 @@ const updateLanguageHelper = (
   if (!state.languagesData) return state;
 
   const updatedLanguagesData = state.languagesData.map((item) => {
-    if (item.language?.label === currentLanguage) {
+    if (item.language?.value === currentLanguage) {
       return {
         ...item,
         value: {
@@ -30,30 +26,14 @@ const updateLanguageHelper = (
     return item;
   });
 
-  let updatedCurrentLanguageData = state.currentLanguageData;
-  if (state.currentLanguageData?.language?.label === currentLanguage) {
-    updatedCurrentLanguageData = {
-      ...state.currentLanguageData,
-      value: {
-        ...state.currentLanguageData.value,
-        [fieldState]:
-          payload === null
-            ? null
-            : { ...state.currentLanguageData.value[fieldState], ...payload },
-      },
-    };
-  }
-
   return {
     ...state,
     languagesData: updatedLanguagesData,
-    currentLanguageData: updatedCurrentLanguageData,
   };
 };
 
 const initialState: StateType = {
   languagesData: null,
-  currentLanguageData: null,
 };
 
 const languageDataSlice = createSlice({
@@ -61,10 +41,13 @@ const languageDataSlice = createSlice({
   initialState,
   reducers: {
     setLanguageData: (state, action) => {
-      state.languagesData = action.payload;
-    },
-    updateCurrentLanguageData: (state, action) => {
-      state.currentLanguageData = action.payload;
+      if (!state.languagesData) {
+        state.languagesData = action.payload;
+
+        return;
+      }
+
+      state.languagesData = [...state.languagesData, action.payload.pop()];
     },
     updateLanguageData: (state, action: PayloadAction<UpdateFieldPayload>) => {
       const { state: fieldState, payload, currentLanguage } = action.payload;
@@ -108,7 +91,7 @@ const languageDataSlice = createSlice({
       if (!state.languagesData) return;
 
       state.languagesData = state.languagesData.map((item) => {
-        if (item.language?.label === language) {
+        if (item.language?.en === language) {
           return {
             ...item,
             value: {
@@ -153,44 +136,23 @@ const languageDataSlice = createSlice({
       });
     });
 
-    builder
-      .addCase(getCommentById.fulfilled, (state, action) => {
-        const { language } = action.meta.arg;
+    builder.addCase(getCommentById.fulfilled, (state, action) => {
+      const { language } = action.meta.arg;
 
-        return updateLanguageHelper(
-          state,
-          "commentState",
-          {
-            comment_group_name: action.payload.name,
-            comments_list: handleComments(action.payload.reviewObject),
-          },
-          language
-        );
-      })
-      .addCase(createCommentHandler.fulfilled, (state, action) => {
-        const { language } = action.meta.arg;
-
-        return updateLanguageHelper(
-          state,
-          "commentState",
-          {
-            comment: state.currentLanguageData?.value.commentState.comment
-              ? {
-                  ...state.currentLanguageData?.value.commentState.comment,
-                  commentId: action.payload._id,
-                }
-              : null,
-          },
-          language
-        );
-      });
+      return updateLanguageHelper(
+        state,
+        "commentState",
+        {
+          comment_group_name: action.payload.name,
+          comments_list: handleComments(action.payload.reviewObject),
+        },
+        language
+      );
+    });
   },
 });
 
 export default languageDataSlice.reducer;
 
-export const {
-  setLanguageData,
-  updateCurrentLanguageData,
-  updateLanguageData,
-} = languageDataSlice.actions;
+export const { setLanguageData, updateLanguageData } =
+  languageDataSlice.actions;

@@ -34,12 +34,6 @@ const settingsSlice = createSlice({
 
       state["subdomain"] = action.payload;
     },
-
-    /* setExistsCampaign: (state, action) => {
-      state.currentCampaign = state.campaigns.find(
-        (item) => item.keitaroCampaignId === action.payload.keitaroCampaignId
-      );
-    }, */
   },
   extraReducers: (builder) => {
     builder

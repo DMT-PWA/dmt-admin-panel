@@ -365,7 +365,7 @@ export const PwaDescriptionForm: FC<DescriptionFormProps> = ({ adminId }) => {
             </div>
             <div className="flex gap-[23px] pt-[22px]">
               <Field className="flex flex-col flex-1/4 gap-2">
-                <Label>Описание</Label>
+                <Label>Что нового</Label>
                 <Textarea
                   className="min-h-[120px]"
                   placeholder="Исправлены баги и ошибки"

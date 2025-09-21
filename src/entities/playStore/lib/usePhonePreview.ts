@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  countryData,
-  CountryKeys,
-  LanguageDataTypes,
-  LanguageKeys,
-} from "src/shared/lib/translations";
-import { Language, Country } from "src/shared/types";
+
+import { AppDataProps, LanguagesListValue } from "src/shared/types";
 
 export const usePhonePreview = (
-  currentLanguage: Language | null,
-  currentCountry: Country
+  currentLanguage: LanguagesListValue | null,
+  appData: AppDataProps
 ) => {
-  const [langData, setLangData] = useState<LanguageDataTypes>(
-    {} as LanguageDataTypes
-  );
+  const [langData, setLangData] = useState<AppDataProps | null>(null);
 
   const [isArabic, setIsArabic] = useState<boolean>(false);
 
@@ -25,14 +18,11 @@ export const usePhonePreview = (
   }
 
   useEffect(() => {
-    if (!currentCountry || !currentLanguage) return;
+    if (!currentLanguage) return;
+    setLangData(appData);
 
-    const country = currentCountry.label.toLowerCase() as CountryKeys;
-    const lang = currentLanguage.label.toLowerCase() as LanguageKeys;
-
-    setLangData(countryData[country][lang]);
-    setIsArabic(lang === ("arabic" as LanguageKeys));
-  }, [currentCountry, currentLanguage]);
+    setIsArabic(currentLanguage.value === "arabic");
+  }, [appData, currentLanguage]);
 
   return { langData, isArabic, formatNumber };
 };

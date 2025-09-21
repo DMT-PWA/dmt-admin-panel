@@ -11,14 +11,14 @@ const BlackPage: FC = () => {
     null
   );
 
-  const { currentLanguage, currentCountry } = useAppSelector(
+  const { currentLanguage, appData } = useAppSelector(
     (state) => state.pwa_design
   );
 
   useEffect(() => {
     setStage({ id: 0, stage: "Main" });
   }, []);
-  if (!states || !currentLanguage) return <div>Loading...</div>;
+  if (!currentLanguage || !appData) return <div>Loading...</div>;
 
   const { descriptionState } = states;
   const { about_description } = descriptionState;
@@ -63,8 +63,6 @@ const BlackPage: FC = () => {
             version={version}
             whats_new={whats_new}
             number_of_downloads={number_of_downloads}
-            currentLanguage={currentLanguage}
-            currentCountry={currentCountry}
           ></AboutPage>
         </div>
       );

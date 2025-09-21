@@ -1,9 +1,9 @@
 import { ICommentsState } from "src/entities/comments";
 import { CombinedDescription } from "src/entities/pwa_description";
-import { ICollection, Language } from "src/shared/types";
+import { ICollection, LanguagesListValue } from "src/shared/types";
 
 type DataByLanguage = {
-  language: Language | null;
+  language: LanguagesListValue | null;
   value: {
     descriptionState: CombinedDescription;
     commentState: ICommentsState;
@@ -23,7 +23,6 @@ interface UpdateFieldPayload {
 
 type StateType = {
   languagesData: DataByLanguage[] | null;
-  currentLanguageData: DataByLanguage | null;
 };
 
 export type { DataByLanguage, UpdateFieldPayload, StateType };

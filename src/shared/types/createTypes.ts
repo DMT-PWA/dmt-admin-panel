@@ -1,4 +1,4 @@
-import { LanguagesList } from "./designTypes";
+import { Language, LanguagesList } from "./designTypes";
 
 export interface UpdatePwaPayload {
   appId: string;
@@ -14,7 +14,7 @@ export interface UpdatePwaPayload {
   descriptionId?: string | undefined | null;
   commentId?: string | undefined | null;
   isExist: boolean;
-  languageList: LanguagesList;
+  languageList: LanguagesList | [Language];
   currentCountry: string;
   currentLanguage: string;
   domain: string;

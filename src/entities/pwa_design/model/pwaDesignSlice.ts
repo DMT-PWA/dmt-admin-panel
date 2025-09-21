@@ -1,21 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IDesign } from "./types";
-import { fetchDesignInfo, fetchPwaInfo } from "./pwaDesignThunk";
-import { languages } from "../lib/const";
-import { Language, Country } from "src/shared/types/designTypes";
+import {
+  fetchCountries,
+  fetchLanguages,
+  fetchPreviewContent,
+} from "./pwaDesignThunk";
+import { Country } from "src/shared/types/designTypes";
 import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
+import { LanguagesListValue } from "src/shared/types";
 
 const defaultState: IDesign = {
-  languages: languages,
+  languages: [],
   pwa_title: null,
   pwa_tags: "",
   collections: [],
   isChanged: false,
-  appData: {},
+  appData: {} as IDesign["appData"],
   languagesList: null,
   currentCountry: null,
   currentLanguage: null,
   displayId: "",
+  countriesList: [],
 };
 
 export const pwaDesignSlice = createSlice({
@@ -37,7 +42,7 @@ export const pwaDesignSlice = createSlice({
     setChanged: (state, action: PayloadAction<boolean>) => {
       state.isChanged = action.payload;
     },
-    setLanguage: (state, action: PayloadAction<Language>) => {
+    setLanguage: (state, action: PayloadAction<LanguagesListValue>) => {
       state.currentLanguage = action.payload;
     },
     updateLanguagesList: (state, action) => {
@@ -49,14 +54,26 @@ export const pwaDesignSlice = createSlice({
     resetState: () => defaultState,
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchDesignInfo.fulfilled, (state, action) => {
-      state.languages = [...action.payload].map((item) => ({
-        value: item.id,
-        label: item.title,
-      }));
-    });
-    builder.addCase(fetchPwaInfo.fulfilled, (state, action) => {
-      state.appData = action.payload;
+    builder.addCase(fetchLanguages.fulfilled, (state, action) => {
+      const { languagesResponse, data } = action.payload;
+
+      state.languages = languagesResponse;
+
+      if (action.meta.arg) return;
+
+      const defaultLang = state.languages.find((el) => el.value === "english");
+
+      if (defaultLang) {
+        state.currentLanguage = defaultLang as LanguagesListValue;
+      }
+
+      if (data) {
+        state.appData = data;
+      }
+
+      if (!defaultLang) return;
+
+      state.languagesList = [defaultLang];
     });
     builder
       .addCase(getPwaById.fulfilled, (state, action) => {
@@ -67,14 +84,35 @@ export const pwaDesignSlice = createSlice({
           defaultLanguage,
         } = action.payload;
 
-        if (!currentCountry || !currentLanguage) return;
+        const lang = state.languages.find((el) => el.en === defaultLanguage);
+
+        if (!currentCountry || !currentLanguage || !lang) return;
 
         state.currentCountry = { label: currentCountry, value: currentCountry };
-        state.currentLanguage = { label: defaultLanguage, value: 0 };
-        state.languagesList = languageList;
+        state.currentLanguage = lang;
+
+        if (!languageList) return;
+
+        state.languagesList = languageList.map((el) => {
+          const mapping = state.languages.find((item) => item.en === el.label);
+
+          if (mapping) {
+            const { en, id, ru, short, value } = mapping;
+
+            return {
+              id,
+              value,
+              short,
+              en,
+              ru,
+            };
+          }
+        });
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
         const { displayName, marketerTag, displayId } = action.payload;
+
+        state.appData = action.payload;
 
         if (!displayName) return;
 
@@ -84,6 +122,17 @@ export const pwaDesignSlice = createSlice({
 
         if (displayId) state.displayId = displayId;
       });
+
+    builder.addCase(fetchCountries.fulfilled, (state, action) => {
+      state.countriesList = action.payload.map((el) => ({
+        label: el.en,
+        value: el.value,
+      }));
+    });
+
+    builder.addCase(fetchPreviewContent.fulfilled, (state, action) => {
+      state.appData = action.payload;
+    });
   },
 });
 
