@@ -80,7 +80,7 @@ export const finishCreatePWA = createAsyncThunk<
 
       return {
         label: el.language?.en,
-        value: el.language?.value,
+        value: el.language?.id,
         isDefault: ind === 0 ? true : false,
         info: {
           updatedDate: last_update,

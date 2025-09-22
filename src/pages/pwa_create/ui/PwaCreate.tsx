@@ -32,7 +32,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     fetchLanguagesData,
     setInitLanguageData,
     handleTabSwitch,
-  } = usePwaCreate(isEdit);
+  } = usePwaCreate(isEdit, appId);
 
   const {
     handleNavigateNext,

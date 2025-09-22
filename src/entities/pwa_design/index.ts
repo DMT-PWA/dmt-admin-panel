@@ -1,7 +1,7 @@
 export { modifiedCountryList } from "./model/selectors";
 
 export {
-  resetState,
+  resetState as resetPwaDesignState,
   addCollection,
   setCountry,
   setChanged,

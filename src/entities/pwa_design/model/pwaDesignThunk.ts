@@ -65,25 +65,20 @@ export const fetchCountries = createAsyncThunk<
   Array<Omit<LanguagesListValue, "short">>
 >("design/allCountries", async () => await apiInstance.get("pwa/allCountries"));
 
-export const fetchLanguages = createAsyncThunk(
-  "pwa/allLanguages",
-  async (isEdit: boolean) => {
-    const languagesResponse: Array<LanguagesListValue> = await apiInstance.get(
-      "pwa/allLanguages"
-    );
+export const fetchLanguages = createAsyncThunk("pwa/allLanguages", async () => {
+  const languagesResponse: Array<LanguagesListValue> = await apiInstance.get(
+    "pwa/allLanguages"
+  );
 
-    const currentLang = languagesResponse.find((el) => el.value === "english");
-
-    if (currentLang && !isEdit) {
+  /* if (!isEdit) {
       const data: AppDataProps = await apiInstance.get(
-        "pwa/fetchPWAContent/:language".replace(":language", currentLang.value)
+        "pwa/fetchPWAContent/:language".replace(":language", "english")
       );
       return { languagesResponse, data };
-    }
+    } */
 
-    return { languagesResponse };
-  }
-);
+  return { languagesResponse };
+});
 
 export const fetchPreviewContent = createAsyncThunk<AppDataProps, string>(
   "pwa/previewContent",

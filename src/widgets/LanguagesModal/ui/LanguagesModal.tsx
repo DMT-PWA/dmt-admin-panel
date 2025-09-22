@@ -21,7 +21,7 @@ export const LanguagesModal: FC<Props> = ({
 
   const [language, setLanguage] = useState<SelectValueProp | null>(null);
 
-  const onSaveHandler = () => {
+  const onSaveHandler = async () => {
     if (!language) return;
 
     updateLanguagesList(language.value);
@@ -33,28 +33,29 @@ export const LanguagesModal: FC<Props> = ({
     <Dialog open={isModalOpen} onClose={onClose} className="relative z-50">
       <DialogBackdrop className="fixed inset-0 bg-black/30" />
       <div className="fixed inset-0 flex w-screen items-center justify-center">
-        <div className="relative bg-white py-11 px-6.5">
-          <div className="flex gap-6.25">
+        <div className="relative bg-white py-11 px-6.5 min-w-[612px]">
+          <div className="flex flex-col gap-2.5">
+            <label className="text__default">Новый язык</label>
             <Select
               classNamePrefix="react-select"
-              className="min-w-63.5 custom-select"
-              placeholder="Выберите язык"
+              className="w-full custom-select languages-select"
+              placeholder="Добавьте новый язык"
               options={languagesList}
               value={language}
               onChange={setLanguage}
             />
           </div>
 
-          <div className="flex gap-[43px]">
-            <ButtonDefault
-              btn_text="Сохранить"
-              btn_classes="btn__orange btn__orange-view-3"
-              onClickHandler={onSaveHandler}
-            />
+          <div className="flex justify-end gap-[13px] mt-8.5">
             <ButtonDefault
               btn_text="Отмена"
-              btn_classes="btn__white btn__white-view-3 "
+              btn_classes="btn__white btn__white-view-3 !px-6.5"
               onClickHandler={onClose}
+            />
+            <ButtonDefault
+              btn_text="ОК"
+              btn_classes="btn__orange btn__orange-view-3"
+              onClickHandler={onSaveHandler}
             />
           </div>
         </div>

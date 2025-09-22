@@ -9,7 +9,7 @@ import { Country } from "src/shared/types/designTypes";
 import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 import { LanguagesListValue } from "src/shared/types";
 
-const defaultState: IDesign = {
+const initialState: IDesign = {
   languages: [],
   pwa_title: null,
   pwa_tags: "",
@@ -25,7 +25,7 @@ const defaultState: IDesign = {
 
 export const pwaDesignSlice = createSlice({
   name: "design",
-  initialState: defaultState,
+  initialState,
   reducers: {
     setPwaTitle(state, action: PayloadAction<string>) {
       state.pwa_title = action.payload;
@@ -47,33 +47,31 @@ export const pwaDesignSlice = createSlice({
     },
     updateLanguagesList: (state, action) => {
       state.languagesList = action.payload;
+
+      /*  const lang = state.languagesList.pop();
+
+      if (lang) {
+        console.log(lang);
+
+        state.currentLanguage = lang;
+      } */
     },
     setCountry: (state, action: PayloadAction<Country>) => {
       state.currentCountry = action.payload;
     },
-    resetState: () => defaultState,
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLanguages.fulfilled, (state, action) => {
-      const { languagesResponse, data } = action.payload;
+      const { languagesResponse } = action.payload;
 
       state.languages = languagesResponse;
 
-      if (action.meta.arg) return;
-
-      const defaultLang = state.languages.find((el) => el.value === "english");
-
-      if (defaultLang) {
-        state.currentLanguage = defaultLang as LanguagesListValue;
+      if (!state.currentLanguage) {
+        state.currentLanguage = state.languages.find(
+          (el) => el.value === "english"
+        ) as LanguagesListValue;
       }
-
-      if (data) {
-        state.appData = data;
-      }
-
-      if (!defaultLang) return;
-
-      state.languagesList = [defaultLang];
     });
     builder
       .addCase(getPwaById.fulfilled, (state, action) => {
@@ -84,7 +82,9 @@ export const pwaDesignSlice = createSlice({
           defaultLanguage,
         } = action.payload;
 
-        const lang = state.languages.find((el) => el.en === defaultLanguage);
+        const lang = state.languages.find(
+          (el) => el.en.toLowerCase() === defaultLanguage.toLowerCase()
+        );
 
         if (!currentCountry || !currentLanguage || !lang) return;
 
@@ -94,7 +94,9 @@ export const pwaDesignSlice = createSlice({
         if (!languageList) return;
 
         state.languagesList = languageList.map((el) => {
-          const mapping = state.languages.find((item) => item.en === el.label);
+          const mapping = state.languages.find(
+            (item) => item.en.toLowerCase() === el.label.toLowerCase()
+          );
 
           if (mapping) {
             const { en, id, ru, short, value } = mapping;

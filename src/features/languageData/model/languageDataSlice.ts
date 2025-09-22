@@ -54,6 +54,8 @@ const languageDataSlice = createSlice({
 
       return updateLanguageHelper(state, fieldState, payload, currentLanguage);
     },
+
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
@@ -154,5 +156,5 @@ const languageDataSlice = createSlice({
 
 export default languageDataSlice.reducer;
 
-export const { setLanguageData, updateLanguageData } =
+export const { setLanguageData, updateLanguageData, resetState } =
   languageDataSlice.actions;
