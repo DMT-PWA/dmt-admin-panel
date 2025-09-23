@@ -129,13 +129,18 @@ export const fetchPwaUpdate = createAsyncThunk<
 >("pwa/updatePwa", async (payload, { getState }) => {
   const { pwa_design, settings } = getState();
 
-  const { descriptionState, commentState } = payload.currentState;
+  const { descriptionState, commentState, collectionState } =
+    payload.currentState;
 
   const { domainApp, subdomain } = settings;
 
   const { title, developer_name, about_description } = descriptionState;
 
   const { selected_comment } = commentState;
+
+  if (!collectionState) return;
+
+  const { _id } = collectionState;
 
   const { currentLanguage } = pwa_design;
   const modifiedPayload = {
@@ -148,6 +153,7 @@ export const fetchPwaUpdate = createAsyncThunk<
     language: currentLanguage?.en,
     about: about_description?.description,
     commentId: selected_comment,
+    collectionId: _id,
   };
 
   return await apiInstance.patch("pwa", modifiedPayload);

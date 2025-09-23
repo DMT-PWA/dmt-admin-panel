@@ -49,3 +49,14 @@ export const addLanguageToPwa = createAsyncThunk<
 
   return await apiInstance.patch("pwa/addLanguage", fullPayload);
 });
+
+export const deleteLanguageFromPwa = createAsyncThunk<
+  boolean,
+  { appId: string; language: string }
+>("pwa/deleteLanguageFromPwa", async ({ appId, language }) => {
+  return await apiInstance.patch("pwa/deleteLanguage", {
+    appId,
+    language,
+    adminId,
+  });
+});

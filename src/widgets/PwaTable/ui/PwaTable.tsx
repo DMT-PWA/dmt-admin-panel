@@ -16,7 +16,13 @@ import { useAppDispatch } from "src/shared/lib/store";
 import { setAppId, createRenderService } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { ClonePwaPayload, RowDefaultType } from "../lib/types";
-import { clonePwa, deletePwa, getAllPwa, pwaPause } from "../lib/table.thunk";
+import {
+  clonePwa,
+  deletePwa,
+  getAllPwa,
+  pwaPause,
+  resumePwa,
+} from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
@@ -57,6 +63,7 @@ export const PwaTable: FC<PwaTableProps> = () => {
       appStatus: obj.appStatus,
       domainLanding: obj.domainLanding,
       domainApp: obj.domainApp,
+      renderId: obj.renderId,
     }));
   }, []);
 
@@ -197,6 +204,16 @@ export const PwaTable: FC<PwaTableProps> = () => {
             </button>
           )}
 
+          {cell.row.original.renderId &&
+            cell.row.original.appStatus === "pending" && (
+              <button onClick={() => handlePwaResume(cell.row.original._id)}>
+                <img
+                  src={play_icon}
+                  style={{ height: "16px", width: "16px" }}
+                />
+              </button>
+            )}
+
           <Menu>
             <MenuButton>
               <img
@@ -309,6 +326,12 @@ export const PwaTable: FC<PwaTableProps> = () => {
 
   const handlePwaPause = async (appId: string) => {
     await dispatch(pwaPause(appId));
+
+    await getTableData();
+  };
+
+  const handlePwaResume = async (appId: string) => {
+    await dispatch(resumePwa(appId));
 
     await getTableData();
   };

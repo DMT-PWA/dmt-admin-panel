@@ -32,3 +32,10 @@ export const pwaPause = createAsyncThunk(
     await apiInstance.post("pwa/pausePWA", { appId: payload });
   }
 );
+
+export const resumePwa = createAsyncThunk(
+  "pwa/resumePwa",
+  async (payload: string) => {
+    await apiInstance.post("pwa/resumePwa", { appId: payload });
+  }
+);

@@ -36,6 +36,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     fetchLanguagesData,
     setInitLanguageData,
     handleTabSwitch,
+    removeLanguage,
   } = usePwaCreate(isEdit, appId);
 
   const {
@@ -101,9 +102,24 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                     }}
                   >
                     <TabList className={"pl-6.5 flex"}>
-                      {languageDataStates?.map((item, ind) => (
+                      {languagesList?.map((item, ind) => (
                         <Tab key={ind} className={clsx("ml-6.25")}>
-                          {item.language?.short}
+                          {item.short}
+
+                          {languagesList && languagesList.length > 1 && (
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                /* if (item.value) {
+                                  removeLanguage(item.value);
+                                } */
+                              }}
+                              className="ml-5 w-2.75 h-2.75"
+                            >
+                              <img src="/pwa_icons/clear-icon.png" />
+                            </div>
+                          )}
                         </Tab>
                       ))}
                       {languageDataStates && languageDataStates.length < 5 && (
