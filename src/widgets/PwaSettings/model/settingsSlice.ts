@@ -35,11 +35,7 @@ const settingsSlice = createSlice({
       state["subdomain"] = action.payload;
     },
 
-    /* setExistsCampaign: (state, action) => {
-      state.currentCampaign = state.campaigns.find(
-        (item) => item.keitaroCampaignId === action.payload.keitaroCampaignId
-      );
-    }, */
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -97,6 +93,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { updateSettingField } = settingsSlice.actions;
+export const { updateSettingField, resetState } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

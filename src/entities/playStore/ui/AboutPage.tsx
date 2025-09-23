@@ -1,13 +1,12 @@
 import { format } from "date-fns";
 import { FC } from "react";
-import { Country, IDescriptionAbout, Language } from "src/shared/types";
+import { IDescriptionAbout } from "src/shared/types";
 import { usePhonePreview } from "src/entities/playStore";
 import clsx from "clsx";
+import { useAppSelector } from "src/shared/lib/store";
 interface IAboutGameProps extends IDescriptionAbout {
   number_of_downloads: string | number | null;
   whats_new: string | null;
-  currentLanguage: Language;
-  currentCountry: Country;
 }
 
 export const AboutPage: FC<IAboutGameProps> = ({
@@ -16,16 +15,15 @@ export const AboutPage: FC<IAboutGameProps> = ({
   release_date,
   version,
   number_of_downloads,
-  currentLanguage,
-  currentCountry,
   whats_new = null,
 }) => {
-  const { isArabic, langData } = usePhonePreview(
-    currentLanguage,
-    currentCountry
+  const { appData, currentLanguage } = useAppSelector(
+    (state) => state.pwa_design
   );
 
-  const { downloads, updatedOn, containsAds, ageRating } = langData;
+  const { isArabic } = usePhonePreview(currentLanguage, appData);
+
+  const { downloads, updatedOn, containsAds, ageRating } = appData;
 
   const modifiedNumberOfDownload = (downloads: number | null) => {
     if (downloads) {

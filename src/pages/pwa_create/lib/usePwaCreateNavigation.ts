@@ -57,5 +57,6 @@ export const usePwaCreateNavigation = (isEdit: boolean = false) => {
     currentRoute,
     goToTable,
     useLocation,
+    location,
   };
 };

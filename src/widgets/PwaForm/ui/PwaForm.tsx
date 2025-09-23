@@ -1,22 +1,17 @@
-import { ChangeEvent, FC, memo, useEffect, useState } from "react";
+import { ChangeEvent, FC, memo, useState } from "react";
 import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
 import { InputDefault } from "src/shared/ui/input";
-import { CustomSelect } from "src/shared/ui/select";
+import Select from "react-select";
 import { Title } from "src/shared/ui/title";
 import {
-  setLanguage,
   setCountry,
-  modifiedCountryList,
-  updateLanguagesList,
   setMarketerTag,
-  selectLanguagesList,
   validatePwaDisplayName,
 } from "src/entities/pwa_design";
 import { useNavigate } from "react-router-dom";
 import { Country } from "src/shared/types";
-import trash_icon from "src/shared/assets/icons/trash_icon_orange.png";
 import { useBeforeUnload, useDebounce, useMount } from "react-use";
 import { cloneDeep, isEqual } from "lodash";
 import { IDesign } from "src/entities/pwa_design/model/types";
@@ -31,30 +26,16 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
   const navigate = useNavigate();
   const state = useAppSelector((state) => state.pwa_design);
 
-  const { languagesList, pwa_tags, pwa_title, currentCountry, displayId } =
+  const { pwa_tags, pwa_title, currentCountry, displayId, countriesList } =
     state;
 
   const [initStateCopy, setInitStateCopy] = useState<IDesign | null>(null);
 
   const dispatch = useAppDispatch();
 
-  const selectedLanguages = useAppSelector(selectLanguagesList);
-
-  const countriesList = useAppSelector(modifiedCountryList);
-
   const handleCountryChange = (option: Country) => {
     dispatch(setCountry(option));
   };
-
-  useEffect(() => {
-    if (selectedLanguages && !isEdit) {
-      dispatch(updateLanguagesList([selectedLanguages]));
-    }
-  }, [selectedLanguages, dispatch, isEdit]);
-
-  useEffect(() => {
-    if (languagesList) dispatch(setLanguage(languagesList[0]));
-  }, [languagesList, dispatch, state]);
 
   const handleNavigate = () => {
     return navigate("/pwa");
@@ -123,68 +104,15 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
             <span className="text-red-600 align-super size-[0.8rem]">*</span>
           </label>
 
-          <CustomSelect
+          <Select
+            className={`custom-select`}
+            classNamePrefix="react-select"
             options={countriesList}
-            value={currentCountry ?? countriesList[0]}
+            value={currentCountry}
             onChange={handleCountryChange}
-            placeholder="Английский"
+            placeholder="Выберите страну..."
           />
-          <label className="title__view-1">
-            Язык интерфейса PWA
-            <span className="text-red-600 align-super size-[0.8rem]">*</span>
-          </label>
 
-          <div className="flex gap-8.75 items-center">
-            {languagesList && (
-              <InputDefault
-                value={languagesList[0]?.label}
-                container_classes="flex-[0.5]"
-                disabled
-                input_classes="!border-0"
-              />
-            )}
-            {languagesList &&
-              languagesList.length === 1 &&
-              languagesList[0].label !== "English" && (
-                <button
-                  onClick={() =>
-                    dispatch(
-                      updateLanguagesList([
-                        ...languagesList,
-                        { label: "English", value: 1 },
-                      ])
-                    )
-                  }
-                  className="bg-white py-[13.5px] px-[16.5px] rounded-[8px]"
-                >
-                  <img
-                    src="/pwa_icons/crosshair.png"
-                    width={14}
-                    height={14}
-                    alt=""
-                  />
-                </button>
-              )}
-            {languagesList &&
-              languagesList[0].label !== "English" &&
-              languagesList?.some((item) => item.label === "English") && (
-                <>
-                  <InputDefault
-                    value={languagesList[1]?.label}
-                    container_classes="flex-[0.5]"
-                    disabled
-                    input_classes="!border-0"
-                  />
-                  <button
-                    onClick={() =>
-                      dispatch(updateLanguagesList(languagesList.slice(0, 1)))
-                    }
-                  >
-                    <img src={trash_icon} width={14} height={14} alt="" />
-                  </button>
-                </>
-              )}
-          </div>
           <InputDefault
             value={pwa_tags}
             label="Тег PWA"

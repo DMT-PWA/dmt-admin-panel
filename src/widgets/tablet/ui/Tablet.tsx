@@ -20,27 +20,25 @@ const Tablet: FC<ITabletProps> = (props) => {
   const states = useAppSelector(selectCurrentLanguageValue);
 
   const [isAppSupport] = useState(false);
-  const { currentCountry, currentLanguage } = useAppSelector(
+  const { currentLanguage, appData } = useAppSelector(
     (state) => state.pwa_design
   );
 
-  const { isArabic, langData, formatNumber } = usePhonePreview(
-    currentLanguage,
-    currentCountry
-  );
-  if (!states) return <div>Loading...</div>;
+  const { isArabic, formatNumber } = usePhonePreview(currentLanguage, appData);
+
+  if (!appData || !states) return <div>Loading...</div>;
 
   const { descriptionState, collectionState, commentState } = states;
 
   const {
-    title,
-    developer_name,
-    raiting,
-    number_of_downloads,
-    grades,
-    checkboxes_state,
+    title = "",
+    developer_name = " ",
+    raiting = null,
+    number_of_downloads = null,
+    grades = [],
+    checkboxes_state = [],
     about_description,
-    review_count,
+    review_count = null,
   } = descriptionState;
 
   const { description } = about_description;
@@ -64,11 +62,11 @@ const Tablet: FC<ITabletProps> = (props) => {
     findHelpful,
     yes,
     no,
-  } = langData;
+  } = appData;
 
   return (
     <>
-      {currentCountry && currentLanguage && (
+      {currentLanguage && (
         <div className="max-w-93.75 w-full max-h-203 relative flex flex-row items-start justify-start leading-[normal] tracking-[normal]">
           <main
             data-phone-container
@@ -358,9 +356,9 @@ const Tablet: FC<ITabletProps> = (props) => {
             </section>
             {/* =========+{Section: Reviews result }======================== */}
             <Reviewer
-              findHelpful={findHelpful}
-              yes={yes}
-              no={no}
+              findHelpful={findHelpful || ""}
+              yes={yes || ""}
+              no={no || ""}
               isArabic={isArabic}
               commentsList={commentState.comments_list}
             />

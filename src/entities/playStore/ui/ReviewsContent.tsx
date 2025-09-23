@@ -164,10 +164,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
               <div className="flex-1 flex flex-col items-start justify-start pt-[3px] px-0 pb-0">
                 <div className="self-stretch h-2.5 relative rounded-9980xl bg-whitesmoke-200">
                   <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-whitesmoke-200 w-full h-full hidden" />
-                  <div
-                    className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]"
-                    style={{ width: `${grades?.[0].value}%` }}
-                  />
+                  <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]" />
                 </div>
               </div>
             </div>
@@ -186,10 +183,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
               <div className="flex-1 flex flex-col items-start justify-start pt-[3px] px-0 pb-0">
                 <div className="self-stretch h-2.5 relative rounded-9980xl bg-whitesmoke-200">
                   <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-whitesmoke-200 w-full h-full hidden" />
-                  <div
-                    className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]"
-                    style={{ width: `${grades?.[1].value}%` }}
-                  />
+                  <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]" />
                 </div>
               </div>
             </div>
@@ -210,10 +204,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
               <div className="flex-1 flex flex-col items-start justify-start pt-[3px] px-0 pb-0">
                 <div className="self-stretch h-2.5 relative rounded-9980xl bg-whitesmoke-200">
                   <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-whitesmoke-200 w-full h-full hidden" />
-                  <div
-                    className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]"
-                    style={{ width: `${grades?.[2].value}%` }}
-                  />
+                  <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]" />
                 </div>
               </div>
             </div>
@@ -232,10 +223,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
               <div className="flex-1 flex flex-col items-start justify-start pt-[3px] px-0 pb-0">
                 <div className="self-stretch h-2.5 relative rounded-9980xl bg-whitesmoke-200">
                   <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-whitesmoke-200 w-full h-full hidden" />
-                  <div
-                    className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]"
-                    style={{ width: `${grades?.[3].value}%` }}
-                  />
+                  <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default h-2.5 z-[1]" />
                 </div>
               </div>
             </div>
@@ -255,10 +243,7 @@ const ReviewsContent: FC<Partial<ReviewsContentProps>> = (props) => {
             <div className="flex-1 flex flex-col items-start justify-start pt-[3px] px-0 pb-0">
               <div className="self-stretch h-2.5 relative rounded-9980xl bg-whitesmoke-200">
                 <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-whitesmoke-200 w-full h-full hidden" />
-                <div
-                  className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default  h-2.5 z-[1]"
-                  style={{ width: `${grades?.[4].value}%` }}
-                />
+                <div className="absolute top-[0px] left-[0px] rounded-9980xl bg-blue_default  h-2.5 z-[1]" />
               </div>
             </div>
           </div>

@@ -60,46 +60,6 @@ const pwaDescriptionSlice = createSlice({
 
     resetState: () => defaultState,
   },
-  extraReducers: () => {
-    /*  builder.addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
-      if (!action.payload) return;
-
-      const {
-        about,
-        rating,
-        downloadsCount,
-        reviewCount,
-        version,
-        whatsNew,
-        androidVersion,
-        lastUpdate,
-        releaseDate,
-        isContainsAds,
-        isEditorsChoice,
-        isInAppPurchases,
-        appTitle,
-        appSubTitle,
-      } = action.payload;
-
-      state.title = appTitle;
-      state.developer_name = appSubTitle;
-      state.raiting = rating;
-      state.number_of_downloads = downloadsCount;
-      state.review_count = reviewCount;
-      state.about_description = {
-        description: about,
-        last_update: lastUpdate,
-        release_date: releaseDate,
-        android_version: androidVersion,
-        version,
-        whats_new: whatsNew,
-      };
-
-      state.checkboxes_state[0].value = isContainsAds;
-      state.checkboxes_state[1].value = isInAppPurchases;
-      state.checkboxes_state[2].value = isEditorsChoice;
-    }); */
-  },
 });
 
 export const { updateAboutDescription, setGrade, batchUpdate, resetState } =

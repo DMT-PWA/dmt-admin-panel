@@ -20,7 +20,8 @@ import {
   clonePwa,
   deletePwa,
   getAllPwa,
-  getPwaByDisplayId,
+  pwaPause,
+  resumePwa,
 } from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -31,13 +32,12 @@ import pause_icon from "src/shared/assets/icons/pause_icon.png";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
-import { useDebounce } from "react-use";
 
 type PwaTableProps = {
   idSearch: string;
 };
 
-export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
+export const PwaTable: FC<PwaTableProps> = () => {
   const [pwas, setPwas] = useState<Array<RowDefaultType>>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -63,6 +63,7 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       appStatus: obj.appStatus,
       domainLanding: obj.domainLanding,
       domainApp: obj.domainApp,
+      renderId: obj.renderId,
     }));
   }, []);
 
@@ -190,17 +191,29 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
       ),
       cell: (cell) => (
         <div className="min-w-23 flex justify-around">
-          {cell.row.original.appStatus === "live" ? (
-            <button onClick={() => onCopyHandler(cell.cell.id)}>
+          {cell.row.original.appStatus === "live" && (
+            <button onClick={() => handlePwaPause(cell.row.original._id)}>
               <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
             </button>
-          ) : (
+          )}
+          {cell.row.original.appStatus === "pending" && (
             <button
               onClick={() => handleCreateRenderService(cell.row.original)}
             >
               <img src={play_icon} style={{ height: "16px", width: "16px" }} />
             </button>
           )}
+
+          {cell.row.original.renderId &&
+            cell.row.original.appStatus === "pending" && (
+              <button onClick={() => handlePwaResume(cell.row.original._id)}>
+                <img
+                  src={play_icon}
+                  style={{ height: "16px", width: "16px" }}
+                />
+              </button>
+            )}
+
           <Menu>
             <MenuButton>
               <img
@@ -307,6 +320,18 @@ export const PwaTable: FC<PwaTableProps> = ({ idSearch }) => {
         domain: payload.domain,
       })
     );
+
+    await getTableData();
+  };
+
+  const handlePwaPause = async (appId: string) => {
+    await dispatch(pwaPause(appId));
+
+    await getTableData();
+  };
+
+  const handlePwaResume = async (appId: string) => {
+    await dispatch(resumePwa(appId));
 
     await getTableData();
   };

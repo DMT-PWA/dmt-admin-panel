@@ -1,8 +1,8 @@
 export {
   default as languageDataReducer,
   setLanguageData,
-  updateCurrentLanguageData,
   updateLanguageData,
+  resetState as resetLanguageDataState,
 } from "./model/languageDataSlice";
 
 export { selectLanguage, selectCurrentLanguageValue } from "./model/selectors";

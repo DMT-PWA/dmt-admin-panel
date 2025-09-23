@@ -23,19 +23,6 @@ export const PwaSettings: FC<{ isEdit: boolean }> = ({ isEdit = false }) => {
   const { domainApp, whitePage, currentCampaign, campaigns, subdomain } = state;
 
   const [initStateCopy, setInitStateCopy] = useState({} as typeof state);
-  /* const handleCampaign = useCallback(async () => {
-    const data = await dispatch(getAllCampaigns());
-
-    if (isEdit) {
-      const existedCampaign = data.payload.find(
-        (item) => item.keitaroCampaignId === action.payload.keitaroCampaignId
-      );
-
-      dispatch(
-        updateSettingField({ field: "currentCampaign", value: existedCampaign })
-      );
-    }
-  }, [dispatch, isEdit]); */
 
   const handleSubdomain = (val: string) => {
     dispatch(

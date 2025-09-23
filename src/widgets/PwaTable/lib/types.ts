@@ -10,6 +10,7 @@ export type RowDefaultType = Pick<
   appStatus: string;
   defaultNaming: string;
   domainApp: string;
+  renderId?: string;
 };
 
 export type ClonePwaPayload = {

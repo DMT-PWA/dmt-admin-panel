@@ -58,6 +58,10 @@
   border-color: transparent !important;
 }
 
+.custom-select.languages-select .react-select__control {
+  border-color: var(--color-gray-1) !important;
+}
+
 .custom-select .react-select__indicators-container {
   padding: 0;
 }

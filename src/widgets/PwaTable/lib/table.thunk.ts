@@ -25,3 +25,17 @@ export const getPwaByDisplayId = createAsyncThunk<RowDefaultType, string>(
   "pwa/getPwaById",
   async (id: string) => await apiInstance.get(`pwa/getPwaByDisplayId/${id}`)
 );
+
+export const pwaPause = createAsyncThunk(
+  "pwa/pwaPause",
+  async (payload: string) => {
+    await apiInstance.post("pwa/pausePWA", { appId: payload });
+  }
+);
+
+export const resumePwa = createAsyncThunk(
+  "pwa/resumePwa",
+  async (payload: string) => {
+    await apiInstance.post("pwa/resumePwa", { appId: payload });
+  }
+);
