@@ -16,7 +16,7 @@ import { useAppDispatch } from "src/shared/lib/store";
 import { setAppId, createRenderService } from "src/entities/pwa_create";
 import clsx from "clsx";
 import { ClonePwaPayload, RowDefaultType } from "../lib/types";
-import { clonePwa, deletePwa, getAllPwa } from "../lib/table.thunk";
+import { clonePwa, deletePwa, getAllPwa, pwaPause } from "../lib/table.thunk";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
@@ -184,17 +184,19 @@ export const PwaTable: FC<PwaTableProps> = () => {
       ),
       cell: (cell) => (
         <div className="min-w-23 flex justify-around">
-          {cell.row.original.appStatus === "live" ? (
-            <button onClick={() => onCopyHandler(cell.cell.id)}>
+          {cell.row.original.appStatus === "live" && (
+            <button onClick={() => handlePwaPause(cell.row.original._id)}>
               <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
             </button>
-          ) : (
+          )}
+          {cell.row.original.appStatus === "pending" && (
             <button
               onClick={() => handleCreateRenderService(cell.row.original)}
             >
               <img src={play_icon} style={{ height: "16px", width: "16px" }} />
             </button>
           )}
+
           <Menu>
             <MenuButton>
               <img
@@ -301,6 +303,12 @@ export const PwaTable: FC<PwaTableProps> = () => {
         domain: payload.domain,
       })
     );
+
+    await getTableData();
+  };
+
+  const handlePwaPause = async (appId: string) => {
+    await dispatch(pwaPause(appId));
 
     await getTableData();
   };

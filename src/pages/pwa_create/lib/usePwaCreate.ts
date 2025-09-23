@@ -22,7 +22,8 @@ import { fetchPwaUpdate } from "src/entities/pwa_create/model/createPwaThunk";
 import { getPwaById, getPwaByIdAndLanguage } from "src/shared/api/create";
 import { LanguagesListValue } from "src/shared/types";
 import { addLanguageToPwa } from "src/features/languageData/model/languagesDataThunk";
-
+import { resetSettingsState } from "src/widgets/PwaSettings";
+import { resetMetricsState } from "src/entities/metrics";
 export const usePwaCreate = (isEdit: boolean, appId?: string) => {
   const dispatch = useAppDispatch();
 
@@ -30,13 +31,13 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     return () => {
       dispatch(resetPwaDesignState());
       dispatch(resetLanguageDataState());
+      dispatch(resetSettingsState());
+      dispatch(resetMetricsState());
     };
   }, [dispatch]);
 
-  const { languagesList, currentCountry, languages } = useAppSelector(
-    (state) => state.pwa_design,
-    shallowEqual
-  );
+  const { languagesList, currentCountry, languages, currentLanguage } =
+    useAppSelector((state) => state.pwa_design, shallowEqual);
   const descriptionState = useAppSelector((state) => state.pwa_description);
 
   const commentState = useAppSelector((state) => state.comments);
@@ -52,6 +53,8 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const [saved, setSaved] = useState(false);
+
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const fetchLanguagesData = useCallback(
     async (appId?: string) => {
@@ -90,33 +93,58 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     [dispatch, isEdit]
   );
 
-  const setInitLanguageData = useCallback(() => {
-    if (languagesList) {
-      dispatch(
-        setLanguageData(
-          languagesList.map((item) => {
-            return {
-              language: item,
-              value: {
-                descriptionState,
-                commentState,
-                collectionState: null,
-              },
-            };
+  const handleTabSwitch = (language: LanguagesListValue, appId?: string) => {
+    setLoading(true);
+    dispatch(setLanguage(language));
+
+    try {
+      if (isEdit) {
+        dispatch(
+          getPwaByIdAndLanguage({
+            appId,
+            language: language.en,
+            country: currentCountry?.value,
           })
-        )
-      );
+        );
+      } else {
+        dispatch(fetchPreviewContent(language.value));
+      }
+    } finally {
+      setLoading(false);
     }
-  }, [languagesList, commentState, descriptionState, dispatch]);
+  };
+
+  const setInitLanguageData = useCallback(
+    (currentLocation: string) => {
+      if (languagesList) {
+        dispatch(
+          setLanguageData(
+            languagesList.map((item) => {
+              return {
+                language: item,
+                value: {
+                  descriptionState,
+                  commentState,
+                  collectionState: null,
+                },
+              };
+            })
+          )
+        );
+
+        if (!currentLocation.endsWith("design") && !loading) {
+          handleTabSwitch(languagesList[languagesList.length - 1]);
+        }
+      }
+    },
+    [languagesList, commentState, descriptionState, dispatch]
+  );
 
   const updateLanguagesListHandler = (lang: string) => {
     const selectedLang = languages.find((el) => el.value === lang);
 
     if (Array.isArray(languagesList)) {
-      const newLanguagesList = [...languagesList, { ...selectedLang }];
-      dispatch(updateLanguagesList(newLanguagesList));
-
-      // handleTabSwitch(newLanguagesList[newLanguagesList.length - 1]);
+      dispatch(updateLanguagesList([...languagesList, { ...selectedLang }]));
     }
 
     if (isEdit && appId && selectedLang) {
@@ -145,9 +173,11 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
       };
     };
 
-    await dispatch(finishCreatePWA(createPayload()));
+    const resp = await dispatch(finishCreatePWA(createPayload()));
 
-    callback();
+    if (finishCreatePWA.fulfilled.match(resp)) {
+      callback();
+    }
   };
 
   const handleSavePwaGeneral = async (appId: string) => {
@@ -168,32 +198,15 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     }
   };
 
-  const handleTabSwitch = (language: LanguagesListValue, appId?: string) => {
-    setLoading(true);
-    dispatch(setLanguage(language));
-
-    try {
-      if (isEdit) {
-        dispatch(
-          getPwaByIdAndLanguage({
-            appId,
-            language: language.en,
-            country: currentCountry?.value,
-          })
-        );
-      } else {
-        dispatch(fetchPreviewContent(language.value));
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return {
     languageDataStates,
     loading,
     isDisabled,
     saved,
+    currentLanguage,
+    languagesList,
+    activeTabIndex,
+    setActiveTabIndex,
     updateLanguagesListHandler,
     handleCreate,
     handleSavePwaGeneral,

@@ -9,7 +9,7 @@ export type { IMetrics, FacebookPixelField } from "./metricsTypes";
 export type { Language, Country } from "./designTypes";
 export type SelectValueProp = { value: string; label: string };
 export type LanguagesListValue = {
-  id: string;
+  id: number;
   en: string;
   ru: string;
   value: string;

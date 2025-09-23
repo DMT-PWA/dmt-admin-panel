@@ -5,11 +5,7 @@ export type Language = {
   label: string;
 };
 
-export type LanguagesList =
-  | [Language, Language]
-  | [Language]
-  | null
-  | Array<LanguagesListValue>;
+export type LanguagesList = null | Array<LanguagesListValue>;
 
 export type Country = {
   value: string;

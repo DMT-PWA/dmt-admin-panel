@@ -19,6 +19,8 @@ import { useBeforeUnload, useMount } from "react-use";
 export const PwaMetrics: FC = () => {
   const state = useAppSelector((state) => state.metrics);
 
+  const dispatch = useAppDispatch();
+
   const { facebookPixelList } = state;
 
   const [initStateCopy, setInitStateCopy] = useState({} as typeof state);
@@ -28,8 +30,6 @@ export const PwaMetrics: FC = () => {
   });
 
   useBeforeUnload(!isEqual(state, initStateCopy));
-
-  const dispatch = useAppDispatch();
 
   return (
     <div className="container__view-2 flex-col flex-1 px-7 pb-[24px] min-h-127.5">

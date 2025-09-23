@@ -26,6 +26,10 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     loading,
     isDisabled,
     saved,
+    currentLanguage,
+    languagesList,
+    activeTabIndex,
+    setActiveTabIndex,
     updateLanguagesListHandler,
     handleCreate,
     handleSavePwaGeneral,
@@ -43,6 +47,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showSaveButton,
     showPreview,
     finishCreateButton,
+    location,
   } = usePwaCreateNavigation(isEdit);
 
   const [isModalOpen, setModal] = useState(false);
@@ -51,7 +56,19 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     fetchLanguagesData(appId);
   }, [fetchLanguagesData, appId]);
 
-  useEffect(setInitLanguageData, [setInitLanguageData]);
+  useEffect(() => {
+    setInitLanguageData(location.pathname);
+  }, [setInitLanguageData]);
+
+  useEffect(() => {
+    const currentIndex = languagesList?.findIndex(
+      (item) => item?.id === currentLanguage?.id
+    );
+
+    if (currentIndex && currentIndex !== -1) {
+      setActiveTabIndex(currentIndex);
+    }
+  }, [currentLanguage, languagesList, setActiveTabIndex]);
 
   return (
     <div className="container__default">
@@ -73,18 +90,19 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                     className={
                       path === "comments" ? "flex-1 mt-[78px]" : "flex-1"
                     }
+                    selectedIndex={activeTabIndex}
+                    onChange={(index) => {
+                      setActiveTabIndex(index);
+
+                      const selectedLanguage = languagesList?.[index];
+                      if (selectedLanguage) {
+                        handleTabSwitch(selectedLanguage, appId);
+                      }
+                    }}
                   >
                     <TabList className={"pl-6.5 flex"}>
                       {languageDataStates?.map((item, ind) => (
-                        <Tab
-                          key={ind}
-                          className={clsx("ml-6.25")}
-                          onClick={() => {
-                            if (item.language) {
-                              handleTabSwitch(item.language, appId);
-                            }
-                          }}
-                        >
+                        <Tab key={ind} className={clsx("ml-6.25")}>
                           {item.language?.short}
                         </Tab>
                       ))}

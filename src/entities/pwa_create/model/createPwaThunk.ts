@@ -27,85 +27,93 @@ export const finishCreatePWA = createAsyncThunk<
   {
     state: RootState;
   }
->("create/createPWA", async ({ payload, languagesData }, { getState }) => {
-  const { metrics, pwa_design, settings } = getState();
+>(
+  "create/createPWA",
+  async ({ payload, languagesData }, { getState, rejectWithValue }) => {
+    const { metrics, pwa_design, settings } = getState();
 
-  const { pwa_title, pwa_tags } = pwa_design;
+    const { pwa_title, pwa_tags } = pwa_design;
 
-  const { facebookPixelList } = metrics;
+    const { facebookPixelList } = metrics;
 
-  const { domainApp, subdomain, currentCampaign } = settings;
+    const { domainApp, subdomain, currentCampaign } = settings;
 
-  const { title, developer_name } = languagesData[0].value.descriptionState;
+    const { title, developer_name } = languagesData[0].value.descriptionState;
 
-  const fullPayload = {
-    ...payload,
-    isExist: true,
-    appTitle: title,
-    appSubTitle: developer_name,
-    displayName: pwa_title,
-    domain: domainApp?.value,
-    subDomain: subdomain,
-    pixelId: facebookPixelList[0].pixel,
-    accessToken: facebookPixelList[0].token,
-    domainApp: `https://www.${subdomain}.${domainApp?.value}`,
-    domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
-    keitaroDomain: currentCampaign?.keitaroDomain,
-    keitaroCampaign: currentCampaign?.keitaroCampaign,
-    keitaroCampaignId: currentCampaign?.keitaroCampaignId,
-    marketerTag: pwa_tags,
-    oneSignalApiKey: "",
-    oneSignalAppId: "",
-    languageList: languagesData.map((el, ind) => {
-      const {
-        checkboxes_state,
-        about_description,
-        raiting,
-        number_of_downloads,
-        review_count,
-      } = el.value.descriptionState;
+    const fullPayload = {
+      ...payload,
+      isExist: true,
+      appTitle: title,
+      appSubTitle: developer_name,
+      displayName: pwa_title,
+      domain: domainApp?.value,
+      subDomain: subdomain,
+      pixelId: facebookPixelList[0].pixel,
+      accessToken: facebookPixelList[0].token,
+      domainApp: `https://www.${subdomain}.${domainApp?.value}`,
+      domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
+      keitaroDomain: currentCampaign?.keitaroDomain,
+      keitaroCampaign: currentCampaign?.keitaroCampaign,
+      keitaroCampaignId: currentCampaign?.keitaroCampaignId,
+      marketerTag: pwa_tags,
+      oneSignalApiKey: "",
+      oneSignalAppId: "",
+      languageList: languagesData.map((el, ind) => {
+        const {
+          checkboxes_state,
+          about_description,
+          raiting,
+          number_of_downloads,
+          review_count,
+        } = el.value.descriptionState;
 
-      const {
-        android_version,
-        description,
-        last_update,
-        release_date,
-        version,
-        whats_new,
-      } = about_description as IDescriptionAbout;
-
-      const currentCollection = el.value.collectionState;
-
-      const { selected_comment } = el.value.commentState;
-
-      return {
-        label: el.language?.en,
-        value: el.language?.id,
-        isDefault: ind === 0 ? true : false,
-        info: {
-          updatedDate: last_update,
-          isExist: true,
-          collectionId: currentCollection?._id,
-          commentId: selected_comment,
-          about: description,
-          isContainsAds: checkboxes_state?.[0].value,
-          isEditorsChoice: checkboxes_state?.[1].value,
-          isInAppPurchases: checkboxes_state?.[2].value,
+        const {
+          android_version,
+          description,
+          last_update,
+          release_date,
           version,
-          lastUpdate: last_update,
-          releaseDate: release_date,
-          downloadsCount: number_of_downloads,
-          androidVersion: android_version,
-          rating: raiting,
-          reviewCount: review_count,
-          newFeatures: whats_new,
-        },
-      };
-    }),
-  };
+          whats_new,
+        } = about_description as IDescriptionAbout;
 
-  return await apiInstance.post("pwa", fullPayload);
-});
+        const currentCollection = el.value.collectionState;
+
+        const { selected_comment } = el.value.commentState;
+
+        return {
+          label: el.language?.en,
+          value: el.language?.id,
+          isDefault: ind === 0 ? true : false,
+          info: {
+            updatedDate: last_update,
+            isExist: true,
+            collectionId: currentCollection?._id,
+            commentId: selected_comment,
+            about: description,
+            isContainsAds: checkboxes_state?.[0].value,
+            isEditorsChoice: checkboxes_state?.[1].value,
+            isInAppPurchases: checkboxes_state?.[2].value,
+            version,
+            lastUpdate: last_update,
+            releaseDate: release_date,
+            downloadsCount: number_of_downloads,
+            androidVersion: android_version,
+            rating: raiting,
+            reviewCount: review_count,
+            newFeatures: whats_new,
+          },
+        };
+      }),
+    };
+
+    try {
+      return await apiInstance.post("pwa", fullPayload);
+    } catch (error) {
+      alert(`${error.response.data.message}`);
+      return rejectWithValue(error);
+    }
+  }
+);
 
 export const fetchPwaUpdate = createAsyncThunk<
   AppDataProps,

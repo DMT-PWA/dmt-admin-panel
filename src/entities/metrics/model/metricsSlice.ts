@@ -36,6 +36,8 @@ const metricsSlice = createSlice({
     ) => {
       state.facebookPixelList[action.payload.id].token = action.payload.value;
     },
+
+    resetState: () => initialState,
   },
 
   extraReducers: (builder) => {
@@ -54,6 +56,7 @@ export const {
   removeFacebookPixelField,
   setPixelValue,
   setTokenValue,
+  resetState,
 } = metricsSlice.actions;
 
 export default metricsSlice.reducer;
