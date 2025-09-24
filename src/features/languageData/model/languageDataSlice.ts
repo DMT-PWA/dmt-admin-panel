@@ -55,6 +55,10 @@ const languageDataSlice = createSlice({
       return updateLanguageHelper(state, fieldState, payload, currentLanguage);
     },
 
+    removeLanguageData: (state, action) => {
+      state.languagesData = action.payload;
+    },
+
     resetState: () => initialState,
   },
   extraReducers: (builder) => {
@@ -93,7 +97,7 @@ const languageDataSlice = createSlice({
       if (!state.languagesData) return;
 
       state.languagesData = state.languagesData.map((item) => {
-        if (item.language?.en === language) {
+        if (item.language?.en.toLowerCase() === language?.toLowerCase()) {
           return {
             ...item,
             value: {
@@ -156,5 +160,9 @@ const languageDataSlice = createSlice({
 
 export default languageDataSlice.reducer;
 
-export const { setLanguageData, updateLanguageData, resetState } =
-  languageDataSlice.actions;
+export const {
+  setLanguageData,
+  updateLanguageData,
+  resetState,
+  removeLanguageData,
+} = languageDataSlice.actions;

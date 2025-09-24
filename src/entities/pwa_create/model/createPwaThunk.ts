@@ -134,7 +134,15 @@ export const fetchPwaUpdate = createAsyncThunk<
 
   const { domainApp, subdomain } = settings;
 
-  const { title, developer_name, about_description } = descriptionState;
+  const {
+    title,
+    developer_name,
+    checkboxes_state,
+    about_description,
+    raiting,
+    number_of_downloads,
+    review_count,
+  } = descriptionState;
 
   const { selected_comment } = commentState;
 
@@ -154,6 +162,19 @@ export const fetchPwaUpdate = createAsyncThunk<
     about: about_description?.description,
     commentId: selected_comment,
     collectionId: _id,
+    updatedDate: about_description?.last_update,
+    isExist: true,
+    isContainsAds: checkboxes_state?.[0].value,
+    isEditorsChoice: checkboxes_state?.[1].value,
+    isInAppPurchases: checkboxes_state?.[2].value,
+    version: about_description?.version,
+    lastUpdate: about_description?.last_update,
+    releaseDate: about_description?.release_date,
+    downloadsCount: number_of_downloads,
+    androidVersion: about_description?.android_version,
+    rating: raiting,
+    reviewCount: review_count,
+    newFeatures: about_description?.whats_new,
   };
 
   return await apiInstance.patch("pwa", modifiedPayload);
