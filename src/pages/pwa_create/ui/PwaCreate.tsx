@@ -22,7 +22,6 @@ type PwaCreateProps = {
 
 export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const {
-    languageDataStates,
     loading,
     isDisabled,
     saved,
@@ -116,7 +115,7 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                           )}
                         </Tab>
                       ))}
-                      {languageDataStates && languageDataStates.length < 5 && (
+                      {languagesList && languagesList.length < 5 && (
                         <Tab
                           datatype="tab-plus"
                           as="div"
@@ -132,18 +131,16 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                       )}
                     </TabList>
                     <TabPanels>
-                      {languageDataStates?.map((item, ind) => {
+                      {languagesList?.map((item, ind) => {
                         return (
                           <TabPanel key={ind}>
                             {path === "description" ? (
                               <PwaDescriptionForm
-                                key={`desc-${item.language?.value}`}
+                                key={`desc-${item.value}`}
                                 adminId={adminId}
                               />
                             ) : (
-                              <PwaComments
-                                key={`comments-${item.language?.value}`}
-                              />
+                              <PwaComments key={`comments-${item.value}`} />
                             )}
                           </TabPanel>
                         );

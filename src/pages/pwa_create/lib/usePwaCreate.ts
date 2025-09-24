@@ -60,7 +60,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const setInitLanguageData = useCallback(
-    (payload) => {
+    (payload: Array<LanguagesListValue>) => {
       dispatch(
         setLanguageData(
           payload.map((item) => ({
@@ -272,7 +272,6 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
   };
 
   return {
-    languageDataStates,
     loading,
     isDisabled,
     saved,
