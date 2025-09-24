@@ -47,14 +47,6 @@ export const pwaDesignSlice = createSlice({
     },
     updateLanguagesList: (state, action) => {
       state.languagesList = action.payload;
-
-      /*  const lang = state.languagesList.pop();
-
-      if (lang) {
-        console.log(lang);
-
-        state.currentLanguage = lang;
-      } */
     },
     setCountry: (state, action: PayloadAction<Country>) => {
       state.currentCountry = action.payload;
@@ -75,12 +67,8 @@ export const pwaDesignSlice = createSlice({
     });
     builder
       .addCase(getPwaById.fulfilled, (state, action) => {
-        const {
-          currentCountry,
-          currentLanguage,
-          languageList,
-          defaultLanguage,
-        } = action.payload;
+        const { currentCountry, currentLanguage, defaultLanguage } =
+          action.payload;
 
         const lang = state.languages.find(
           (el) => el.en.toLowerCase() === defaultLanguage.toLowerCase()
@@ -90,26 +78,6 @@ export const pwaDesignSlice = createSlice({
 
         state.currentCountry = { label: currentCountry, value: currentCountry };
         state.currentLanguage = lang;
-
-        if (!languageList) return;
-
-        state.languagesList = languageList.map((el) => {
-          const mapping = state.languages.find(
-            (item) => item.en.toLowerCase() === el.label.toLowerCase()
-          );
-
-          if (mapping) {
-            const { en, id, ru, short, value } = mapping;
-
-            return {
-              id,
-              value,
-              short,
-              en,
-              ru,
-            };
-          }
-        });
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
         const { displayName, marketerTag, displayId } = action.payload;

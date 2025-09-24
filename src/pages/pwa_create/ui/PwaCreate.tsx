@@ -22,7 +22,6 @@ type PwaCreateProps = {
 
 export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const {
-    languageDataStates,
     loading,
     isDisabled,
     saved,
@@ -34,7 +33,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     handleCreate,
     handleSavePwaGeneral,
     fetchLanguagesData,
-    setInitLanguageData,
     handleTabSwitch,
     removeLanguage,
   } = usePwaCreate(isEdit, appId);
@@ -48,7 +46,6 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     showSaveButton,
     showPreview,
     finishCreateButton,
-    location,
   } = usePwaCreateNavigation(isEdit);
 
   const [isModalOpen, setModal] = useState(false);
@@ -58,15 +55,11 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   }, [fetchLanguagesData, appId]);
 
   useEffect(() => {
-    setInitLanguageData(location.pathname);
-  }, [setInitLanguageData]);
-
-  useEffect(() => {
     const currentIndex = languagesList?.findIndex(
       (item) => item?.id === currentLanguage?.id
     );
 
-    if (currentIndex && currentIndex !== -1) {
+    if (currentIndex !== -1 && typeof currentIndex !== "undefined") {
       setActiveTabIndex(currentIndex);
     }
   }, [currentLanguage, languagesList, setActiveTabIndex]);
@@ -103,28 +96,29 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                   >
                     <TabList className={"pl-6.5 flex"}>
                       {languagesList?.map((item, ind) => (
-                        <Tab key={ind} className={clsx("ml-6.25")}>
+                        <Tab key={ind} as="div" className={clsx("ml-6.25")}>
                           {item.short}
 
                           {languagesList && languagesList.length > 1 && (
-                            <div
+                            <button
                               onClick={(e) => {
                                 e.stopPropagation();
 
-                                /* if (item.value) {
+                                if (item.value) {
                                   removeLanguage(item.value);
-                                } */
+                                }
                               }}
                               className="ml-5 w-2.75 h-2.75"
                             >
                               <img src="/pwa_icons/clear-icon.png" />
-                            </div>
+                            </button>
                           )}
                         </Tab>
                       ))}
-                      {languageDataStates && languageDataStates.length < 5 && (
+                      {languagesList && languagesList.length < 5 && (
                         <Tab
                           datatype="tab-plus"
+                          as="div"
                           className={clsx("ml-3.5")}
                           onClick={(e) => {
                             e.preventDefault();
@@ -137,18 +131,16 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
                       )}
                     </TabList>
                     <TabPanels>
-                      {languageDataStates?.map((item, ind) => {
+                      {languagesList?.map((item, ind) => {
                         return (
                           <TabPanel key={ind}>
                             {path === "description" ? (
                               <PwaDescriptionForm
-                                key={`desc-${item.language?.value}`}
+                                key={`desc-${item.value}`}
                                 adminId={adminId}
                               />
                             ) : (
-                              <PwaComments
-                                key={`comments-${item.language?.value}`}
-                              />
+                              <PwaComments key={`comments-${item.value}`} />
                             )}
                           </TabPanel>
                         );

@@ -196,13 +196,17 @@ export const PwaTable: FC<PwaTableProps> = () => {
               <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
             </button>
           )}
-          {cell.row.original.appStatus === "pending" && (
-            <button
-              onClick={() => handleCreateRenderService(cell.row.original)}
-            >
-              <img src={play_icon} style={{ height: "16px", width: "16px" }} />
-            </button>
-          )}
+          {!cell.row.original.renderId &&
+            cell.row.original.appStatus === "pending" && (
+              <button
+                onClick={() => handleCreateRenderService(cell.row.original)}
+              >
+                <img
+                  src={play_icon}
+                  style={{ height: "16px", width: "16px" }}
+                />
+              </button>
+            )}
 
           {cell.row.original.renderId &&
             cell.row.original.appStatus === "pending" && (

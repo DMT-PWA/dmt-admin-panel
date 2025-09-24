@@ -151,16 +151,16 @@
   border-radius: 6px;
 }
 
-button[role="tab"] {
+div[role="tab"] {
   font-family: "Inter", serif;
   @apply px-4 py-3.5 bg-[#F5F5F5] font-bold text-[17px];
 }
 
-button[role="tab"][datatype="tab-plus"] {
+div[role="tab"][datatype="tab-plus"] {
   @apply px-4;
 }
 
-button[role="tab"][data-selected] {
+div[role="tab"][data-selected] {
   @apply text-orange;
 }
 

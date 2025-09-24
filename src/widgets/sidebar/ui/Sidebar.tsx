@@ -5,7 +5,6 @@ import clsx from "clsx";
 import shevron from "src/shared/assets/icons/shevron.png";
 import dots from "src/shared/assets/icons/dots.png";
 import logo from "src/shared/assets/images/logo.png";
-import paperAirplane from "src/shared/assets/icons/paper-airplane.svg";
 type listItem = {
   id: number;
   title: string;
@@ -44,14 +43,6 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
       setCurrentTab("PWA");
     }
   }, [pathname]);
-
-  /*  useEffect(() => {
-    if (isOpen && pathname.startsWith("/push_notification")) {
-      setOpen(false);
-    } else {
-      setOpen(true);
-    }
-  }, [pathname, isOpen]); */
 
   return (
     <div className="container__sidebar">
@@ -95,7 +86,7 @@ export const Sidebar: FC<PwaCreateProps> = ({ appId }) => {
             )}
           </div>
         </div>
-        {pathname !== "/pwa" && isOpen ? (
+        {pathname !== "/pwa" && currentTab === "PWA" ? (
           <ul className="pl-[64px]">
             {PWA_LIST.map((item: listItem) => (
               <li

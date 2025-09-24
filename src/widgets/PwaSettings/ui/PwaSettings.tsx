@@ -34,8 +34,10 @@ export const PwaSettings: FC<{ isEdit: boolean }> = ({ isEdit = false }) => {
   };
 
   useEffect(() => {
-    dispatch(getAllCampaigns());
-  }, [dispatch]);
+    if (!campaigns) {
+      dispatch(getAllCampaigns());
+    }
+  }, [dispatch, campaigns]);
 
   useMount(() => {
     setInitStateCopy(cloneDeep(state) as unknown as typeof state);

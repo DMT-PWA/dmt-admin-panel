@@ -3,6 +3,7 @@ export {
   setLanguageData,
   updateLanguageData,
   resetState as resetLanguageDataState,
+  removeLanguageData,
 } from "./model/languageDataSlice";
 
 export { selectLanguage, selectCurrentLanguageValue } from "./model/selectors";
