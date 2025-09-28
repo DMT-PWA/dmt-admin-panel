@@ -5,6 +5,7 @@ import arrow_left from "../../assets/icons/arrow_left.png";
 type Button = {
   btn_text: string;
   btn_classes: string;
+  disabled: boolean;
   onClickHandler: (
     event: MouseEvent<HTMLButtonElement>
   ) => void | Promise<void> | (object | null)[];
@@ -16,8 +17,10 @@ export const ButtonDefault: FC<Partial<Button>> = ({
   btn_classes,
   onClickHandler,
   withArrow = false,
+  disabled = false,
 }) => (
   <button
+    disabled={disabled}
     onClick={onClickHandler}
     className={clsx(btn_classes, "btn__default", {
       "flex justify-between items-center": withArrow,
