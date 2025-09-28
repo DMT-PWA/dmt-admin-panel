@@ -30,6 +30,8 @@ import { useBeforeUnload, useMount } from "react-use";
 export const PwaCommentsCreate: FC = () => {
   const value = useAppSelector(selectCurrentLanguageValue);
 
+  const commentsInitState = useAppSelector((state) => state.comments);
+
   const language = useAppSelector(selectLanguage);
 
   const reset = useAppSelector((state) => state.comments.comment);
@@ -53,9 +55,35 @@ export const PwaCommentsCreate: FC = () => {
   const isCommentUpdate = () => getPathSegments.includes("comment_update");
   const getLastSegment = () => getPathSegments.pop() as string;
   useEffect(() => {
+    if (
+      !isCommentUpdate() &&
+      value?.commentState.selected_comment &&
+      language
+    ) {
+      dispatch(
+        updateLanguageData({
+          state: "commentState",
+          payload: commentsInitState,
+          currentLanguage: language,
+        })
+      );
+    }
+
     if (isCommentUpdate() && language) {
       dispatch(getCommentById({ id: getLastSegment(), language }));
     }
+
+    return () => {
+      if (language && !isCommentUpdate()) {
+        dispatch(
+          updateLanguageData({
+            state: "commentState",
+            payload: commentsInitState,
+            currentLanguage: language,
+          })
+        );
+      }
+    };
   }, [pathname, dispatch]);
 
   useMount(() => {
@@ -159,8 +187,6 @@ export const PwaCommentsCreate: FC = () => {
     if (!comments_list || !comment) return;
     handleUpdateField({
       comments_list: [...comments_list, comment],
-    });
-    handleUpdateField({
       comment: reset,
     });
   };

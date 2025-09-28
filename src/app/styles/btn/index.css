@@ -11,7 +11,7 @@
   color: var(--color-white);
 }
 
-.btn__orange:hover {
+.btn__orange:not(:disabled):hover {
   opacity: 0.75;
 }
 

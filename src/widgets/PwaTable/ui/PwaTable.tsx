@@ -28,7 +28,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import copy_icon from "src/shared/assets/icons/copy_icon.png";
 import link_icon from "src/shared/assets/icons/link_icon.png";
 import play_icon from "src/shared/assets/icons/play_icon.png";
-import pause_icon from "src/shared/assets/icons/pause_icon.png";
+import { Pause } from "src/shared/assets/icons/pause";
 import options_icon from "src/shared/assets/icons/options_icon.png";
 import trash from "src/shared/assets/icons/trash_icon_orange.png";
 import pencil from "src/shared/assets/icons/pencil.png";
@@ -189,15 +189,22 @@ export const PwaTable: FC<PwaTableProps> = () => {
           </button>
         </div>
       ),
-      cell: (cell) => (
-        <div className="min-w-23 flex justify-around">
-          {cell.row.original.appStatus === "live" && (
-            <button onClick={() => handlePwaPause(cell.row.original._id)}>
-              <img src={pause_icon} style={{ height: "16px", width: "16px" }} />
-            </button>
-          )}
-          {!cell.row.original.renderId &&
-            cell.row.original.appStatus === "pending" && (
+      cell: (cell) => {
+        const deploying = cell.row.original.appStatus === "deploying";
+        const live = cell.row.original.appStatus === "live";
+        const pending = cell.row.original.appStatus === "pending";
+
+        return (
+          <div className="min-w-23 flex justify-around">
+            {(live || deploying) && (
+              <button
+                disabled={deploying}
+                onClick={() => handlePwaPause(cell.row.original._id)}
+              >
+                <Pause fill={deploying ? "#afb8c7" : "#6B7280"} />
+              </button>
+            )}
+            {!cell.row.original.renderId && pending && (
               <button
                 onClick={() => handleCreateRenderService(cell.row.original)}
               >
@@ -208,8 +215,7 @@ export const PwaTable: FC<PwaTableProps> = () => {
               </button>
             )}
 
-          {cell.row.original.renderId &&
-            cell.row.original.appStatus === "pending" && (
+            {cell.row.original.renderId && pending && (
               <button onClick={() => handlePwaResume(cell.row.original._id)}>
                 <img
                   src={play_icon}
@@ -218,75 +224,76 @@ export const PwaTable: FC<PwaTableProps> = () => {
               </button>
             )}
 
-          <Menu>
-            <MenuButton>
-              <img
-                src={options_icon}
-                style={{ height: "4px", width: "16px" }}
-              />
-            </MenuButton>
-            <MenuItems
-              transition
-              anchor="bottom end"
-              className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
-            >
-              <MenuItem>
-                <button
-                  onClick={() => {
-                    handleClonePwa({
-                      appId: cell.row.original._id,
-                      newAdminId: cell.row.original.adminId,
-                    });
-                  }}
-                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
-                >
-                  <img
-                    src={copy_icon}
-                    style={{ height: "14px", width: "14px" }}
-                  />
-                  Клонировать
-                </button>
-              </MenuItem>
-
-              <MenuItem>
-                <button
-                  onClick={() => {
-                    if (!cell.row.original._id) return;
-                    onUpdateHandler(cell.row.original._id);
-                  }}
-                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
-                >
-                  <img
-                    src={pencil}
-                    style={{
-                      height: "14px",
-                      width: "14px",
+            <Menu>
+              <MenuButton>
+                <img
+                  src={options_icon}
+                  style={{ height: "4px", width: "16px" }}
+                />
+              </MenuButton>
+              <MenuItems
+                transition
+                anchor="bottom end"
+                className="origin-top-right rounded-xl border border-none bg-white pb-3.25 pt-2.25 pl-4.5 pr-5  transition duration-100 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+              >
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      handleClonePwa({
+                        appId: cell.row.original._id,
+                        newAdminId: cell.row.original.adminId,
+                      });
                     }}
-                  />
-                  Редактировать
-                </button>
-              </MenuItem>
+                    className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                  >
+                    <img
+                      src={copy_icon}
+                      style={{ height: "14px", width: "14px" }}
+                    />
+                    Клонировать
+                  </button>
+                </MenuItem>
 
-              <div className="my-1 h-px bg-white/5" />
-              <MenuItem>
-                <button
-                  onClick={() => deletePwaHandler(cell.row.original)}
-                  className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
-                >
-                  <img
-                    src={trash}
-                    style={{
-                      height: "16px",
-                      width: "14px",
+                <MenuItem>
+                  <button
+                    onClick={() => {
+                      if (!cell.row.original._id) return;
+                      onUpdateHandler(cell.row.original._id);
                     }}
-                  />
-                  Удалить
-                </button>
-              </MenuItem>
-            </MenuItems>
-          </Menu>
-        </div>
-      ),
+                    className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7 mb-4"
+                  >
+                    <img
+                      src={pencil}
+                      style={{
+                        height: "14px",
+                        width: "14px",
+                      }}
+                    />
+                    Редактировать
+                  </button>
+                </MenuItem>
+
+                <div className="my-1 h-px bg-white/5" />
+                <MenuItem>
+                  <button
+                    onClick={() => deletePwaHandler(cell.row.original)}
+                    className="group flex w-full items-center gap-2 rounded-lg text__default text-view-7"
+                  >
+                    <img
+                      src={trash}
+                      style={{
+                        height: "16px",
+                        width: "14px",
+                      }}
+                    />
+                    Удалить
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Menu>
+          </div>
+        );
+      },
     }),
   ];
 

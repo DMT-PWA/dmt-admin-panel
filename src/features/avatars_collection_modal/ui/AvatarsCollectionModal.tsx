@@ -23,40 +23,48 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
 }) => {
   const [avatar, setTempAvatar] = useState<string | null>(null);
 
+  const [loading, setLoading] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setLoading(true);
+
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = await handleFileUpload(file);
       setTempAvatar(imageUrl);
     }
+
+    setLoading(false);
   };
 
   const handleAvatarChoose = () => {
-    const newList = comments_list?.map((item) => ({
-      ...item,
-      avatar: avatar,
-    }));
+    if (index !== null) {
+      const newList = comments_list?.map((item, ind) =>
+        ind === index
+          ? {
+              ...item,
+              avatar,
+            }
+          : item
+      );
 
-    if (avatar) {
-      if (index) {
-        handleUpdateField({ comments_list: newList });
-        onPopupHandler();
-        return;
-      }
+      handleUpdateField({ comments_list: newList });
+      onPopupHandler();
+      return;
+    }
 
-      if (comment) {
-        handleUpdateField({
-          comment: {
-            ...comment,
-            avatar: avatar,
-          },
-        });
-        onPopupHandler();
-      }
+    if (comment) {
+      handleUpdateField({
+        comment: {
+          ...comment,
+          avatar,
+        },
+      });
+      onPopupHandler();
     }
   };
 
@@ -113,6 +121,7 @@ export const AvatarsCollectionModal: FC<IAvatarsCollectionProps> = ({
       </div>
       <div className="flex gap-[43px]">
         <ButtonDefault
+          disabled={loading}
           btn_text="Выбрать"
           onClickHandler={handleAvatarChoose}
           btn_classes="btn__orange btn__orange-view-3 flex-1/2"
