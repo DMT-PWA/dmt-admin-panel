@@ -6,6 +6,7 @@ import { Field, Label, Switch, Textarea } from "@headlessui/react";
 import { ButtonDefault } from "src/shared/ui/button";
 import DatePicker from "react-datepicker";
 import clsx from "clsx";
+import { Controller, useFormContext } from "react-hook-form";
 
 interface CommentCreateProps extends IUserComment {
   onFiledUpdate: <K extends keyof IUserComment>(
@@ -19,18 +20,22 @@ interface CommentCreateProps extends IUserComment {
 export const CommentCreate: FC<CommentCreateProps> = ({
   onFiledUpdate,
   setModalOpen,
-  author_name,
-  avatar,
-  comments_text,
-  likes_count,
-  raiting,
-  review_date,
-  developer_answer,
-  answer_date,
-  answer_text,
-  developer_name,
   index,
+  ...props
 }) => {
+  const {
+    avatar,
+    comments_text,
+    developer_answer,
+    likes_count,
+    raiting,
+    review_date,
+    answer_date,
+    answer_text,
+    developer_name,
+    author_name,
+  } = props;
+
   const label = (text: string) => (
     <Label
       className={clsx("mb-2 text-view-2", {
@@ -40,6 +45,8 @@ export const CommentCreate: FC<CommentCreateProps> = ({
       {text}
     </Label>
   );
+
+  const { control } = useFormContext();
 
   return (
     <div className={clsx({ "mb-6.5": index !== null })}>
@@ -59,15 +66,26 @@ export const CommentCreate: FC<CommentCreateProps> = ({
       <div className="bg-white flex gap-4.25 rounded-[6px] mt-4 pl-4 pr-[19px] pt-3 pb-[30px]">
         <div className="flex-1/2">
           <div className="flex flex-col gap-2">
-            <InputDefault
-              label="Имя автора"
-              input_classes=""
-              onUpdateValue={(e) =>
-                onFiledUpdate("author_name", e.target.value)
-              }
-              value={author_name ?? ""}
-              container_classes="flex-[0.5]"
-              placeholder="Введите имя автора"
+            <Controller
+              name="authorName"
+              rules={{
+                required: "Введите имя автора",
+              }}
+              control={control}
+              render={({ field, fieldState: { invalid, error } }) => (
+                <InputDefault
+                  label="Имя автора"
+                  onUpdateValue={(e) => {
+                    field.onChange(e.target.value);
+                    onFiledUpdate("author_name", e.target.value);
+                  }}
+                  value={author_name || ""}
+                  container_classes="flex-[0.5]"
+                  placeholder="Введите имя автора"
+                  error_message={error?.message}
+                  valid={!invalid}
+                />
+              )}
             />
             <Field>
               <Label className="text__default text-view-2">Аватар</Label>
