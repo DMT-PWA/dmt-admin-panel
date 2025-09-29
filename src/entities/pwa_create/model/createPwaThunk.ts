@@ -127,12 +127,14 @@ export const fetchPwaUpdate = createAsyncThunk<
   },
   { state: RootState }
 >("pwa/updatePwa", async (payload, { getState }) => {
-  const { pwa_design, settings } = getState();
+  const { pwa_design, settings, metrics } = getState();
 
   const { descriptionState, commentState, collectionState } =
     payload.currentState;
 
-  const { domainApp, subdomain } = settings;
+  const { domainApp, subdomain, currentCampaign } = settings;
+
+  const { facebookPixelList } = metrics;
 
   const {
     title,
@@ -150,7 +152,7 @@ export const fetchPwaUpdate = createAsyncThunk<
 
   const { _id } = collectionState;
 
-  const { currentLanguage } = pwa_design;
+  const { currentLanguage, pwa_tags } = pwa_design;
   const modifiedPayload = {
     appId: payload.id,
     adminId,
@@ -175,6 +177,14 @@ export const fetchPwaUpdate = createAsyncThunk<
     rating: raiting,
     reviewCount: review_count,
     newFeatures: about_description?.whats_new,
+    pixelId: facebookPixelList[0].pixel,
+    accessToken: facebookPixelList[0].token,
+    keitaroDomain: currentCampaign?.keitaroDomain,
+    keitaroCampaign: currentCampaign?.keitaroCampaign,
+    keitaroCampaignId: currentCampaign?.keitaroCampaignId,
+    marketerTag: pwa_tags,
+    domainApp: `https://www.${subdomain}.${domainApp?.value}`,
+    domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
   };
 
   return await apiInstance.patch("pwa", modifiedPayload);

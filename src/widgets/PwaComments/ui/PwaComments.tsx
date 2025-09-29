@@ -103,7 +103,7 @@ export const PwaComments: FC = () => {
 
     await dispatch(removeCommentById(id));
 
-    await dispatch(getAllComments());
+    await fetchAllComments();
   };
 
   return (

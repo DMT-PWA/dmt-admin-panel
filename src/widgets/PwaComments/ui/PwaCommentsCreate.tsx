@@ -26,6 +26,8 @@ import {
 import { debounce } from "src/shared/lib/helpers";
 import { cloneDeep, isEqual } from "lodash";
 import { useBeforeUnload, useMount } from "react-use";
+import { useForm, Controller, FormProvider } from "react-hook-form";
+import clsx from "clsx";
 
 export const PwaCommentsCreate: FC = () => {
   const value = useAppSelector(selectCurrentLanguageValue);
@@ -43,6 +45,8 @@ export const PwaCommentsCreate: FC = () => {
   const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(
     null
   );
+
+  const [saved, setSaved] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -92,6 +96,19 @@ export const PwaCommentsCreate: FC = () => {
 
   useBeforeUnload(!isEqual(value, initStateCopy));
 
+  const methods = useForm({
+    defaultValues: {
+      groupName: "",
+      authorName: "",
+    },
+    mode: "onChange",
+  });
+
+  const {
+    control,
+    formState: { errors },
+  } = methods;
+
   if (!value || !language) return <div>Loading...</div>;
 
   const { commentState } = value;
@@ -127,6 +144,12 @@ export const PwaCommentsCreate: FC = () => {
           reviewObject: comments_list,
         })
       );
+    }
+
+    if (!saved) {
+      setSaved(true);
+
+      setTimeout(() => setSaved(false), 2000);
     }
   };
 
@@ -206,59 +229,85 @@ export const PwaCommentsCreate: FC = () => {
           withArrow
         />
       </div>
-      <InputDefault
-        label="Название группы"
-        input_classes=""
-        onUpdateValue={(e) =>
-          handleUpdateField({ comment_group_name: e.target.value })
-        }
-        value={comment_group_name ?? ""}
-        container_classes="max-w-128.25"
-        placeholder="Введите название группы"
+      <Controller
+        name="groupName"
+        control={control}
+        rules={{
+          required: "Название группы обязательно",
+        }}
+        render={({ field, fieldState: { error, invalid } }) => (
+          <InputDefault
+            label="Название группы"
+            onUpdateValue={(e) => {
+              field.onChange(e.target.value);
+              handleUpdateField({ comment_group_name: e.target.value });
+            }}
+            value={field.value}
+            container_classes="max-w-128.25"
+            placeholder="Введите название группы"
+            error_message={error?.message}
+            valid={!invalid}
+          />
+        )}
       />
       <div className="flex flex-col gap-6">
         <div>
-          {comments_list &&
-            comments_list.map((item, ind) => {
-              return (
-                <CommentCreate
-                  key={ind}
-                  index={ind}
-                  setModalOpen={() => {
-                    setModalOpen(true);
-                    setCurrentModalIndex(ind);
-                  }}
-                  onFiledUpdate={(field, value) =>
-                    onUpdateCommentInList(field, ind, value)
-                  }
-                  {...item}
-                />
-              );
-            })}
-          {comment && (
-            <CommentCreate
-              setModalOpen={() => {
-                setModalOpen(true);
-                setCurrentModalIndex(null);
-              }}
-              onFiledUpdate={(field, value) => updateNewComment(field, value)}
-              {...comment}
-            />
-          )}
-          <button
-            onClick={onAddNewComment}
-            className="flex items-center gap-6.75 text-view-4 text-gray-6 bg-white py-[13.5px] px-[16.5px] rounded-[8px] mt-5.5"
-          >
-            <img src="/pwa_icons/crosshair.png" width={14} height={14} alt="" />
-            Добавить новый комментарий
-          </button>
-          {comments_list && comments_list.length > 0 && (
-            <ButtonDefault
-              onClickHandler={onSaveHandler}
-              btn_text="Сохранить"
-              btn_classes="btn__orange btn__orange-view-1 w-62.25 mt-5.5"
-            />
-          )}
+          <FormProvider {...methods}>
+            {comments_list &&
+              comments_list.map((item, ind) => {
+                return (
+                  <CommentCreate
+                    key={ind}
+                    index={ind}
+                    setModalOpen={() => {
+                      setModalOpen(true);
+                      setCurrentModalIndex(ind);
+                    }}
+                    onFiledUpdate={(field, value) =>
+                      onUpdateCommentInList(field, ind, value)
+                    }
+                    {...item}
+                  />
+                );
+              })}
+            {comment && (
+              <CommentCreate
+                setModalOpen={() => {
+                  setModalOpen(true);
+                  setCurrentModalIndex(null);
+                }}
+                onFiledUpdate={(field, value) => updateNewComment(field, value)}
+                {...comment}
+              />
+            )}
+            <button
+              disabled={Object.keys(errors).length > 0}
+              onClick={onAddNewComment}
+              className={clsx(
+                "flex items-center gap-6.75 text-view-4 text-gray-6 bg-white py-[13.5px] px-[16.5px] rounded-[8px] mt-5.5",
+                { "opacity-50": Object.keys(errors).length > 0 }
+              )}
+            >
+              <img
+                src="/pwa_icons/crosshair.png"
+                width={14}
+                height={14}
+                alt=""
+              />
+              Добавить новый комментарий
+            </button>
+            {comments_list && comments_list.length > 0 && (
+              <ButtonDefault
+                onClickHandler={onSaveHandler}
+                btn_text={saved ? "Сохранено" : "Сохранить"}
+                btn_classes={clsx(
+                  "btn__orange btn__orange-view-1 w-62.25 mt-5.5",
+                  { "opacity-50": saved }
+                )}
+                disabled={saved}
+              />
+            )}
+          </FormProvider>
         </div>
       </div>
       <Dialog
