@@ -49,22 +49,23 @@ const settingsSlice = createSlice({
           keitaroCampaignName: item.keitaroCampaignName,
           keitaroState: item.keitaroState,
         }));
+
+        if (state.currentCampaignId) {
+          const campaign = state.campaigns?.find(
+            (item) =>
+              Number(item.keitaroCampaignId) === Number(state.currentCampaignId)
+          );
+
+          if (campaign) {
+            state.currentCampaign = campaign;
+          }
+        }
       })
       .addCase(getPwaByIdAndLanguage.fulfilled, (state, action) => {
         const { keitaroCampaignId, domain, subDomain } = action.payload;
 
         if (keitaroCampaignId) {
           state.currentCampaignId = keitaroCampaignId;
-        }
-
-        if (state.currentCampaignId) {
-          const campaign = state.campaigns?.find(
-            (item) => item.keitaroCampaignId === Number(state.currentCampaignId)
-          );
-
-          if (campaign) {
-            state.currentCampaign = campaign;
-          }
         }
 
         if (subDomain) {
