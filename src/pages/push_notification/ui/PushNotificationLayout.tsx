@@ -46,7 +46,7 @@ export const PushNotificationLayout: FC = () => {
         />
         <Route
           path="form/:id"
-          element={<NotificationForm navigateToList={navigateToList} />}
+          element={<NotificationForm navigateToList={navigateToList} isEdit />}
         />
       </Routes>
     </div>

@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, memo, useState } from "react";
+import { ChangeEvent, FC, memo, useEffect, useState } from "react";
 import { setPwaTitle } from "src/entities/pwa_design";
 import { useAppDispatch, useAppSelector } from "src/shared/lib/store";
 import { ButtonDefault } from "src/shared/ui/button";
@@ -15,6 +15,7 @@ import { Country } from "src/shared/types";
 import { useBeforeUnload, useDebounce, useMount } from "react-use";
 import { cloneDeep, isEqual } from "lodash";
 import { IDesign } from "src/entities/pwa_design/model/types";
+import { fetchCountries } from "src/entities/pwa_design/model/pwaDesignThunk";
 
 type PwaFormProps = {
   isEdit?: boolean;
@@ -61,6 +62,10 @@ const PwaFormComponent: FC<PwaFormProps> = ({ isEdit = false }) => {
     300,
     [pwa_title]
   );
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
   const onSetPwaTitle = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setPwaTitle(e.target.value));
   };

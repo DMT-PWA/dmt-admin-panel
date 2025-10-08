@@ -4,16 +4,18 @@ import { Title } from "src/shared/ui/title";
 import { NotificationMessage } from "src/shared/types/notification.types";
 import Select from "react-select";
 import { Textarea } from "@headlessui/react";
-import { languages } from "src/entities/pwa_design/lib/const";
 import { handleFileUpload } from "src/features/appData/appDataAPI";
+import { SelectValueProp } from "src/shared/types";
 
 type NotificationMessageProps = {
   notificationMessages: NotificationMessage[];
+  languages: Array<SelectValueProp>;
   setMessage: (arg: NotificationMessage[]) => void;
 };
 
 export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
   notificationMessages,
+  languages,
   setMessage,
 }) => {
   const fileInputRef = useRef<HTMLInputElement[]>([]);
@@ -136,10 +138,7 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
                           if (file) {
                             const fileURL = await handleFileUpload(file);
 
-                            handleMessage(
-                              { url: fileURL, name: file.name },
-                              "image"
-                            );
+                            handleMessage(fileURL, "image");
                           }
                         }}
                       />
@@ -147,15 +146,20 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
                         htmlFor={`file-input-${ind}`}
                         className="relative input__default !border-none inline-block w-87.5"
                       >
-                        {message.image.name
-                          ? message.image.name
-                          : "Выберите файл"}
+                        {message.image ? (
+                          <img
+                            src={message.image}
+                            alt=""
+                            width={75}
+                            height={75}
+                          />
+                        ) : (
+                          "Выберите файл"
+                        )}
                         {message.image && (
                           <button
-                            onClick={() =>
-                              handleMessage({ url: "", name: "" }, "image")
-                            }
-                            className="absolute w-2.75 h-2.75 bottom-3.75 right-4"
+                            onClick={() => handleMessage("", "image")}
+                            className="absolute w-2.75 h-2.75 top-3.75 right-4"
                           >
                             <img src="/pwa_icons/clear-icon.png" />
                           </button>
@@ -200,7 +204,7 @@ export const CreateNotificationMessage: FC<NotificationMessageProps> = ({
               {
                 message: "",
                 icon: "",
-                image: { name: "", url: "" },
+                image: "",
                 language: "",
                 heading: "",
               },

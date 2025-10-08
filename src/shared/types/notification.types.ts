@@ -33,7 +33,7 @@ export interface NotificationTime {
 export type NotificationMessage = Pick<
   Notification,
   "language" | "heading" | "message" | "icon"
-> & { image: { url: string; name: string } | string };
+> & { image: string };
 
 type Pwa = {
   displayName: string;

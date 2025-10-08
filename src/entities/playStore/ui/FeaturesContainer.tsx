@@ -1,10 +1,7 @@
-import { appData } from "src/shared/lib/data";
-
 const FeaturesContainer = () => {
   //===================================================================================================
   //==========================={Translations Block}====================================================
   //===================================================================================================
-  const { casino } = appData.malaysia.english;
   //===================================================================================================
   //================================={React states}====================================================
   //===================================================================================================
@@ -17,7 +14,7 @@ const FeaturesContainer = () => {
           <div className="w-[48px] flex-1 flex flex-row items-center justify-start">
             <div className="self-stretch flex-1 flex flex-row items-start justify-start">
               <div className="self-stretch flex-1 relative tracking-[0.25px] leading-[18px]">
-                {casino}
+                Casino
               </div>
             </div>
           </div>

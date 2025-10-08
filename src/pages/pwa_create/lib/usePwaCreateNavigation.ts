@@ -1,9 +1,10 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ROUTE_ORDER } from "src/entities/pwa_create/lib/const";
 
-export const usePwaCreateNavigation = (isEdit: boolean = false) => {
+export const usePwaCreateNavigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { appId } = useParams();
 
   const pathSegments = location.pathname.split("/");
   const currentRoute = pathSegments[pathSegments.length - 1];
@@ -34,7 +35,7 @@ export const usePwaCreateNavigation = (isEdit: boolean = false) => {
     ROUTE_ORDER.indexOf(currentRoute) < ROUTE_ORDER.length - 1 &&
     ROUTE_ORDER.indexOf(currentRoute) !== -1;
 
-  const showSaveButton = isEdit && ROUTE_ORDER.includes(currentRoute);
+  const showSaveButton = appId && ROUTE_ORDER.includes(currentRoute);
 
   const showPreview =
     currentRoute === "description" ||
@@ -42,7 +43,7 @@ export const usePwaCreateNavigation = (isEdit: boolean = false) => {
     currentRoute === "comments_create" ||
     pathSegments[pathSegments.length - 2] === "comment_update";
 
-  const finishCreateButton = !isEdit && currentRoute === "metrics";
+  const finishCreateButton = !appId && currentRoute === "metrics";
 
   const goToTable = () => navigate("/pwa");
 
@@ -58,5 +59,6 @@ export const usePwaCreateNavigation = (isEdit: boolean = false) => {
     goToTable,
     useLocation,
     location,
+    appId,
   };
 };

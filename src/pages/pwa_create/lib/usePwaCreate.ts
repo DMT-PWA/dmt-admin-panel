@@ -12,7 +12,6 @@ import {
   removeLanguageData,
 } from "src/features/languageData";
 import {
-  fetchCountries,
   fetchLanguages,
   fetchPreviewContent,
 } from "src/entities/pwa_design/model/pwaDesignThunk";
@@ -27,7 +26,7 @@ import {
 } from "src/features/languageData/model/languagesDataThunk";
 import { resetSettingsState } from "src/widgets/PwaSettings";
 import { resetMetricsState } from "src/entities/metrics";
-export const usePwaCreate = (isEdit: boolean, appId?: string) => {
+export const usePwaCreate = (appId?: string) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -51,7 +50,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     (state) => state.language_data
   );
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -79,13 +78,9 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
 
   const fetchLanguagesData = useCallback(
     async (appId?: string) => {
-      setLoading(true);
-
-      await dispatch(fetchCountries());
-
       const { languagesResponse } = await dispatch(fetchLanguages()).unwrap();
 
-      if (!isEdit) {
+      if (!appId) {
         const defaultLang = languagesResponse.find(
           (el) => el.value === "english"
         );
@@ -97,7 +92,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
         await dispatch(fetchPreviewContent("english"));
       }
 
-      if (appId && isEdit) {
+      if (appId) {
         const { currentCountry, currentLanguage, languageList } =
           await dispatch(getPwaById(appId)).unwrap();
 
@@ -106,14 +101,16 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
         const { payload } = dispatch(
           updateLanguagesList(
             languageList.map((el) => {
-              const mapping = languagesResponse.find(
-                (item) => item.en.toLowerCase() === el.label.toLowerCase()
-              );
+              if ("label" in el) {
+                const mapping = languagesResponse.find(
+                  (item) => item.en.toLowerCase() === el.label.toLowerCase()
+                );
 
-              if (mapping) {
-                return {
-                  ...mapping,
-                };
+                if (mapping) {
+                  return {
+                    ...mapping,
+                  };
+                }
               }
             })
           )
@@ -132,31 +129,26 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
 
       setLoading(false);
     },
-    [dispatch, isEdit, setInitLanguageData]
+    [dispatch, setInitLanguageData]
   );
 
   const handleTabSwitch = useCallback(
     async (language: LanguagesListValue, appId?: string) => {
-      setLoading(true);
       dispatch(setLanguage(language));
 
-      try {
-        if (isEdit) {
-          await dispatch(
-            getPwaByIdAndLanguage({
-              appId,
-              language: language.en,
-              country: currentCountry?.value,
-            })
-          );
-        } else {
-          await dispatch(fetchPreviewContent(language.value));
-        }
-      } finally {
-        setLoading(false);
+      if (appId) {
+        await dispatch(
+          getPwaByIdAndLanguage({
+            appId,
+            language: language.en,
+            country: currentCountry?.value,
+          })
+        );
+      } else {
+        await dispatch(fetchPreviewContent(language.value));
       }
     },
-    [dispatch, isEdit, currentCountry?.value]
+    [dispatch, currentCountry?.value]
   );
 
   const updateLanguagesListHandler = useCallback(
@@ -175,7 +167,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
 
       try {
         if (selectedLang) {
-          if (appId && isEdit) {
+          if (appId) {
             await dispatch(addLanguageToPwa({ appId, selectedLang }));
             await handleTabSwitch(selectedLang, appId);
             return;
@@ -190,7 +182,6 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     [
       appId,
       dispatch,
-      isEdit,
       handleTabSwitch,
       languages,
       languagesList,
@@ -199,7 +190,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
   );
 
   const removeLanguage = async (lang: string) => {
-    if (appId && isEdit) {
+    if (appId) {
       await dispatch(deleteLanguageFromPwa({ appId, language: lang }));
     }
 
@@ -220,7 +211,7 @@ export const usePwaCreate = (isEdit: boolean, appId?: string) => {
     if (currentLanguage?.value === lang) {
       await handleTabSwitch(
         payload[payload.length - 1],
-        isEdit ? appId : undefined
+        appId ? appId : undefined
       );
     }
   };

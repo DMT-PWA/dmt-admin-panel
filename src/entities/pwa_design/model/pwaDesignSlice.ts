@@ -59,10 +59,12 @@ export const pwaDesignSlice = createSlice({
 
       state.languages = languagesResponse;
 
+      const defaultLang = state.languages.find(
+        (el) => el.value === "english"
+      ) as LanguagesListValue;
+
       if (!state.currentLanguage) {
-        state.currentLanguage = state.languages.find(
-          (el) => el.value === "english"
-        ) as LanguagesListValue;
+        state.currentLanguage = defaultLang;
       }
     });
     builder

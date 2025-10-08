@@ -1,26 +1,32 @@
 import { FC, useEffect, useState } from "react";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Title } from "src/shared/ui/title";
-import { PwaDescriptionForm } from "src/widgets/PwaDescriptionForm";
 import { PwaForm } from "src/widgets/PwaForm";
 import { PhonePreview } from "src/widgets/PhonePreview";
 import { ButtonDefault } from "src/shared/ui/button";
 import { Route, Routes } from "react-router-dom";
-import { PwaComments, PwaCommentsCreate } from "src/widgets/PwaComments";
+import { PwaCommentsCreate } from "src/widgets/PwaComments";
 import { PwaSettings } from "src/widgets/PwaSettings";
 import { PwaMetrics } from "src/widgets/PwaMetrics";
-import { adminId } from "src/shared/lib/data";
 import clsx from "clsx";
 import { usePwaCreate } from "../lib/usePwaCreate";
 import { usePwaCreateNavigation } from "../lib/usePwaCreateNavigation";
 import { LanguagesModal } from "src/widgets/LanguagesModal";
+import { PwaTabs } from "./PwaTabs";
+import { FormProvider, useForm } from "react-hook-form";
 
-type PwaCreateProps = {
-  appId?: string;
-  isEdit: boolean;
-};
+export const PwaCreate: FC = () => {
+  const {
+    handleNavigateNext,
+    handleNavigatePrev,
+    goToTable,
+    showBackButton,
+    showNextButton,
+    showSaveButton,
+    showPreview,
+    finishCreateButton,
+    appId,
+  } = usePwaCreateNavigation();
 
-export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   const {
     loading,
     isDisabled,
@@ -35,18 +41,9 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
     fetchLanguagesData,
     handleTabSwitch,
     removeLanguage,
-  } = usePwaCreate(isEdit, appId);
+  } = usePwaCreate(appId);
 
-  const {
-    handleNavigateNext,
-    handleNavigatePrev,
-    goToTable,
-    showBackButton,
-    showNextButton,
-    showSaveButton,
-    showPreview,
-    finishCreateButton,
-  } = usePwaCreateNavigation(isEdit);
+  const methods = useForm();
 
   const [isModalOpen, setModal] = useState(false);
 
@@ -67,98 +64,52 @@ export const PwaCreate: FC<PwaCreateProps> = ({ appId, isEdit }) => {
   return (
     <div className="container__default">
       <Title
-        title={isEdit ? "Редактирование  PWA" : "Создание PWA"}
+        title={appId ? "Редактирование  PWA" : "Создание PWA"}
         classes="title__default"
-        withContainer={!isEdit}
+        withContainer={!appId}
       />
       {!loading && (
-        <div className="flex gap-[54px]">
-          <Routes>
-            <Route path="design" element={<PwaForm isEdit={isEdit} />} />
-            {["description", "comments"].map((path) => (
+        <FormProvider {...methods}>
+          <div className="flex gap-[54px]">
+            <Routes>
               <Route
-                key={path}
-                path={path}
-                element={
-                  <TabGroup
-                    className={
-                      path === "comments" ? "flex-1 mt-[78px]" : "flex-1"
-                    }
-                    selectedIndex={activeTabIndex}
-                    onChange={(index) => {
-                      setActiveTabIndex(index);
-
-                      const selectedLanguage = languagesList?.[index];
-                      if (selectedLanguage) {
-                        handleTabSwitch(selectedLanguage, appId);
-                      }
-                    }}
-                  >
-                    <TabList className={"pl-6.5 flex"}>
-                      {languagesList?.map((item, ind) => (
-                        <Tab key={ind} as="div" className={clsx("ml-6.25")}>
-                          {item.short}
-
-                          {languagesList && languagesList.length > 1 && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-
-                                if (item.value) {
-                                  removeLanguage(item.value);
-                                }
-                              }}
-                              className="ml-5 w-2.75 h-2.75"
-                            >
-                              <img src="/pwa_icons/clear-icon.png" />
-                            </button>
-                          )}
-                        </Tab>
-                      ))}
-                      {languagesList && languagesList.length < 5 && (
-                        <Tab
-                          datatype="tab-plus"
-                          as="div"
-                          className={clsx("ml-3.5")}
-                          onClick={(e) => {
-                            e.preventDefault();
-
-                            setModal(true);
-                          }}
-                        >
-                          <img src="/pwa_icons/crosshair-s.png" alt="" />
-                        </Tab>
-                      )}
-                    </TabList>
-                    <TabPanels>
-                      {languagesList?.map((item, ind) => {
-                        return (
-                          <TabPanel key={ind}>
-                            {path === "description" ? (
-                              <PwaDescriptionForm
-                                key={`desc-${item.value}`}
-                                adminId={adminId}
-                              />
-                            ) : (
-                              <PwaComments key={`comments-${item.value}`} />
-                            )}
-                          </TabPanel>
-                        );
-                      })}
-                    </TabPanels>
-                  </TabGroup>
-                }
+                path="design"
+                element={<PwaForm isEdit={appId !== undefined} />}
               />
-            ))}
-            <Route path="comments_create" element={<PwaCommentsCreate />} />
-            <Route path="comment_update/:id" element={<PwaCommentsCreate />} />
-            <Route path="settings" element={<PwaSettings isEdit={isEdit} />} />
-            <Route path="metrics" element={<PwaMetrics />} />
-            <Route path="*" element={<PwaForm />} />
-          </Routes>
+              {["description", "comments"].map((path) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <PwaTabs
+                      activeTabIndex={activeTabIndex}
+                      appId={appId}
+                      handleTabSwitch={handleTabSwitch}
+                      languagesList={languagesList}
+                      path={path}
+                      removeLanguage={removeLanguage}
+                      setActiveTabIndex={setActiveTabIndex}
+                      setModal={setModal}
+                    />
+                  }
+                />
+              ))}
+              <Route path="comments_create" element={<PwaCommentsCreate />} />
+              <Route
+                path="comment_update/:id"
+                element={<PwaCommentsCreate />}
+              />
+              <Route
+                path="settings"
+                element={<PwaSettings isEdit={appId !== undefined} />}
+              />
+              <Route path="metrics" element={<PwaMetrics />} />
+              <Route path="*" element={<PwaForm />} />
+            </Routes>
 
-          {!loading && showPreview && <PhonePreview />}
-        </div>
+            {!loading && showPreview && <PhonePreview />}
+          </div>
+        </FormProvider>
       )}
       {showSaveButton && (
         <ButtonDefault
