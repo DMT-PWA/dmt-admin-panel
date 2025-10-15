@@ -152,12 +152,13 @@ export const fetchPwaUpdate = createAsyncThunk<
 
   const { _id } = collectionState;
 
-  const { currentLanguage, pwa_tags } = pwa_design;
+  const { currentLanguage, pwa_tags, pwa_title } = pwa_design;
   const modifiedPayload = {
     appId: payload.id,
     adminId,
     appTitle: title,
     appSubTitle: developer_name,
+    displayName: pwa_title,
     domain: domainApp?.value,
     subDomain: subdomain,
     language: currentLanguage?.en,
