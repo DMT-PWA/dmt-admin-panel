@@ -61,9 +61,8 @@ export const PwaTable: FC<PwaTableProps> = () => {
       tag: obj.marketerTag,
       createdAt: format(obj.createdAt, "dd.MM.yyyy | hh:mm"),
       appStatus: obj.appStatus,
-      domainLanding: obj.domainLanding,
       domainApp: obj.domainApp,
-      renderId: obj.renderId,
+      cloudflareId: obj.cloudflareId,
     }));
   }, []);
 
@@ -204,7 +203,7 @@ export const PwaTable: FC<PwaTableProps> = () => {
                 <Pause fill={deploying ? "#afb8c7" : "#6B7280"} />
               </button>
             )}
-            {!cell.row.original.renderId && pending && (
+            {!cell.row.original.cloudflareId && pending && (
               <button
                 onClick={() => handleCreateRenderService(cell.row.original)}
               >
@@ -215,7 +214,7 @@ export const PwaTable: FC<PwaTableProps> = () => {
               </button>
             )}
 
-            {cell.row.original.renderId && pending && (
+            {cell.row.original.cloudflareId && pending && (
               <button onClick={() => handlePwaResume(cell.row.original._id)}>
                 <img
                   src={play_icon}

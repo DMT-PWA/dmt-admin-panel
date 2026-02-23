@@ -171,11 +171,10 @@ export type AppDataFull = {
   subDomain?: string;
   accessToken?: string;
   domainApp?: string;
-  domainLanding?: string;
   keitaroDomain?: string;
   keitaroFirstCampaign?: string;
   pixelId?: string;
-  renderId?: string; // new
+  cloudflareId?: string; // new
 };
 
 // Example usage:
@@ -191,7 +190,6 @@ export type UpdatedAppDataProps = {
   pixelId?: string;
   accessToken?: string;
   domainApp?: string;
-  domainLanding?: string;
   keitaroDomain?: string;
   keitaroCampaign?: string;
   keitaroCampaignId?: string;
@@ -310,7 +308,6 @@ export type AppDataProps = {
   pixelId?: string;
   accessToken?: string;
   domainApp?: string;
-  domainLanding?: string;
   keitaroDomain?: string;
   keitaroCampaign?: string;
   keitaroCampaignId?: string;
@@ -322,7 +319,7 @@ export type AppDataProps = {
   marketerTag?: string;
   appTitle?: string;
   appSubTitle?: string;
-  renderId?: string;
+  cloudflareId?: string;
   icon?: string;
   screenShots?: string[];
   reviewObject: CommentResponse[];

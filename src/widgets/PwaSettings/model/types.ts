@@ -8,7 +8,7 @@ export type Keitaro = SelectValueProp & {
   keitaroState: string;
 };
 
-type SettingNames = "marketerTag" | "domainApp" | "domainLanding" | "whitePage";
+type SettingNames = "marketerTag" | "domainApp" | "whitePage";
 
 export type Settings = Record<SettingNames, SelectValueProp | null> & {
   currentCampaign: Keitaro | null;

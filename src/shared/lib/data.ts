@@ -33,7 +33,6 @@ export const appData = {
   accessToken:
     "EAARZCb4ynPgEBO45UqyXtcNc5EfSAOdGsX9gboavkhMZBHHGtECCI6RNkCWdrCUybqNgjL3dm8awWrxBoAApYFKir0zIroz6CB3X0FSDLNa4zOTRr27ZBaad3AWZA2mhxhR2WwL6sErV4l95yFa7ToZAhJkJCCR6AkrOnhCsBBVZCLAjfEip5WSu2Cd9xZAZB7MS2AZDZD",
   domainApp: "https://www.plinsters.pro",
-  domainLanding: "https://www.app.plinsters.pro",
   keitaroDomain: "https://privacy.plinsters.pro",
   keitaroFirstCampaign: "https://privacy.plinsters.pro/Zwhxxgqc",
   pixelId: "911082550969358",

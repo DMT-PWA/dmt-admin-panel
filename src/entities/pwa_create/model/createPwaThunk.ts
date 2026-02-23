@@ -50,8 +50,7 @@ export const finishCreatePWA = createAsyncThunk<
       subDomain: subdomain,
       pixelId: facebookPixelList[0].pixel,
       accessToken: facebookPixelList[0].token,
-      domainApp: `https://www.${subdomain}.${domainApp?.value}`,
-      domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
+      domainApp: `https://${subdomain}.${domainApp?.value}`,
       keitaroDomain: currentCampaign?.keitaroDomain,
       keitaroCampaign: currentCampaign?.keitaroCampaign,
       keitaroCampaignId: currentCampaign?.keitaroCampaignId,
@@ -184,8 +183,7 @@ export const fetchPwaUpdate = createAsyncThunk<
     keitaroCampaign: currentCampaign?.keitaroCampaign,
     keitaroCampaignId: currentCampaign?.keitaroCampaignId,
     marketerTag: pwa_tags,
-    domainApp: `https://www.${subdomain}.${domainApp?.value}`,
-    domainLanding: `https://www.app-${subdomain}.${domainApp?.value}`,
+    domainApp: `https://${subdomain}.${domainApp?.value}`,
   };
 
   return await apiInstance.patch("pwa", modifiedPayload);
@@ -195,7 +193,7 @@ export const createRenderService = createAsyncThunk<
   unknown,
   Pick<IAppCommon, "adminId" | "appId"> & { domain?: string }
 >("create/createRenderService", async (payload) => {
-  const response = await apiInstance.post("render", { ...payload });
+  const response = await apiInstance.post("cloudflare", { ...payload });
 
   return response;
 });

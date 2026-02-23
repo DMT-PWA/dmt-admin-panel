@@ -7,7 +7,6 @@ import { domains } from "../lib/constants";
 
 const initialState: Settings = {
   domainApp: null,
-  domainLanding: null,
   marketerTag: null,
   whitePage: null,
   currentCampaign: null,
